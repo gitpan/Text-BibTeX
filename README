@@ -1,26 +1,45 @@
-                              Text::BibTeX
-                              version 0.21
-                   Greg Ward (greg@bic.mni.mcgill.ca)
-                           6 October, 1997
+                               Text::BibTeX
+                               version 0.30
+                       Greg Ward (gward@python.net)
+                              12 March, 1999
 
 INTRODUCTION
 ------------
 
-Text::BibTeX is a Perl module (with a couple of helper modules) for
-reading, parsing, and writing BibTeX files.  Currently, the documented
-interface provides only the lowest level of support needed to process
-BibTeX bibliographies: parsing the entries and turning them into Perl
-hashes.  (Or rather, Perl objects queried through methods.  But it's all
-done with hashes internally.)  No knowledge of BibTeX conventions or
-requirements is present in the module, both in order to make it more
-general (i.e. the input files could hold any kind of data that lends
-itself to a bit of structure) and because I wanted to make this release
-before adding a whole new layer of code.
+Text::BibTeX is a Perl library for reading, parsing, and writing BibTeX
+files.  It is the Perl half of btOOL, a pair of libraries for dealing
+with BibTeX data; the C half, btparse, is needed to compile Text::BibTeX
+(see below).
 
-After installing the module, see the Text::BibTeX man page for a brief
-introduction to the system, Text::BibTeX::File for a little more material
-that is essentially introductory, and Text::BibTeX::Entry for the real
-thing.
+Text::BibTeX gives you access to the data at many different levels: you
+may work with BibTeX entries as simple "field -> string" mappings, or
+get at the original form of the data as a list of simple values
+(strings, macros, or numbers) pasted together.  You can impose no
+restrictions on the allowed/expected entry types or fields, or you can
+use the structure defined by BibTeX 0.99's standard style files, or you
+can invent your own.
+
+The library is copiously documented.  After installing the module, see
+the Text::BibTeX man page for a comprehensive introduction to the
+system.  If you wish to dive straight in without regards for niceties
+such as splitting and formatting names, defining or imposing database
+structures, getting access to unprocessed field values, and other nifty
+features, then you can probably get away with just reading the
+Text::BibTeX::Entry man page.  Much of the documentation is rather raw,
+because no one except me has read it, so comments are most welcome --
+particularly comments that suggest constructive improvements.
+
+In addition to the man pages embedded in each module (and available
+after installation), I have written a technical report describing btOOL,
+with the btparse and Text::BibTeX documentation included as appendices.
+The whole report is just over 100 pages, around 45 of which make up the
+Text::BibTeX documentation (the btparse documentation is a further 30
+pages).  It can be downloaded from the same location as the btOOL code:
+
+    http://www.aseonline.net/~gward/
+
+I may also make the btparse and Text::BibTeX manuals available as
+separate PostScript files, but they aren't there as of this writing.
 
 
 DEPENDENCIES
@@ -30,16 +49,19 @@ Text::BibTeX requires Perl 5.004 or later and an ANSI-compliant C
 compiler.
 
 You must also have the btparse distribution, the C library underlying
-Text::BibTeX.  It is enough to put btparse-0.2.tar.gz in the same
-directory where you unpack the Text-BibTeX-0.2 archive; or you can put
-the btparse tar file right into the Text-BibTeX-0.2 directory.
+Text::BibTeX.  It is enough to put btparse-x.y.tar.gz (where x.y is the
+btparse release number -- it should be the same as for Text::BibTeX) in
+the same directory where you unpack the Text::BibTeX archive; or you can
+put the btparse tar file right into the Text::BibTeX distribution
+directory.  If you have already unpacked btparse, the directory that it
+unpacked to should be found just fine.
 
 
 BUILDING
 --------
 
 Start by generating the Makefile and other preparatory steps (most
-notably, finding and unpacking the btparse distribution):
+notably, finding and possibly unpacking the btparse distribution):
 
    perl Makefile.PL
 
@@ -51,6 +73,11 @@ an ANSI compiler such as 'gcc' or Sun's 'acc'.  This can be done for
 Text::BibTeX as follows:
 
    perl Makefile.PL CC=gcc      # or acc, or whatever works on your system
+
+However, this is fraught with danger and not recommended.  The only safe
+thing to do is to build Perl with an ANSI-compliant compiler.  This will
+probably save you trouble with other extensions that require an ANSI C
+compiler.
 
 Now, configure btparse (the C library that is the back-end to
 Text::BibTeX):
@@ -68,7 +95,7 @@ would also recommend using the same compiler to build Perl itself.)
 
 Next, build and test the C library (still in the 'btparse' directory):
 
-   make
+   make lib
    make test
 
 Return to the main Text::BibTeX distribution directory, and continue as
@@ -91,4 +118,20 @@ AVAILABILITY
 
 The latest version of Text::BibTeX and btparse should be available from
 
-   ftp://ftp.bic.mni.mcgill.ca/pub/users/greg/
+   http://www.aseonline.net/~gward/
+
+Up-to-date information on btOOL is available at the btOOL web site:
+
+   http://starship.python.net/~gward/btOOL/
+
+Here you will (eventually) find HTML versions of the documentation and
+technical report describing the project, links to download the code, and
+whatever other goodies I can come up with over time.
+
+
+CREDITS
+-------
+
+See the btparse README file.
+
+$Id: README,v 1.5 1999/03/11 04:23:06 greg Exp $

@@ -4,7 +4,7 @@ use IO::Handle;
 BEGIN { require "t/common.pl"; }
 
 my $loaded;
-BEGIN { $| = 1; print "1..62\n"; }
+BEGIN { $| = 1; print "1..51\n"; }
 END {print "not ok 1\n" unless $loaded;}
 use Text::BibTeX;
 $loaded = 1;
@@ -16,17 +16,22 @@ setup_stderr;
 
 sub test_name
 {
-   my ($name, $components) = @_;
+   my ($name, $parts) = @_;
    my $ok = 1;
-   my @parts = qw(first von last jr);
+   my @partnames = qw(first von last jr);
    my $i;
 
-   for $i (0 .. $#parts)
+   for $i (0 .. $#partnames)
    {
-      $ok &= (defined $components->[$i])
-         ? (defined $name->{$parts[$i]}) && 
-            slist_equal ($components->[$i], $name->{$parts[$i]})
-         : (! defined $name->{$parts[$i]});
+      if (defined $parts->[$i])
+      {
+         $ok &= ($name->part ($partnames[$i]))
+            && slist_equal ($parts->[$i], [$name->part ($partnames[$i])]);
+      }
+      else
+      {
+         $ok &= ! $name->part ($partnames[$i]);
+      }
    }
 
    test (keys %$name <= 4 && $ok);
@@ -38,37 +43,6 @@ sub test_name
 
 my (@names, %names, @orig_namelist, $namelist, @namelist);
 my ($text, $entry);
-
-@names =
-   ('J. Smith and N. D. Andrews' => ['J. Smith', 'N. D. Andrews'],
-    'J. Smith and A. Jones' => ['J. Smith', 'A. Jones'],
-    'J. Smith and A. Jones and J. Random' => ['J. Smith', 'A. Jones', 'J. Random'],
-    'A. Smith and J. Jones' => ['A. Smith', 'J. Jones'],
-    'A. Smith and A. Jones' => ['A. Smith', 'A. Jones'],
-    'Amy Smith and Andrew Jones' => ['Amy Smith', 'Andrew Jones'],
-    'Amy Smith and And y Jones' => ['Amy Smith', undef, 'y Jones'],
-    'K. Herterich and S. Determann and B. Grieger and I. Hansen and P. Helbig and S. Lorenz and A. Manschke' => ['K. Herterich', 'S. Determann', 'B. Grieger', 'I. Hansen', 'P. Helbig', 'S. Lorenz', 'A. Manschke'],
-    'A. Manschke and M. Matthies and A. Paul and R. Schlotte and U. Wyputta' => ['A. Manschke', 'M. Matthies', 'A. Paul', 'R. Schlotte', 'U. Wyputta'],
-    'S. Lorenz and A. Manschke and M. Matthies' => ['S. Lorenz', 'A. Manschke', 'M. Matthies'],
-    'K. Herterich and S. Determann and B. Grieger and I. Hansen and P. Helbig and S. Lorenz and A. Manschke and M. Matthies and A. Paul and R. Schlotte and U. Wyputta' => ['K. Herterich', 'S. Determann', 'B. Grieger', 'I. Hansen', 'P. Helbig', 'S. Lorenz', 'A. Manschke', 'M. Matthies', 'A. Paul', 'R. Schlotte', 'U. Wyputta'],
-   );
-
-while (@names)
-{
-   my ($name, $should_split) = (shift @names, shift @names);
-   my $actual_split = [Text::BibTeX::split_list ($name, 'and')];
-
-   if ($DEBUG)
-   {
-      printf "name = >%s<\n", $name;
-      print "should split to:\n  ";
-      print join ("\n  ", @$should_split) . "\n";
-      print "actually split to:\n  ";
-      print join ("\n  ", @$actual_split) . "\n";
-   }
-
-   test (slist_equal ($should_split, $actual_split));
-}
 
 # first just a big ol' list of names, not attached to any entry
 %names =
@@ -98,13 +72,13 @@ my $i;
 foreach $i (0 .. $#namelist)
 {
    test ($namelist[$i] eq $orig_namelist[$i]);
-   my $comp = Text::BibTeX::split_name ($namelist[$i], 'test', 0, $i);
-   test (keys %$comp <= 4);
+   my %parts;
+   Text::BibTeX::Name::_split (\%parts, $namelist[$i], 'test', 0, $i, 0);
+   test (keys %parts <= 4);
 
    my @name = map { join ('+', ref $_ ? @$_ : ()) }
-                  @$comp{'first','von','last','jr'};
+                  @parts{'first','von','last','jr'};
    test (join ('|', @name) eq $names{$orig_namelist[$i]});
-
 }
 
 # now an entry with some names in it

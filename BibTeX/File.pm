@@ -1,8 +1,21 @@
+# ----------------------------------------------------------------------
+# NAME       : BibTeX/File.pm
+# CLASSES    : Text::BibTeX::File
+# RELATIONS  : 
+# DESCRIPTION: Provides an object-oriented interface to whole BibTeX
+#              files.
+# CREATED    : March 1997, Greg Ward
+# MODIFIED   : 
+# VERSION    : $Id: File.pm,v 1.8 1999/03/11 04:54:06 greg Exp $
+# COPYRIGHT  : Copyright (c) 1997-98 by Gregory P. Ward.  All rights
+#              reserved.
+# 
+#              This file is part of the Text::BibTeX library.  This
+#              library is free software; you may redistribute it and/or
+#              modify it under the same terms as Perl itself.
+# ----------------------------------------------------------------------
+
 package Text::BibTeX::File;
-
-# $Id: File.pm,v 1.3 1997/09/24 14:42:45 greg Exp $
-
-# BEGIN { print "compiling Text::BibTeX::File\n"; }
 
 use strict;
 use Carp;
@@ -17,9 +30,7 @@ Text::BibTeX::File - interface to whole BibTeX files
    use Text::BibTeX;     # this loads Text::BibTeX::File
 
    $bib = new Text::BibTeX::File "foo.bib" or die "foo.bib: $!\n";
-
-OR
-
+   # or:
    $bib = new Text::BibTeX::File;
    $bib->open ("foo.bib") || die "foo.bib: $!\n";
 
@@ -32,40 +43,48 @@ OR
 
 =head1 DESCRIPTION
 
-C<Text::BibTeX::File> provides a gratuitous object-oriented interface to
-BibTeX files.  It really doesn't do much apart from keep track of a
-filename and filehandle together for use by the C<Text::BibTeX::Entry>
-module (which is much more interesting), but it provides a nice clean
-interface to which I might add functionality at some point.
+F<Text::BibTeX::File> provides an object-oriented interface to BibTeX
+files.  Its most obvious purpose is to keep track of a filename and
+filehandle together for use by the F<Text::BibTeX::Entry> module (which
+is much more interesting).  In addition, it allows you to specify
+certain options which are applicable to a whole database (file), rather
+than having to specify them for each entry in the file.  Currently, you
+can specify the I<database structure> and some I<structure options>.
+These concepts are fully documented in L<Text::BibTeX::Structure>.
 
 =head1 METHODS
+
+=head2 Object creation, file operations
 
 =over 4
 
 =item new ([FILENAME [,MODE [,PERMS]]]) 
 
-Creates a new C<Text::BibTeX::File> object.  If C<FILENAME> is supplied,
-passes it to the C<open> method (along with C<MODE> and C<PERMS> if they
+Creates a new F<Text::BibTeX::File> object.  If FILENAME is supplied,
+passes it to the C<open> method (along with MODE and PERMS if they
 are supplied).  If the C<open> fails, C<new> fails and returns false; if
-the C<open> succeeds (or if C<FILENAME> isn't supplied), C<new> returns the
+the C<open> succeeds (or if FILENAME isn't supplied), C<new> returns the
 new object reference.
 
 =item open (FILENAME [,MODE [,PERMS]])
 
-Opens the file specified by C<FILENAME>, possibly using C<MODE> and
-C<PERMS> (see L<IO::File> for full semantics; this C<open> is just a front
-end for C<IO::File::open>).
+Opens the file specified by FILENAME, possibly using MODE and PERMS.
+See L<IO::File> for full semantics; this C<open> is just a front end for
+C<IO::File::open>.
 
-=item close
+=item close ()
 
 Closes the filehandle associated with the object.  If there is no such
-filehandle (ie. if you never called C<open> on the object), does nothing.
+filehandle (i.e., C<open> was never called on the object), does nothing.
+
+=item eof ()
+
+Returns the end-of-file state of the filehandle associated with the
+object: a true value means we are at the end of the file.
 
 =back
 
 =cut
-
-# Object creation/destruction, file operations
 
 sub new
 {
@@ -103,8 +122,27 @@ sub DESTROY
    $self->close;
 }
 
+=head2 Object properties
 
-# Set/query various properties
+=over 4
+
+=item set_structure (STRUCTURE [, OPTION =E<gt> VALUE, ...])
+
+Sets the database structure for a BibTeX file.  At the simplest level,
+this means that entries from the file are expected to conform to certain
+field requirements as specified by the I<structure module>.  It also
+gives you full access to the methods of the particular I<structured
+entry class> for this structure, allowing you to perform operations
+specific to this kind of database.  See L<Text::BibTeX::Structure/"CLASS
+INTERACTIONS"> for all the consequences of setting the database
+structure for a F<Text::BibTeX::File> object.
+
+=item structure ()
+
+Returns the name of the database structure associated with the object
+(as set by C<set_structure>).
+
+=cut
 
 sub set_structure 
 {
@@ -115,20 +153,43 @@ sub set_structure
          "number of elements"
       unless @options % 2 == 0;
    $self->{structure} = new Text::BibTeX::Structure ($structure, @options);
-#   $self->{structure_opts} = \%options;
 }
 
 sub structure { shift->{structure} }
 
 
+=item preserve_values ([PRESERVE])
+
+Sets the "preserve values" flag, to control all future parsing of entries
+from this file.  If PRESERVE isn't supplied, returns the current state of
+the flag.  See L<Text::BibTeX::Value> for details on parsing in "value
+preservation" mode.
+
+=back
+
+=cut
+
+sub preserve_values
+{
+   my $self = shift;
+
+   $self->{'preserve_values'} = shift if @_;
+   $self->{'preserve_values'};
+}
+
+
 1;
+
+=head1 SEE ALSO
+
+L<Text::BibTeX>, L<Text::BibTeX::Entry>, L<Text::BibTeX::Structure>
 
 =head1 AUTHOR
 
-Greg Ward <greg@bic.mni.mcgill.ca>
+Greg Ward <gward@python.net>
 
 =head1 COPYRIGHT
 
-Copyright (c) 1997 by Gregory P. Ward.  All rights reserved.  This is free
-software; you can redistribute it and/or modify it under the same terms as
-Perl itself.
+Copyright (c) 1997-98 by Gregory P. Ward.  All rights reserved.  This file
+is part of the Text::BibTeX library.  This library is free software; you
+may redistribute it and/or modify it under the same terms as Perl itself.

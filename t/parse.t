@@ -1,4 +1,5 @@
 use strict;
+use vars ('$DEBUG');
 use IO::Handle;
 BEGIN { require "t/common.pl"; }
 
@@ -8,6 +9,8 @@ END {print "not ok 1\n" unless $loaded;}
 use Text::BibTeX;
 $loaded = 1;
 print "ok 1\n";
+
+$DEBUG = 0;
 
 setup_stderr;
 

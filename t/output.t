@@ -33,10 +33,10 @@ test (! warnings);
 $new_text = $entry->print_s;
 
 test ($new_text =~ /^\@article\{homer97,$/m &&
-      $new_text =~ /^\s*author\s*=\s*\{Homer Simpson and Ned Flanders\},$/m &&
-      $new_text =~ /^\s*title\s*=\s*\{Territorial[^\}]*Suburbia\},$/m &&
-      $new_text =~ /^\s*journal\s*=\s*\{Journal[^\}]*Studies\},$/m &&
-      $new_text =~ /^\s*year\s*=\s*\{1997\},?$/m);
+      $new_text =~ /^\s*author\s*=\s*[\{\"]Homer Simpson and Ned Flanders[\}\"],$/m &&
+      $new_text =~ /^\s*title\s*=\s*[\{\"]Territorial[^\}\"]*Suburbia[\}\"],$/m &&
+      $new_text =~ /^\s*journal\s*=\s*[\{\"]Journal[^\}]*Studies[\}\"],$/m &&
+      $new_text =~ /^\s*year\s*=\s*[\{\"]1997[\}\"],?$/m);
 
 $new_entry = new Text::BibTeX::Entry $new_text;
 

@@ -8,339 +8,38 @@
                  Text::BibTeX::constant
                  Text::BibTeX::initialize
                  Text::BibTeX::cleanup
-                 Text::BibTeX::Entry::parse_s
-                 Text::BibTeX::Entry::parse
+                 Text::BibTeX::split_list
+                 Text::BibTeX::purify_string
+                 Text::BibTeX::Entry::_parse_s
+                 Text::BibTeX::Entry::_parse
+                 Text::BibTeX::Name::split
+                 Text::BibTeX::Name::free
+                 Text::BibTeX::add_macro_text
+                 Text::BibTeX::delete_macro
+                 Text::BibTeX::delete_all_macros
+                 Text::BibTeX::macro_length
+                 Text::BibTeX::macro_text
 @GLOBALS    : 
 @CALLS      : 
 @CREATED    : Jan/Feb 1997, Greg Ward
 @MODIFIED   : 
-@VERSION    : $Id: BibTeX.xs,v 1.13 1997/10/03 04:01:47 greg Exp $
+@VERSION    : $Id: BibTeX.xs,v 1.27 1999/02/22 03:27:40 greg Exp $
 -------------------------------------------------------------------------- */
-#ifdef __cplusplus
-extern "C" {
-#endif
 #include "EXTERN.h"
 #include "perl.h"
 #include "XSUB.h"
 
-#include <btparse.h>
-#ifdef __cplusplus
-}
-#endif
-
 #define BT_DEBUG 0
 
-#if BT_DEBUG
-# define DBG_ACTION(x) x
-#else
-# define DBG_ACTION(x)
-#endif
-
-
-static char *nodetype_names[] = 
-{
-   "entry", "macrodef", "text", "key", "field", "string", "number", "macro"
-};
-
-
-static int
-not_here(s)
-char *s;
-{
-    croak("%s not implemented on this architecture", s);
-    return -1;
-}
-
-
-static int
-constant(name, arg)
-char *   name;
-IV *     arg;
-{
-   int   ok = FALSE;
-
-   DBG_ACTION (printf ("constant: name=%s\n", name));
-
-   if (! (name[0] == 'B' && name[1] == 'T')) /* should not happen! */
-      croak ("Illegal constant name \"%s\"", name);
-
-   switch (name[2])
-   {
-      case 'E':                         /* entry metatypes */
-         if (strEQ (name, "BTE_UNKNOWN")) { *arg = BTE_UNKNOWN; ok = TRUE; }
-         if (strEQ (name, "BTE_REGULAR")) { *arg = BTE_REGULAR; ok = TRUE; }
-         if (strEQ (name, "BTE_COMMENT")) { *arg = BTE_COMMENT; ok = TRUE; }
-         if (strEQ (name, "BTE_PREAMBLE")) { *arg = BTE_PREAMBLE; ok = TRUE; }
-         if (strEQ (name, "BTE_MACRODEF")) { *arg = BTE_MACRODEF; ok = TRUE; }
-         break;
-      case 'A':                         /* AST nodetypes (not all of them) */
-         if (strEQ (name, "BTAST_STRING")) { *arg = BTAST_STRING; ok = TRUE; }
-         if (strEQ (name, "BTAST_NUMBER")) { *arg = BTAST_NUMBER; ok = TRUE; }
-         if (strEQ (name, "BTAST_MACRO")) { *arg = BTAST_MACRO; ok = TRUE; }
-         break;
-      default:
-         break;
-   }
-
-   return ok;
-}
-
-
-static void
-convert_assigned_entry (AST *top, HV *entry)
-{
-   AV *    flist;                 /* the field list -- put into entry */
-   HV *    values;                /* the field values -- put into entry */
-   HV *    lines;                 /* line numbers of entry and its fields */
-   AST *   field;
-   char *  field_name;
-   AST *   item;
-   char *  item_text;
-   int     prev_line;
-
-   /*
-    * Start the line number hash.  It will contain (num_fields)+2 elements;
-    * one for each field (keyed on the field name), and the `start' and
-    * `stop' lines for the entry as a whole.  (Currently, the `stop' line
-    * number is the same as the line number of the last field.  This isn't
-    * strictly correct, but by the time we get our hands on the AST, that
-    * closing brace or parenthesis is long lost -- so this is the best we
-    * get.  I just want to put this redundant line number in in case some
-    * day I get ambitious and keep track of its true value.)
-    */
-
-   lines = newHV ();
-   hv_store (lines, "START", 5, newSViv (top->line), 0);
-
-   /* 
-    * Now loop over all fields in the entry.   As we loop, we build 
-    * three structures: the list of field names, the hash relating
-    * field names to (fully expanded) values, and the list of line 
-    * numbers.
-    */
-   
-   DBG_ACTION (printf ("  creating field list, value hash\n"));
-   flist = newAV ();
-   values = newHV ();
-
-   DBG_ACTION (printf ("  getting fields and values\n"));
-   field = bt_next_field (top, NULL, &field_name);
-   while (field)
-   {
-      AST *  value;
-      bt_nodetype_t 
-             nodetype;
-      char * field_value;
-      SV *   sv_field_name;
-      SV *   sv_field_value;
-
-      if (!field_name)                  /* this shouldn't happen -- but if */
-         continue;                      /* it does, skipping the field seems */
-                                        /* reasonable to me */
-
-      /* Get the field name and value as SVs */
-
-      value = bt_next_value (field, NULL, &nodetype, &field_value);
-      if (value &&
-          (! (nodetype == BTAST_STRING || nodetype == BTAST_NUMBER) ||
-           bt_next_value (field, value, NULL, NULL) != NULL))
-      {
-         croak ("BibTeX.xs: internal error in entry post-processing--value "
-                "for field %s is not a simple string or number", field_name);
-      }
-
-      DBG_ACTION (printf ("  field=%s, value=\"%s\"\n", 
-                          field_name, field_value));
-      sv_field_name = newSVpv (field_name, 0);
-      sv_field_value = field_value ? newSVpv (field_value, 0) : &sv_undef;
-
-
-      /* 
-       * Push the field name onto the field list, add the field value to
-       * the values hash, and add the line number onto the line number
-       * hash.
-       */
-      av_push (flist, sv_field_name);
-      hv_store (values, field_name, strlen (field_name), sv_field_value, 0);
-      hv_store (lines, field_name, strlen (field_name),
-                newSViv (field->line), 0);
-      prev_line = field->line;          /* so we can duplicate last line no. */
-
-      field = bt_next_field (top, field, &field_name);
-      DBG_ACTION (printf ("  stored field/value; next will be %s\n",
-                          field_name));
-   }
-
-
-   /* 
-    * Duplicate the last element of `lines' (kludge until we keep track of
-    * the true end-of-entry line number).
-    */
-   hv_store (lines, "STOP", 4, newSViv (prev_line), 0);
-
-
-   /* Put refs to field list, value hash, and line list into the main hash */
-
-   DBG_ACTION (printf ("  got all fields; storing list/hash refs\n"));
-   hv_store (entry, "fields", 6, newRV ((SV *) flist), 0);
-   hv_store (entry, "values", 6, newRV ((SV *) values), 0);
-   hv_store (entry, "lines", 5, newRV ((SV *) lines), 0);
-
-} /* convert_assigned_entry () */
-
-
-static void
-convert_value_entry (AST *top, HV *entry)
-{
-   HV *    lines;                 /* line numbers of entry and its fields */
-   AST *   item,
-       *   prev_item;
-   int     last_line;
-   char *  value;
-   SV *    sv_value;
-
-   /* 
-    * Start the line number hash.  For "value" entries, it's a bit simpler --
-    * just a `start' and `stop' line number.  Again, the `stop' line is
-    * inaccurate; it's just the line number of the last value in the
-    * entry.
-    */
-   lines = newHV ();
-   hv_store (lines, "START", 5, newSViv (top->line), 0);
-
-   /* Walk the list of values to find the last one (for its line number) */
-   item = NULL;
-   while (item = bt_next_value (top, item, NULL, NULL))
-      prev_item = item;
-   last_line = prev_item->line;
-   hv_store (lines, "STOP", 4, newSViv (last_line), 0);
-
-   /* Store the line number hash in the entry hash */
-   hv_store (entry, "lines", 5, newRV ((SV *) lines), 0);
-
-   /* And get the value of the entry as a single string (fully processed) */
-   value = bt_get_text (top);
-   sv_value = value ? newSVpv (value, 0) : &sv_undef;
-   hv_store (entry, "value", 5, sv_value, 0);
-
-} /* convert_value_entry () */
-
-
-static void 
-ast_to_hash (SV *entry_ref, AST *top, boolean parse_status)
-{
-   char *  type;
-   char *  key;
-   HV *    entry;                 /* the main hash -- build and return */
-
-   DBG_ACTION (printf ("ast_to_hash: entry\n"));
-
-   /* printf ("checking that entry_ref is a ref and a hash ref\n"); */
-   if (! (SvROK (entry_ref) && (SvTYPE (SvRV (entry_ref)) == SVt_PVHV)))
-      croak ("entry_ref must be a hash ref");
-   entry = (HV *) SvRV (entry_ref);
-
-   /* 
-    * Clear out all hash values that might not be replaced in this
-    * conversion (in case the user parses into an existing
-    * Text::BibTeX::Entry object).  (We don't blow the hash away with
-    * hv_clear() in case higher-up code has put interesting stuff into it.)
-    */
-
-   hv_delete (entry, "key", 3, G_DISCARD);
-   hv_delete (entry, "fields", 6, G_DISCARD);
-   hv_delete (entry, "lines", 5, G_DISCARD);
-   hv_delete (entry, "values", 6, G_DISCARD);
-   hv_delete (entry, "value", 5, G_DISCARD);
-
-
-   /* 
-    * Start filling in the hash; all entries have a type and metatype,
-    * and we'll do the key here (even though it's not in all entries)
-    * for good measure.
-    */
-
-   type = bt_entry_type (top);
-   key = bt_entry_key (top);
-   DBG_ACTION (printf ("  inserting type (%s), metatype (%d)\n",
-                       type ? type : "*none*", bt_entry_metatype (top)));
-   DBG_ACTION (printf ("        ... key (%s) status (%d)\n",
-                       key ? key : "*none*", parse_status));
-
-   if (!type)
-      croak ("entry has no type");
-   hv_store (entry, "type", 4, newSVpv (type, 0), 0);
-   hv_store (entry, "metatype", 8, newSViv (bt_entry_metatype (top)), 0);
-
-   if (key)
-      hv_store (entry, "key", 3, newSVpv (key, 0), 0);
-
-   hv_store (entry, "status", 6, newSViv ((IV) parse_status), 0);
-
-
-   switch (bt_entry_metatype (top))
-   {
-      case BTE_MACRODEF:
-      case BTE_REGULAR:
-         convert_assigned_entry (top, entry);
-         break;
-
-      case BTE_COMMENT:
-      case BTE_PREAMBLE:
-         convert_value_entry (top, entry);
-         break;
-
-      default:                          /* this should never happen! */
-         croak ("unknown entry type \"%s\"\n", bt_entry_type (top));
-   }
-
-
-   /* And finally, free up the AST */
-
-   bt_free_ast (top);
-
-/*   hv_store (entry, "ast", 3, newSViv ((IV) top), 0); */
-
-   DBG_ACTION (printf ("ast_to_hash: exit\n"));
-}  /* ast_to_hash () */
-
-
-static SV *
-convert_stringlist (char **list, int num_strings)
-{
-   int    i;
-   AV *   perl_list;
-   SV *   sv_string;
-
-   perl_list = newAV ();
-   for (i = 0; i < num_strings; i++)
-   {
-      sv_string = newSVpv (list[i], 0);
-      av_push (perl_list, sv_string);
-   }
-
-   return newRV ((SV *) perl_list);
-
-} /* convert_stringlist() */
-
-
-static void
-store_stringlist (HV *hash, char *key, char **list, int num_strings)
-{
-   SV *  listref;
-
-   if (list)
-   {
-      listref = convert_stringlist (list, num_strings);
-      hv_store (hash, key, strlen (key), listref, 0);
-   }
-
-} /* store_stringlist() */
+#include "btparse.h"
+#include "btxs_support.h"
 
 
 MODULE = Text::BibTeX           PACKAGE = Text::BibTeX
 
-PROTOTYPES: ENABLE
+# XSUBs with no corresponding functions in the C library (hence no prefix
+# for this section):
+#    constant
 
 SV *
 constant(name)
@@ -352,76 +51,29 @@ char *   name
 	else
 	    ST(0) = &sv_undef;
 
-void
-initialize()
-        CODE:
-        bt_initialize ();
-
-
-void
-cleanup()
-        CODE:
-        bt_cleanup ();
-
-
-MODULE = Text::BibTeX   	PACKAGE = Text::BibTeX::Entry
-
-int
-parse (entry_ref, filename, file)
-SV *    entry_ref;
-char *  filename;
-FILE *  file;
-
-        PREINIT:
-        ushort  options = 0;
-        boolean status;
-        AST *   top;
-
-        CODE:
-
-        top = bt_parse_entry (file, filename, options, &status);
-#if BT_DEBUG >= 2
-        dump_ast ("BibTeX.xs:parse: AST from bt_parse_entry():\n", top);
-#endif
-
-        if (!top)                  /* at EOF -- return false to perl */
-        {
-           XSRETURN_NO;
-        }
-
-        ast_to_hash (entry_ref, top, status);
-        XSRETURN_YES;              /* OK -- return true to perl */
-
-
-int
-parse_s (entry_ref, text)
-SV *    entry_ref;
-char *  text;
-
-        PREINIT:
-        ushort  options = 0;
-        boolean status;
-        AST *   top;
-
-        CODE:
-
-        top = bt_parse_entry_s (text, NULL, 1, options, &status);
-
-        if (!top)                  /* no entry found -- return false to perl */
-        {
-           XSRETURN_NO;
-        }
-
-        ast_to_hash (entry_ref, top, status);
-        XSRETURN_YES;              /* OK -- return true to perl */
-
 
 MODULE = Text::BibTeX           PACKAGE = Text::BibTeX          PREFIX = bt_
 
+# XSUBs that consist solely of calls to corresponding C functions in the
+# library:
+#    initialize
+#    cleanup
+
+void
+bt_initialize()
+
+void
+bt_cleanup()
+
+
+# XSUBs that still go right into the Text::BibTeX package (ie. they don't
+# really belong in one of the subsidiary packages), but need a bit of work
+# to convert the C data to Perl form:
+#    split_list
+#    purify_string
 
 void
 bt_split_list (string, delim, filename=NULL, line=0, description=NULL)
-# bt_split_list (string, delim, filename, line, description)
 
     char *   string
     char *   delim
@@ -437,6 +89,8 @@ bt_split_list (string, delim, filename=NULL, line=0, description=NULL)
 
     PPCODE:
        names = bt_split_list (string, delim, filename, line, description);
+       if (names == NULL)
+          XSRETURN_EMPTY;       /* return empty list to perl */
 
        EXTEND (sp, names->num_items);
        for (i = 0; i < names->num_items; i++)
@@ -453,36 +107,435 @@ bt_split_list (string, delim, filename=NULL, line=0, description=NULL)
 
 
 SV *
-bt_split_name (name, filename=NULL, line=0, name_num=-1)
+bt_purify_string (instr, options=0)
 
+    char *  instr
+    int     options
+
+    CODE:
+       if (instr == NULL)               /* undef in, undef out */
+          XSRETURN_EMPTY;
+       RETVAL = newSVpv (instr, 0);
+       bt_purify_string (SvPVX (RETVAL), (ushort) options);
+       SvCUR_set (RETVAL, strlen (SvPVX (RETVAL))); /* reset SV's length */
+
+    OUTPUT:
+       RETVAL
+
+
+# Here's an alternate formulation of `purify_string' that acts more like
+# the C function (and less like nice Perl): it modifies the input string
+# in place, and returns nothing.  In addition to being weird Perl,
+# this contradicts the documentation.  And it would be impossible
+# to replicate this behaviour in a similar Python extension... all
+# round, a bad idea!
+
+## void
+## bt_purify_string (str, options=0)
+
+##     char * str
+##     int    options
+
+##     CODE:
+##        if (str != NULL) 
+##           bt_purify_string (str, (ushort) options);
+##           sv_setpv (ST(0), str);
+
+
+SV *
+bt_change_case (transform, string, options=0)
+    char   transform
+    char * string
+    int    options
+
+    CODE:
+       DBG_ACTION
+          (1, printf ("XSUB change_case: transform=%c, string=%p (%s)\n",
+                      transform, string, string))                  
+       if (string == NULL)
+          XSRETURN_EMPTY;
+       RETVAL = newSVpv (string, 0);
+       DBG_ACTION
+          (1, printf ("                  passing string %p (%s) to lib\n",
+                      copystr, copystr))
+       bt_change_case (transform, SvPVX (RETVAL), (ushort) options);
+
+    OUTPUT:
+       RETVAL
+
+
+
+
+MODULE = Text::BibTeX   	PACKAGE = Text::BibTeX::Entry
+
+# The two XSUBs that go to the Text::BibTeX::Entry package; both rely on
+# ast_to_hash() to do the appropriate "convert to Perl form" work:
+#    _parse
+#    _parse_s
+
+int
+_parse (entry_ref, filename, file, preserve=FALSE)
+    SV *    entry_ref;
+    char *  filename;
+    FILE *  file;
+    boolean preserve;
+
+    PREINIT:
+        ushort  options = 0;
+        boolean status;
+        AST *   top;
+
+    CODE:
+
+        top = bt_parse_entry (file, filename, options, &status);
+        DBG_ACTION 
+           (2, dump_ast ("BibTeX.xs:parse: AST from bt_parse_entry():\n", top))
+
+        if (!top)                  /* at EOF -- return false to perl */
+        {
+           XSRETURN_NO;
+        }
+
+        ast_to_hash (entry_ref, top, status, preserve);
+        XSRETURN_YES;              /* OK -- return true to perl */
+
+
+int
+_parse_s (entry_ref, text, preserve=FALSE)
+    SV *    entry_ref;
+    char *  text;
+    boolean preserve;
+
+    PREINIT:
+        ushort  options = 0;
+        boolean status;
+        AST *   top;
+
+    CODE:
+
+        top = bt_parse_entry_s (text, NULL, 1, options, &status);
+
+        if (!top)                  /* no entry found -- return false to perl */
+        {
+           XSRETURN_NO;
+        }
+
+        ast_to_hash (entry_ref, top, status, preserve);
+        XSRETURN_YES;              /* OK -- return true to perl */
+
+
+MODULE = Text::BibTeX           PACKAGE = Text::BibTeX::Name
+
+# The XSUBs that go in the Text::BibTeX::Name package (ie. that operate
+# on name objects):
+#    split
+#    free
+
+#if BT_DEBUG
+
+void
+dump (hashref)
+    SV *   hashref
+
+    PREINIT:
+       HV *       hash;
+       SV **      sv_name;
+       bt_name  * name;
+
+    CODE:
+       hash = (HV *) SvRV (hashref);
+       sv_name = hv_fetch (hash, "_cstruct", 8, 0);
+       if (! sv_name)
+       {
+          warn ("Name::dump: no _cstruct member in hash");
+       }
+       else
+       { 
+          name = (bt_name *) SvIV (*sv_name);
+          dump_name (name);             /* currently in format_name.c */
+       }
+
+#endif
+
+
+void
+_split (name_hashref, name, filename, line, name_num, keep_cstruct)
+
+    SV *    name_hashref
     char *  name
     char *  filename
     int     line
     int     name_num
+    int     keep_cstruct
 
     PREINIT:
-       bt_name * name_split;
-       int       i;
-       SV *      sv_first;
-       SV *      sv_von;
-       SV *      sv_last;
-       SV *      sv_jr;
        HV *      name_hash;
+       SV *      sv_old_name;
+       bt_name * old_name;
+       bt_name * name_split;
 
     CODE:
+       if (! (SvROK (name_hashref) && 
+              SvTYPE (SvRV (name_hashref)) == SVt_PVHV))
+          croak ("name_hashref is not a hash reference");
+       name_hash = (HV *) SvRV (name_hashref);
+
+       DBG_ACTION (1, 
+       {
+          printf ("XS Name::_split:\n");
+          printf ("  name_hashref=%p, name_hash=%p\n", 
+                  (void *) name_hashref, (void *) name_hash);
+          printf ("  name=%p (%s), filename=%p (%s)\n",
+                  name, name, filename, filename);
+          printf ("  line=%d, name_num=%d, keep_cstruct=%d\n",
+                  line, name_num, keep_cstruct);
+       })
+
+       sv_old_name = hv_delete (name_hash, "_cstruct", 8, 0);
+       if (sv_old_name)
+       {
+          old_name = (bt_name *) SvIV (sv_old_name);
+          DBG_ACTION
+             (1, printf ("XS Name::_split: name hash had old C structure "
+                         "(%d tokens, first was >%s<) -- freeing it\n",
+                         old_name->tokens->num_items,
+                         old_name->tokens->items[0]))
+          bt_free_name (old_name);
+       }
+
        name_split = bt_split_name (name, filename, line, name_num);
-       name_hash = newHV ();
+       DBG_ACTION (1, printf ("XS Name::_split: back from bt_split_name, "
+                              "calling store_stringlist x 4\n"))
 
        store_stringlist (name_hash, "first", 
-                         name_split->first, name_split->n_first);
+                         name_split->parts[BTN_FIRST],
+                         name_split->part_len[BTN_FIRST]);
        store_stringlist (name_hash, "von", 
-                         name_split->von, name_split->n_von);
+                         name_split->parts[BTN_VON],
+                         name_split->part_len[BTN_VON]);
        store_stringlist (name_hash, "last", 
-                         name_split->last, name_split->n_last);
+                         name_split->parts[BTN_LAST],
+                         name_split->part_len[BTN_LAST]);
        store_stringlist (name_hash, "jr", 
-                         name_split->jr, name_split->n_jr);
- 
-       RETVAL = newRV ((SV *) name_hash);
+                         name_split->parts[BTN_JR],
+                         name_split->part_len[BTN_JR]);
+
+       DBG_ACTION (1, 
+       {
+          char ** last = name_split->parts[BTN_LAST];
+          char ** first = name_split->parts[BTN_FIRST];
+              
+          printf ("XS Name::_split: name has %d tokens; "
+                 "last[0]=%s, first[0]=%s\n",
+                 name_split->tokens->num_items,
+                 last ? last[0] : "*no last name*",
+                 first ? first[0] : "*no first name*");
+       })
+
+       if (keep_cstruct)
+       {
+          hv_store (name_hash, "_cstruct", 8, newSViv ((IV) name_split), 0);
+          DBG_ACTION 
+             (1, printf ("XS Name::_split: storing pointer to structure %p\n", 
+                         name_split))
+       }
+       else
+       {
+          bt_free_name (name_split);
+       }
+
+
+void
+free (name_hashref)
+    SV *   name_hashref
+
+    PREINIT:
+       HV *      name_hash;
+       SV **     sv_name;
+       bt_name * name;
+
+    CODE:
+       name_hash = (HV *) SvRV (name_hashref);
+       sv_name = hv_fetch (name_hash, "_cstruct", 8, 0);
+       if (sv_name != NULL)
+       {
+          name = (bt_name *) SvIV (*sv_name);
+          DBG_ACTION (1, printf ("XS Name::free: freeing name %p\n", name))
+          bt_free_name (name);
+       }
+#if BT_DEBUG >= 1
+       else
+       {
+          printf ("XS Name::free: no C structure to free!\n");
+       }
+#endif
+
+
+MODULE = Text::BibTeX           PACKAGE = Text::BibTeX::NameFormat
+
+IV
+create (parts="fvlj", abbrev_first=FALSE)
+    char * parts
+    bool   abbrev_first
+
+    PREINIT:
+
+    CODE:
+       DBG_ACTION 
+          (1, printf ("XS NameFormat::create: "
+                      "creating name format: parts=\"%s\", abbrev=%d\n",
+                      parts, abbrev_first));
+       RETVAL = (IV) bt_create_name_format (parts, abbrev_first);
 
     OUTPUT:
        RETVAL
+
+
+void
+free (format)
+    bt_name_format * format
+
+    CODE:
+       bt_free_name_format ((bt_name_format *) format);
+
+
+#if BT_DEBUG
+
+void
+dump (hashref)
+    SV *   hashref
+
+    PREINIT:
+       HV *             hash;
+       SV **            sv_format;
+       bt_name_format * format;
+
+    CODE: 
+       hash = (HV *) SvRV (hashref);
+       sv_format = hv_fetch (hash, "_cstruct", 8, 0);
+       if (! sv_format)
+       {
+          warn ("NameFormat::dump: no _cstruct member in hash");
+       }
+       else
+       { 
+          format = (bt_name_format *) SvIV (*sv_format);
+          dump_format (format);         /* currently in format_name.c */
+       }
+
+#endif
+
+
+void
+_set_text (format, part, pre_part, post_part, pre_token, post_token)
+    bt_name_format * format
+    bt_namepart      part
+    char *           pre_part
+    char *           post_part
+    char *           pre_token
+    char *           post_token
+
+    CODE:
+#if BT_DEBUG >= 2
+    {
+       static char * nameparts[] =
+          { "first", "von", "last", "jr" };
+       static char * joinmethods[] =
+          {"may tie", "space", "force tie", "nothing"};
+
+       printf ("XS NameFormat::_set_text:\n");
+       printf ("  format=%p, namepart=%d (%s)\n", 
+               format, part, nameparts[part]);
+       printf ("  format currently is:\n");
+       dump_format (format);
+       printf ("  pre_part=%s, post_part=%s\n", pre_part, post_part);
+       printf ("  pre_token=%s, post_token=%s\n", pre_token, post_token);
+    }
+#endif
+
+       /*
+        * No memory leak here -- just copy the pointers.  At first
+        * blush, it might seem that we're opening ourselves up to
+        * the possibility of dangling pointers if the Perl strings
+        * that these char *'s refer to ever go away.  However, this
+        * is taken care of at the Perl level -- see the comment
+        * in BibTeX/NameFormat.pm, sub set_text.
+        */
+
+       bt_set_format_text (format, part,
+                           pre_part, post_part, pre_token, post_token);
+#if BT_DEBUG >= 2
+       printf ("XS NameFormat::_set_text: after call, format is:\n");
+       dump_format (format);
+#endif
+
+
+void
+_set_options (format, part, abbrev, join_tokens, join_part)
+    bt_name_format * format
+    bt_namepart      part
+    bool             abbrev
+    bt_joinmethod    join_tokens
+    bt_joinmethod    join_part
+
+    CODE:
+       bt_set_format_options (format, part, 
+                              abbrev, join_tokens, join_part);
+
+
+char *
+format_name (name, format)
+    bt_name * name
+    bt_name_format * format
+
+    CODE:
+       DBG_ACTION 
+          (2, printf ("XS format_name: name=%p, format=%p\n", name, format))
+       RETVAL = bt_format_name (name, format);
+       DBG_ACTION
+          (1, printf ("XS format_name: formatted name=%s\n", RETVAL))
+
+    OUTPUT:
+       RETVAL
+
+
+MODULE = Text::BibTeX           PACKAGE = Text::BibTeX          PREFIX = bt_
+
+void
+bt_add_macro_text (macro, text, filename=NULL, line=0) 
+    char * macro
+    char * text
+    char * filename
+    int    line
+
+void
+bt_delete_macro (macro)
+    char * macro
+
+void
+bt_delete_all_macros ()
+
+int
+bt_macro_length (macro)
+    char * macro
+
+char *
+bt_macro_text (macro, filename=NULL, line=0)
+    char * macro
+    char * filename
+    int    line
+
+
+# This bootstrap code is used to make btparse do "minimal post-processing"
+# on all entries.  That way, we can control how much is done on a per-entry
+# basis by simply calling bt_postprocess_entry() ourselves.
+#
+# The need to do this means that btparse is somewhat brain-damaged -- I 
+# should be able to specify the per-entry processing options when I call
+# bt_parse_entry()!  Shouldn't be too hard to fix....
+BOOT:
+    bt_set_stringopts (BTE_MACRODEF, 0);
+    bt_set_stringopts (BTE_REGULAR, 0);
+    bt_set_stringopts (BTE_COMMENT, 0);
+    bt_set_stringopts (BTE_PREAMBLE, 0);
+

@@ -25,10 +25,16 @@ sub warnings
 {
    my @err;
    open (ERR, $err_file) || die "couldn't open $err_file: $!\n";
-   chomp (@err = <ERR>);                # ???
+   chomp (@err = <ERR>);
+   close (ERR);
    open (STDERR, ">$err_file")
       || die "couldn't redirect stderr to $err_file: $!\n";
    STDERR->autoflush (1);
+   if ($DEBUG)
+   {
+      printf "caught %d messages on stderr:\n", scalar @err;
+      print join ("\n", @err) . "\n";
+   }
    @err;
 }
 
@@ -47,7 +53,12 @@ sub list_equal
 sub slist_equal
 {
    my ($a, $b) = @_;
-   list_equal (sub { $_[0] eq $_[1] }, $a, $b);
+   list_equal (sub
+               {
+                  my ($a, $b) = @_;
+                  (defined $a && defined $b && $a eq $b) ||
+                     (! defined $a && ! defined $b);
+               }, $a, $b);
 }
 
 my $i = 1;
