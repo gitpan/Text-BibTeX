@@ -1,0 +1,67 @@
+                               Text::BibTeX
+                                version 0.1
+                    Greg Ward (greg@bic.mni.mcgill.ca)
+                               8 March, 1997
+
+INTRODUCTION
+------------
+
+Text::BibTeX is a Perl module (with a couple of helper modules) for
+reading, parsing, and writing BibTeX files.  Currently, it provides only
+the lowest level of support needed to process BibTeX bibliographies:
+parsing the entries and turning them into Perl hashes.  (Or rather, Perl
+objects queried through methods.  But it's all done with hashes
+internally.)  No knowledge of BibTeX conventions or requirements is present
+in the module, both in order to make it more general (i.e. the input files
+could hold any kind of data that lends itself to a bit of structure) and
+because I wanted to make this release before adding a whole new layer of
+code.
+
+After installing the module, see the Text::BibTeX man page for a brief
+introduction to the system, Text::BibTeX::File for a little more material
+that is essentially introductory, and Text::BibTeX::Entry for the real
+thing.
+
+
+DEPENDENCIES
+------------
+
+In order to use Text::BibTeX, you must have the IO packages installed
+(Text::BibTeX uses IO::File).  They're available on CPAN under
+modules/by-module/IO.
+
+
+BUILDING
+--------
+
+First, you have to unpack and build btparse, the C library that does the
+actual work of reading, lexically analyzing, and parsing BibTeX data:
+
+   gunzip -c btparse-0.1.tar.gz | tar -xvf -
+   cd btparse-0.1
+   <edit Makefile>
+
+(The "edit Makefile" step is merely to ensure that `make' will use the
+right compiler and options.  If "cc -O2" is ANSI-compliant and generates
+correct code on your system, you're fine -- you don't need to edit
+Makefile.  However, if your standard C compiler is non-ANSI or buggy
+(eg. "cc" on SunOS) you might have to change either or both of CC and OPT
+to use a different compiler or options.)
+
+Now compile the library:
+
+   make
+   cd ..
+
+The code in btparse should be portable to any ANSI-compliant platform,
+but I haven't tested it widely.  Please let me know if you have problems
+compiling it.
+
+To build the Perl module, do the usual:
+
+   perl Makefile.PL
+   make
+   make test
+   make install
+
+This too should work fine -- please let me know if you have problems.

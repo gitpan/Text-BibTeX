@@ -1,0 +1,10 @@
+MANIFEST
+README
+BibTeX.pm
+BibTeX.xs
+Changes
+Makefile.PL
+test.pl
+BibTeX/File.pm
+BibTeX/Entry.pm
+btparse-0.1.tar.gz
