@@ -1,6 +1,6 @@
 package Text::BibTeX::File;
 
-# $Id: File.pm,v 1.1 1997/03/08 18:28:01 greg Exp $
+# $Id: File.pm,v 1.2 1997/04/22 01:14:42 greg Exp $
 
 # BEGIN { print "compiling Text::BibTeX::File\n"; }
 
@@ -66,7 +66,7 @@ sub new
 {
    my $class = shift;
 
-   my $class = ref ($class) || $class;
+   $class = ref ($class) || $class;
    my $self = bless {}, $class;
    ($self->open (@_) || return undef) if @_; # filename [, mode [, perms]]
    $self;
@@ -87,6 +87,12 @@ sub close
 {
    my $self = shift;
    $self->{handle}->close if $self->{handle};   
+}
+
+
+sub eof
+{
+   eof (shift->{handle});
 }
       
 

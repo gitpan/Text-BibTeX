@@ -6,13 +6,13 @@ package Text::BibTeX;
 #              needed for parsing BibTeX files (both Perl and C code).
 # CREATED    : February 1997, Greg Ward
 # MODIFIED   : 
-# VERSION    : $Id: BibTeX.pm,v 1.2 1997/03/08 18:32:41 greg Exp $
+# VERSION    : $Id: BibTeX.pm,v 1.6 1997/09/13 16:06:13 greg Exp $
 # ----------------------------------------------------------------------
 
 
 # BEGIN { print "compiling Text::BibTeX\n"; }
 
-require 5.002;
+require 5.003;
 
 =head1 NAME
 
@@ -54,33 +54,39 @@ details on those two modules and their methods.
 
 use strict;
 use Carp;
-use vars qw($VERSION @ISA @EXPORT_OK %EXPORT_TAGS $AUTOLOAD);
+use vars qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS $AUTOLOAD);
 
 require Exporter;
 require DynaLoader;
 @ISA = qw(Exporter DynaLoader);
-@EXPORT_OK = qw(BT_STRING BT_MACRO BT_NUMBER);
-%EXPORT_TAGS = (ast_types => [qw/BT_STRING BT_MACRO BT_NUMBER/]);
-$VERSION = '0.1';
+%EXPORT_TAGS = (nodetypes => [qw(BTAST_STRING BTAST_MACRO BTAST_NUMBER)],
+                metatypes => [qw(BTE_UNKNOWN BTE_REGULAR BTE_COMMENT 
+                                 BTE_PREAMBLE BTE_MACRODEF)],
+                subs      => [qw(bibloop split_list split_name)]);
+@EXPORT_OK = (@{$EXPORT_TAGS{'subs'}}, @{$EXPORT_TAGS{'nodetypes'}});
+@EXPORT = @{$EXPORT_TAGS{'metatypes'}};
+$VERSION = '0.2';
 
 sub AUTOLOAD
 {
-    # This AUTOLOAD is used to 'autoload' constants from the constant()
-    # XS function.  If a constant is not found then control is passed
-    # to the AUTOLOAD in AutoLoader.
+   # This AUTOLOAD is used to 'autoload' constants from the constant()
+   # XS function.
 
-#    print "AUTOLOAD: \$AUTOLOAD=$AUTOLOAD\n";
+#   print "AUTOLOAD: \$AUTOLOAD=$AUTOLOAD\n";
 
-    my ($constname, $ok, $val);
-    ($constname = $AUTOLOAD) =~ s/.*:://;
-    $val = constant ($constname);
-    croak ("Unknown Text::BibTeX constant: \"$constname\"")
-       unless (defined $val);
+   my ($constname, $ok, $val);
+   ($constname = $AUTOLOAD) =~ s/.*:://;
+   carp ("Recursive AUTOLOAD--probable compilation error"), return
+      if $constname eq 'constant';
+   $val = constant ($constname)
+      if $constname =~ /^BT/;
+   croak ("Unknown Text::BibTeX function: \"$constname\"")
+      unless (defined $val);
+   
+#   print "          constant ($constname) returned \"$val\"\n";
 
-#    print "          constant ($constname) returned \"$val\"\n";
-
-    eval "sub $AUTOLOAD { $val }";
-    $val;
+   eval "sub $AUTOLOAD { $val }";
+   $val;
 }
 
 # BEGIN { print "loading helpers\n"; }
@@ -98,25 +104,54 @@ bootstrap Text::BibTeX $VERSION;
 # which tries to call `constant' again, ad infinitum.  The moral of the
 # story: beware of what you put in BEGIN blocks in XS-dependent modules!)
 
-# BEGIN { print "initializing\n"; }
 &initialize;                            # these are both XS functions
 END { &cleanup; }
 
-# BEGIN { print "done\n"; }
+sub bibloop # (&$;$$)
+{
+   my ($body, $files, $dest, $extra_args) = @_;
+
+   croak ("extra_args must be an array ref if given")
+      if defined $extra_args && !ref $extra_args eq 'ARRAY';
+   my @extra_args = (defined $extra_args) ? (@$extra_args) : ();
+
+   my $file;
+   while ($file = shift @$files)
+   {
+      my $bib = new Text::BibTeX::File $file;
+      
+      while (! $bib->eof())
+      {
+         my $entry = new Text::BibTeX::Entry $bib;
+         next unless $entry->parse_ok;
+#         $entry->get ($bib);
+
+         # N.B. if I change the Entry structure to include a ref to
+         # the associated Text::BibTeX::file, then the body doesn't
+         # need to be passed a filename.  (Even better if I add
+         # a `warn' method to Text::BibTeX::Entry, so caller doesn't
+         # have to know about filename/line number at all.)
+
+#         my $result = &$body ($bib->{'filename'}, $entry, @extra_args);
+         my $result = &$body ($entry, @extra_args);
+         $entry->write ($dest, 1)
+            if ($result && $dest)
+      }
+   }
+}
+
 1;
+
 
 __END__
 
 =head1 BUGS AND LIMITATIONS
 
-There's a memory leak somewhere in the underlying C library, so be careful
-about processing large amounts of .bib data.  This will be fixed in the
-next release.
-
-Doesn't currently handle C<@preamble> entries.
-
 How to deal with macro definitions (C<@string> entries) from the Perl
 programmer's point of view is still a little fuzzy (and undocumented).
+Currently, macro expansions are stored in a hash table by the underlying C
+library, macros are expanded when entries are parsed.  Macro expansion
+values are not yet available to Perl code.
 
 =head1 AUTHOR
 

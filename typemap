@@ -1,0 +1,7 @@
+# this is needed so we can pass 'undef' for the filename to
+# Text::BibTeX::Entry::parse and have it wind up as NULL
+# in bt_parse_entry()
+
+INPUT
+T_PV
+	$var = ($arg == &sv_undef) ? NULL : ($type) SvPV ($arg,na)

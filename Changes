@@ -3,3 +3,12 @@ Revision history for Perl extension Text::BibTeX.
 0.1  Sat Mar  8 13:38:20 EST 1997
 	- first release
 
+0.2
+        - fixed a bunch of little memory leaks in the btparse C library
+        - rationalized the Text::BibTeX::Entry method names
+        - added (incomplete) Text::BibTeX::Structure module
+        - completely overhauled the parser and the interface to it;
+          this necessitated many small changes to BibTeX.xs
+        - greatly expanded the test suite and fixed a few little bugs
+          found in the process
+        - fixed the XS code to handle comment and preamble entries

@@ -1,9 +1,13 @@
 package Text::BibTeX::Entry;
 
-# $Id: Entry.pm,v 1.1 1997/03/08 18:28:04 greg Exp $
+require 5.004;
+
+# $Id: Entry.pm,v 1.7 1997/09/13 15:36:27 greg Exp $
 
 use strict;
 use Carp;
+use UNIVERSAL 'isa';
+#use Text::BibTeX
 
 =head1 NAME
 
@@ -11,34 +15,59 @@ Text::BibTeX::Entry - read and parse BibTeX files
 
 =head1 SYNOPSIS
 
-   # Assume $bib and $newbib are both objects of class 
-   # Text::BibTeX::File, and that $newbib was opened 
-   # for writing.
+   # ...assuming that $bibfile and $newbib are both objects of class
+   # Text::BibTeX::File, opened for reading and writing (respectively):
 
-   $entry = new Text::BibTeX::Entry ($bib);
-   die "Errors in entry\n" unless $entry->parse_ok;
+   # Entry creation/parsing methods:
+   $entry = new Text::BibTeX::Entry;
+   $entry->read ($bibfile);
+   $entry->parse ($filename, $filehandle);
+   $entry->parse_s ($entry_text);
+
+   # or:
+   $entry = new Text::BibTeX::Entry $bibfile;
+   $entry = new Text::BibTeX::Entry $filename, $filehandle;
+   $entry = new Text::BibTeX::Entry $entry_text;
    
+   # Entry query methods
+   warn "error in input" unless $entry->parse_ok;
+   $metatype = $entry->metatype;
    $type = $entry->type;
 
-   $entry->set_type ($new_type);
-
-   $key = $entry->key;
-
-   $entry->set_key ($new_key);
-
-   $num_fields = $entry->num_fields ();
-
-   @fields = $entry->fields ();
-
-   %values = $entry->values ();
-
+   # if metatype is BTE_REGULAR or BTE_MACRODEF:
+   $key = $entry->key;                  # BTE_REGULAR only, actually
+   $num_fields = $entry->num_fields;
+   @fieldlist = $entry->fieldlist;
    $has_title = $entry->exists ('title');
+   $title = $entry->get ('title');
+   # or:
+   ($val1,$val2,...$valn) = $entry->get ($field1, $field2, ..., $fieldn);
 
-   $title = $entry->value ('title');
+   # if metatype is BTE_COMMENT or BTE_PREAMBLE:
+   $value = $entry->value;
 
-   $entry->set_value ('title', $new_title);
+   # Author name methods 
+   @authors = $entry->split ('author');
+   ($first_author) = $entry->names ('author');
 
-   $entry->put ($newbib);
+   # Entry modification methods
+   $entry->set_type ($new_type);
+   $entry->set_key ($new_key);
+   $entry->set ('title', $new_title);
+   # or:
+   $entry->set ($field1, $val1, $field2, $val2, ..., $fieldn, $valn);
+   $entry->delete ($field);
+   $entry->set_fieldlist (\@fieldlist);
+
+   # Entry output methods
+   $entry->write ($newbib);
+   $entry->print ($filehandle);
+   $entry_text = $entry->print_s;
+
+   # Miscellaneous methods
+   $entry->warn ($entry_warning);
+   # or:
+   $entry->warn ($field_warning, $field);
 
 =head1 DESCRIPTION
 
@@ -48,64 +77,113 @@ front-end to a C library that does all that.  But that's not important
 right now.)
 
 BibTeX entries can be read either from C<Text::BibTeX::File> objects (using
-the C<get> method), or directly from a filehandle (using the C<parse>
-method).  The former is preferable, since you don't have to worry about
-supplying the filename, and because I might add more functionality to that
-method in the future.  Currently, though, the two are pretty much
-identical.
+the C<read> method), or directly from a filehandle (using the C<parse>
+method), or from a string (using C<parse_s>).  The first is preferable,
+since you don't have to worry about supplying the filename, and because I
+might add more functionality to that method in the future.  Currently,
+though, the two are pretty much identical.
 
 Once you have the entry, you can query it or change it in a variety of
 ways.  The query methods are C<parse_ok>, C<type>, C<key>, C<num_fields>,
-C<fields>, C<values>, C<exists>, and C<value>.  Methods for changing the
-entry are C<set_type>, C<set_key>, C<set_field> and C<set_fields>.
+C<fieldlist>, C<exists>, and C<get>.  Methods for changing the entry are
+C<set_type>, C<set_key>, C<set_fieldlist>, C<delete>, and C<set>.
 
-Finally, you can output BibTeX entries, again either to a filehandle or
-an open C<Text::BibTeX::File> object.  (This object must, of course,
-have been opened in write mode.)  Output to a filehandle is done with
-the C<print> method, and to a C<Text::BibTeX::File> object via C<put>.
-Again, the two are currently identical, but I may add interesting
-functionality to the nice object-oriented way of doing things.  (In
-spite of that advice, I often write utilities that read from
-C<Text::BibTeX::File> objects created from command-line arguments, and
-then just write to STDOUT, in the grand Unix filter fashion.)
+Finally, you can output BibTeX entries, again either to an open
+C<Text::BibTeX::File> object, a filehandle or a string.  (A
+C<Text::BibTeX::File> object or filehandle must, of course, have been
+opened in write mode.)  Output to a C<Text::BibTeX::File> object is done
+with the C<write> method, to a filehandle via C<print>, and to a string
+with C<print_s>.  Again, the nice object-oriented way of doing things is
+recommended for future extensibility.
 
 =head1 METHODS
 
 =head2 Entry creation/parsing methods
 
-=over
+=over 4
 
 =item new ([SOURCE])
 
 Creates a new C<Text::BibTeX::Entry> object.  If the SOURCE parameter is
-supplied, calls C<get> on the new object with it.  Returns the new
-object, unless SOURCE is supplied and C<get> fails (e.g. due to end of
-file) -- then it returns a false value.
+supplied, it must be one of the following: a C<Text::BibTeX::File> (or
+descendant class) object, a filename/filehandle pair, or a string.  Calls
+C<read> to read from a C<Text::BibTeX::File> object, C<parse> to read from
+a filehandle, and C<parse_s> to read from a string.
+
+A filehandle can be specified as a GLOB reference, or as an
+C<IO::Handle> (or descendants) object, or as a C<FileHandle> (or
+descendants) object.  (But there's really no point in using
+C<FileHandle> objects, since C<Text::BibTeX> requires Perl 5.004, which
+always includes the C<IO> modules.)  You can I<not> pass in the name of
+a filehandle as a string, though, because F<Text::BibTeX::Entry>
+conforms to the C<use strict> pragma (which disallows such symbolic
+references).
+
+The corresponding filename should be supplied in order to allow for
+accurate error messages; if you simply don't have the filename, you can
+pass C<undef> and you'll get error messages without a filename.  (It's
+probably better to rearrange your code so that the filename is
+available, though.)
+
+Thus, the following are equivalent to read from a file named by
+C<$filename> (error handling ignored):
+
+   # good ol' fashioned filehandle and GLOB ref
+   open (BIBFILE, $filename);
+   $entry = new Text::BibTeX::Entry ($filename, \*BIBFILE);
+
+   # newfangled IO::File thingy
+   $file = new IO::File $filename;
+   $entry = new Text::BibTeX::Entry ($filename, $file);
+
+But using a C<Text::BibTeX::File> object is preferred:
+
+   $file = new Text::BibTeX::File $filename;
+   $entry = new Text::BibTeX::Entry $file;
+
+Returns the new object, unless SOURCE is supplied and reading/parsing
+the entry fails (e.g., due to end of file) -- then it returns false.
 
 =cut
 
 sub new
 {
-   my ($class, $source) = @_;
+   my ($class, @source) = @_;
 
-   my $class = ref ($class) || $class;
-   my $self = bless {}, $class;
-   if ($source)
+   $class = ref ($class) || $class;
+   my $self = {file   => undef,
+               type   => undef,
+               key    => undef,
+               status => undef,
+               'fields' => [],
+               'values' => {}};
+
+   bless $self, $class;
+   if (@source)
    {
-      my $status = $self->get ($source);
-      return $status unless $status;    # get failed -- tell our caller
+      my $status;
+
+      if (@source == 1 && isa ($source[0], 'Text::BibTeX::File'))
+          { $status = $self->read ($source[0]) }
+      elsif (@source == 2 && ! ref $source[0] && fileno ($source[1]))
+          { $status = $self->parse ($source[0], $source[1]) }
+      elsif (@source == 1 && ! ref $source[0])
+          { $status = $self->parse_s ($source[0]) }
+      else
+          { croak "new: source argument must be either a Text::BibTeX::File " .
+                  "(or descendant) object, filename/filehandle pair, or " .
+                  "a string"; }
+
+      return $status unless $status;    # parse failed -- tell our caller
    }
    $self;
 }
 
-=item get (SOURCE)
+=item read (BIBFILE)
 
-Reads and parses an entry from SOURCE.  SOURCE can be either a
-C<Text::BibTeX::File> object (or descendant), in which case the next entry
-will be read from the file associated with that object.  Otherwise, SOURCE
-should be a string containing an entire BibTeX entry, which will be parsed.
-(SOURCE could in fact contain multiple entries, but only the first one is
-seen, and the string is I<not> modified to `pop' off this first entry.)
+Reads and parses an entry from BIBFILE, which must be a
+C<Text::BibTeX::File> object (or descendant).  The next entry will be read
+from the file associated with that object.
 
 Returns the same as C<parse> (or C<parse_s>): false if no entry found
 (e.g., at end-of-file), true otherwise.  To see if the parse itself failed
@@ -113,23 +191,17 @@ Returns the same as C<parse> (or C<parse_s>): false if no entry found
 
 =cut
 
-sub get
+sub read
 {
    my ($self, $source) = @_;
+   croak "`source' argument must be ref to open Text::BibTeX::File " .
+         "(or descendant) object"
+      unless (isa ($source, 'Text::BibTeX::File'));
 
-   if (ref $source)                     # assume a Text::BibTeX::File object
-   {
-      croak "Bad `source' argument: should be ref to open Text::BibTeX::File object (or descendant)"
-         unless exists $source->{'filename'} && exists $source->{'handle'};
-
-      my $fn = $source->{'filename'};
-      my $fh = $source->{'handle'};
-      $self->parse ($fn, $fh);
-   }
-   else                                 # assume $source is just the entry text
-   {
-      $self->parse_s ($source);
-   }
+   my $fn = $source->{'filename'};
+   my $fh = $source->{'handle'};
+   $self->{'file'} = $source;        # store File object for later use
+   return $self->parse ($fn, $fh);
 }
 
 
@@ -164,25 +236,26 @@ false value.  Otherwise, it returns a true value -- even if there were
 syntax errors.  Hence, it's important to check C<parse_ok>.
 
 The FILENAME parameter is only used for generating error messages, but
-your users will certainly appreciate you setting it correctly!
+anybody using your program will certainly appreciate your setting it
+correctly!
 
 =item parse_s (TEXT)
 
 Parses a BibTeX entry (using the above rules) from the string TEXT.  The
 string is not modified; repeatedly calling C<parse_s> with the same string
-will give you the same results.  Thus, there's no point in putting multiple
-entries in one string.
+will give you the same results each time.  Thus, there's no point in
+putting multiple entries in one string.
 
 =back
 
 =cut
 
-# see BibTeX.xs for the implementation of the `parse' method
+# see BibTeX.xs for the implementation of the `parse' and `parse_s' methods
 
 
 =head2 Entry query methods
 
-=over
+=over 4
 
 =item parse_ok
 
@@ -198,35 +271,42 @@ Returns the type of the entry.  (The `type' is the word that follows the
 '@' sign; e.g. `article', `book', `inproceedings', etc. for the standard
 BibTeX styles.)
 
+=item metatype
+
+Returns the metatype of the entry.  (The `metatype' is a numeric value used
+to classify entry types into four groups: comment, preamble, macro
+definition (C<@string> entries), and regular (all other entry types).
+Text::BibTeX exports four constants for these metatypes: BTE_COMMENT,
+BTE_PREAMBLE, BTE_MACRODEF, and BTE_REGULAR.)
+
 =item key
 
 Returns the key of the entry.  (The key is the token immediately
-following the opening `{' or `('.)
+following the opening `{' or `(' in "regular" entries.  Returns C<undef>
+for entries that don't have a key, such as macro definition (C<@string>)
+entries.)
 
 =item num_fields
 
 Returns the number of fields in the entry.  (Note that, currently, this is
-I<not> equivalent to putting C<scalar> in front of a call to C<fields>.
-See below for the consequences of calling C<fields> in a scalar context.)
+I<not> equivalent to putting C<scalar> in front of a call to C<fieldlist>.
+See below for the consequences of calling C<fieldlist> in a scalar
+context.)
 
-=item fields
+=item fieldlist
 
-Returns the list of fields in the entry.  (In a scalar context, returns a
+Returns the list of fields in the entry.  In a scalar context, returns a
 reference to the object's own list of fields.  That way, you can change or
 reorder the field list with minimal interference from the class.  I'm not
 entirely sure if this is a good idea, so don't rely on it existing in the
 future; feel free to play around with it and let me know if you get bitten
-in dangerous ways.)
-
-=item values
-
-Returns a hash mapping field name to field value for the entire entry.  (In
-a scalar context, returns a reference to the object's own field value hash.
-The same caveats as for C<fields> apply.)
+in dangerous ways or find this enormously useful.
 
 =cut
 
 sub parse_ok   { shift->{'status'}; }
+
+sub metatype   { shift->{'metatype'}; }
 
 sub type       { shift->{'type'}; }
 
@@ -234,23 +314,27 @@ sub key        { shift->{'key'}; }
 
 sub num_fields { scalar @{shift->{'fields'}}; }
 
-sub fields     { wantarray ? @{shift->{'fields'}} : shift->{'fields'}; }
-
-sub values     { wantarray ? %{shift->{'values'}} : shift->{'values'}; }
+sub fieldlist  { wantarray ? @{shift->{'fields'}} : shift->{'fields'}; }
 
 =item exists (FIELD)
 
 Returns true if a field named FIELD is present in the entry, false
 otherwise.  
 
-=item value (FIELD)
+=item get (FIELD, ...)
 
-Returns the value of FIELD.  If FIELD is not present in the entry, C<undef>
-will be returned.  However, you can't trust this as a test for presence or
-absence of a field; it is possible for a field to be present but undefined.
-Currently this can only happen due to certain syntax errors in the input,
-or if you pass an undefined value to C<set_field>, or if you implicitly
-create a new field with C<set_fields>.
+Returns the value of one or more FIELDs, as a list of values.  For example:
+
+   $author = $entry->get ('author');
+   ($author, $editor) = $entry->get ('author', 'editor');
+
+If a FIELD is not present in the entry, C<undef> will be returned at its
+place in the return list.  However, you can't completely trust this as a
+test for presence or absence of a field; it is possible for a field to be
+present but undefined.  Currently this can only happen due to certain
+syntax errors in the input, or if you pass an undefined value to C<set>, or
+if you create a new field with C<set_fieldlist> (the new field's value is
+implicitly set to C<undef>).
 
 Currently, the field value is what the input looks like after "maximal
 processing"--quote characters are removed, whitespace is collapsed (the
@@ -274,13 +358,16 @@ you have ideas, feel free to email me!  (I also have plans for
 documenting what exactly is done to strings in my BibTeX parser; that'll
 probably be distributed with the C library, btparse.)
 
-=item names ([FIELD, [DELIM]])   *currently unimplemented*
+=item value
 
-Splits the value of FIELD (default: `author') on DELIM (default: `and').
-This is a bit trickier than it sounds because we have to exclude delimiters
-encased in braces, which mandates scanning a character at a time and
-keeping track of brace-depth.  (That's why this is currently
-unimplemented.)
+Retuns the single string associated with C<@comment> and C<@preamble>
+entries.  For instance, the entry
+
+   @preamble{" This is   a preamble" # 
+             {---the concatenation of several strings}}
+
+would return a value of "This is a preamble---the concatenation of
+several strings".
 
 =back
 
@@ -293,28 +380,156 @@ sub exists
    exists $self->{'values'}{$field};
 }
 
-sub value
+sub get
 {
-   my ($self, $field) = @_;
+   my ($self, @fields) = @_;
 
-   $self->{'values'}{$field};
+   @{$self->{'values'}}{@fields};
 }
 
-# sub names
-# {
-#    my ($self, $field, $delim) = @_;
-
-#    $field = 'author' unless $field;
-#    $delim = 
+sub value { shift->{'value'} }
 
 
-#
-# Entry modification methods
-#
+=head2 Author name methods
+
+This is the only part of the module that makes any assumption about the
+nature of the data, namely that certain fields are lists delimited by a
+simple word such as "and", and that the delimited sub-strings are human
+names of the "First von Last" or "von Last, Jr., First" style used by
+BibTeX.  If you are using this module for anything other than
+bibliographic data, you can most likely forget about these two methods.
+However, if you are in fact hacking on BibTeX-style bibliographic data,
+these could come in very handy -- the name-parsing done by BibTeX is not
+trivial, and the list-splitting would also be a pain to implement in
+Perl because you have to pay attention to brace-depth.  (Not that it
+wasn't a pain to implement in C -- it's just a lot more efficient than a
+Perl implementation would be.)
+
+Incidentally, both of these methods assume that the strings being split
+have already been "collapsed" in the BibTeX way, i.e. all leading and
+trailing whitespace removed and internal whitespace reduced to single
+spaces.  This should always be the case when using these two methods on
+a C<Text::BibTeX::Entry> object, but these are actually just front ends
+to more general functions in C<Text::BibTeX>.  (More general in that you
+supply the string to be parsed, rather than supplying the name of an
+entry field.)  Should you ever use those more general functions
+directly, you might have to worry about collapsing whitespace; see
+L<Text::BibTeX> (the C<split_list> and C<split_name> functions in
+particular) for more information.
+
+Please note that the interface to author name parsing is experimental,
+subject to change, and open to discussion.  Please let me know if you
+have problems with it, think it's just perfect, or whatever.
+
+=over 4
+
+=item split (FIELD [, DELIM [, DESC]])
+
+Splits the value of FIELD on DELIM (default: `and').  Don't assume that,
+just because the names are the same, this works the same as Perl's
+builtin C<split>: in particular, DELIM must be a simple string (no
+regexps), and delimiters that are at the beginning or end of the string,
+or at non-zero brace depth, or not surrounded by whitespace, are
+ignored.  Some examples might illuminate matters:
+
+   if field F is...                then split (F) returns...
+   'Name1 and Name2'               ('Name1', 'Name2')
+   'Name1 and and Name2'           ('Name1', undef, 'Name2')
+   'Name1 and'                     ('Name1 and')
+   'and Name2'                     ('and Name2')
+   'Name1 {and} Name2 and Name3'   ('Name1 {and} Name2', 'Name3')
+   '{Name1 and Name2} and Name3'   ('{Name1 and Name2}', 'Name3')
+
+Note that a warning will be issued for empty names (as in the second
+example above).  A warning ought to be issued for delimiters at the
+beginning or end of a string, but currently this isn't done.  (Hmmm.)
+
+DESC is a one-word description of the substrings; it defaults to 'name'.
+It is only used for generating warning messages.
+
+=item names (FIELD)
+
+Splits FIELD as described above, and further splits each name into four
+components: first, von, last, and jr.  The rules for this are described
+colloquially in any BibTeX documentation, and will eventually be spelled
+out more formally in the documentation for the F<btparse> library.
+
+Returns a list of structures representing the names.  Each structure is
+a hash with at most four keys (C<first>, C<von>, C<last>, and C<jr>);
+the values are either C<undef> or lists of the tokens that make up that
+component of the name.  For example, the following entry:
+
+   @article{foo,
+            author = {John Smith and 
+                      Hacker, J. Random and
+                      Ludwig van Beethoven and
+                      {Foo, Bar and Company}}}
+
+would result in the following list of name-structures being returned by
+C<names>:
+
+   ( { first => ['John'],
+       von   => undef,
+       last  => ['Smith'],
+       jr    => undef },
+     { first => ['J.', 'Random'],
+       von   => undef,
+       last  => ['Hacker'],
+       jr    => undef },
+     { first => ['Ludwig'],
+       von   => ['van'],
+       last  => ['Beethoven']
+       jr    => undef },
+     { first => undef,
+       von   => undef,
+       last  => ['{Foo, Bar and Company}'],
+       jr    => undef } )
+
+and some example code might look like
+
+   @names = $entry->names ('author');
+   $sort_key = $names[0]->{'last'} . ' ' . $names[0]->{'first'};
+
+=cut
+
+sub split
+{
+   my ($self, $field, $delim, $desc) = @_;
+
+   return unless $self->exists ($field);
+   $delim ||= 'and';
+   $desc ||= 'name';
+
+   my $filename = ($self->{'file'} && $self->{'file'}{'filename'});
+   my $line = $self->{'lines'}{$field};
+
+   local $^W = 0                        # suppress spurious warning from 
+      unless defined $filename;         # undefined $filename
+   Text::BibTeX::split_list ($self->{'values'}{$field}, $delim,
+                             $filename, $line, $desc);
+}
+
+sub names
+{
+   my ($self, $field) = @_;
+   my (@names, $i);
+
+   my $filename = ($self->{'file'} && $self->{'file'}{'filename'});
+   my $line = $self->{'lines'}{$field};
+
+   @names = $self->split ($field);
+   local $^W = 0                        # suppress spurious warning from 
+      unless defined $filename;         # undefined $filename
+   for $i (0 .. $#names)
+   {
+      $names[$i] = Text::BibTeX::split_name ($names[$i], $filename, $line, $i);
+   }
+   @names;
+}
 
 =head2 Entry modification methods
 
-=over
+=over 4
 
 =item set_type (TYPE)
 
@@ -324,21 +539,32 @@ Sets the entry's type.
 
 Sets the entry's key.
 
-=item set_field (FIELD, VALUE)
+=item set (FIELD, VALUE, ...)
 
-Sets the value of field FIELD.  (VALUE might be C<undef> or unsupplied, in
-which FIELD will simply be set to C<undef> -- this is where the difference
-between the C<exists> method and testing the definedness of field values
-becomes clear.)
+Sets the value of field FIELD.  (VALUE might be C<undef> or unsupplied,
+in which case FIELD will simply be set to C<undef> -- this is where the
+difference between the C<exists> method and testing the definedness of
+field values becomes clear.)
 
-=item set_fields (FIELD1, ..., FIELDn)
+Multiple (FIELD, VALUE) pairs may be supplied; they will be processed in
+order (i.e. the input is treated like a list, not a hash).  For example:
 
-Sets the entry's list of fields.  If any of the field names supplied to
-C<set_fields> are not currently present in the entry, they are created
-with the value C<undef> and a warning is printed.  Conversely, if any of
-the fields currently present in the entry are not named in the list of
-fields supplied to C<set_fields>, they are deleted from the entry and
-another warning is printed.
+   $entry->set ('author', $author);
+   $entry->set ('author', $author, 'editor', $editor);
+
+=item delete (FIELD)
+
+Deletes field FIELD from an entry.
+
+=item set_fieldlist (FIELDLIST)
+
+Sets the entry's list of fields to FIELDLIST, which must be a list
+reference.  If any of the field names supplied in FIELDLIST are not
+currently present in the entry, they are created with the value C<undef>
+and a warning is printed.  Conversely, if any of the fields currently
+present in the entry are not named in the list of fields supplied to
+C<set_fields>, they are deleted from the entry and another warning is
+printed.
 
 =back
 
@@ -358,23 +584,48 @@ sub set_key
    $self->{'key'} = $key;
 }
 
-sub set_field
+sub set
 {
-   my ($self, $field, $value) = @_;
+   my $self = shift;
+   croak "set: must supply an even number of arguments"
+      unless (@_ % 2 == 0);
+   my ($field, $value);
 
-   push (@{$self->{'fields'}}, $field)
-      unless exists $self->{'values'}{$field};
-   $self->{'values'}{$field} = $value;
+   while (@_)
+   {
+      ($field,$value) = (shift,shift);
+      push (@{$self->{'fields'}}, $field)
+         unless exists $self->{'values'}{$field};
+      $self->{'values'}{$field} = $value;
+   }
 }
 
-sub set_fields
+sub delete
 {
-   my ($self, @fields) = @_;
+   my ($self, $field) = @_;
+
+   @{$self->{'fields'}} = grep ($_ ne $field, @{$self->{'fields'}});
+   delete $self->{'values'}{$field};
+}
+
+# sub delete_fields
+# {
+#    my ($self, @fields) = @_;
+#    my (%goners);
+
+#    @goners{@fields} = ();
+#    @{$self->{'fields'}} = grep (exists $goners{$_}, @{$self->{'fields'}});
+#    map (delete $self->{'values'}{$_}, @fields);
+# }
+
+sub set_fieldlist
+{
+   my ($self, $fields) = @_;
 
    # Warn if any of the caller's fields aren't already present in the entry
 
    my ($field, %in_list);
-   foreach $field (@fields)
+   foreach $field (@$fields)
    {
       $in_list{$field} = 1;
       unless (exists $self->{'values'}{$field})
@@ -396,17 +647,17 @@ sub set_fields
       }
    }
 
-   # Now we can install the caller's desired field list;
+   # Now we can install (a copy of) the caller's desired field list;
 
-   $self->{'fields'} = \@fields;
+   $self->{'fields'} = [@$fields];
 }
 
 
 =head2 Entry output methods
 
-=over
+=over 4
 
-=item put (BIBFILE)
+=item write (BIBFILE)
 
 Prints a BibTeX entry on the filehandle associated with BIBFILE (which
 should be a C<Text::BibTeX::File> object, opened for output).  Currently
@@ -417,9 +668,13 @@ pretty-printer will be developed eventually.
 
 Prints a BibTeX entry on FILEHANDLE.
 
+=item print_s
+
+Prints a BibTeX entry to a string, which is the return value.
+
 =cut
 
-sub put
+sub write
 {
    my ($self, $bibfile) = @_;
 
@@ -430,16 +685,98 @@ sub put
 sub print
 {
    my ($self, $handle) = @_;
-   my ($save, $field);
 
-   $save = select $handle;           # how 'bout $handle->select ???
-   printf "@%s{%s,\n", $self->{'type'}, $self->{'key'};
+   print $handle $self->print_s;
+}
+
+sub print_s
+{
+   my $self = shift;
+
+   my ($field, $output);
+
+   carp "entry type undefined" unless defined $self->{'type'};
+   carp "entry key undefined" unless defined $self->{'key'};
+   $output = '';
+   $output .= sprintf ("@%s{%s,\n",
+                       $self->{'type'} || '', 
+                       $self->{'key'} || '');
    foreach $field (@{$self->{'fields'}})
    {
-      printf "  %s = {%s},\n", $field, $self->{'values'}{$field};
+      carp "field \"$field\" has undefined value\n"
+         unless defined $self->{'values'}{$field};
+      $output .= sprintf ("  %s = {%s},\n",
+                          $field, 
+                          $self->{'values'}{$field} || '');
    }
-   print "}\n\n";
+   $output .= "}\n\n";
+   $output;
 }
+
+
+=head2 Miscellaneous methods
+
+=over 4
+
+=item warn (WARNING [, FIELD])
+
+Prepends a bit of location information (filename and line number(s)) to
+WARNING, appends a newline, and passes it to Perl's C<warn>.  If FIELD is
+supplied, the line number given is just that of the field; otherwise, the
+range of lines for the whole entry is given.  (Well, almost -- currently,
+the line number of the last field is used as the last line of the whole
+entry.  This is a bug.)
+
+For example, if lines 10-15 of file F<foo.bib> look like this:
+
+   @article{homer97,
+     author = {Homer Simpson and Ned Flanders},
+     title = {Territorial Imperatives in Modern Suburbia},
+     journal = {Journal of Suburban Studies},
+     year = 1997
+   }
+
+then, after parsing this entry to C<$entry>, the calls
+
+   $entry->warn ('what a silly entry');
+   $entry->warn ('what a silly journal', 'journal');
+
+would result in the following warnings being issued:
+
+   foo.bib, lines 10-14: what a silly entry
+   foo.bib, line 13: what a silly journal
+
+=cut
+
+sub warn
+{
+   my ($self, $warning, $field) = @_;
+
+   my $location = '';
+   if ($self->{'file'})
+   {
+      $location = $self->{'file'}{'filename'} . ", ";
+   }
+
+   my $lines = $self->{'lines'};
+   my $entry_range = ($lines->{'START'} == $lines->{'STOP'})
+      ? "line $lines->{'START'}"
+      : "lines $lines->{'START'}-$lines->{'STOP'}";
+
+   if (defined $field)
+   {
+      $location .= (exists $lines->{$field})
+         ? "line $lines->{$field}: "
+         : "$entry_range (unknown field \"$field\"): ";
+   }
+   else
+   {
+      $location .= "$entry_range: ";
+   }
+
+   warn "$location$warning\n";
+}
+
 
 1;
 
