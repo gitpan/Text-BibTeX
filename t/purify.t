@@ -4,7 +4,7 @@
 # Text::BibTeX test program -- compare my purify routine with known
 # results from BibTeX 0.99.
 #
-# $Id: purify.t,v 1.3 1999/02/22 01:57:36 greg Exp $
+# $Id: purify.t,v 1.3 1999/02/22 01:57:36 greg Rel $
 #
 
 use strict;

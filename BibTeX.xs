@@ -23,7 +23,7 @@
 @CALLS      : 
 @CREATED    : Jan/Feb 1997, Greg Ward
 @MODIFIED   : 
-@VERSION    : $Id: BibTeX.xs,v 1.28 1999/10/06 01:43:21 greg Exp $
+@VERSION    : $Id: BibTeX.xs,v 1.29 2000/05/20 02:45:15 greg Exp $
 -------------------------------------------------------------------------- */
 #include "EXTERN.h"
 #include "perl.h"
@@ -49,7 +49,7 @@ char *   name
 	if (constant(name, &i))
 	    ST(0) = sv_2mortal(newSViv(i));
 	else
-	    ST(0) = &sv_undef;
+	    ST(0) = &PL_sv_undef;
 
 
 MODULE = Text::BibTeX           PACKAGE = Text::BibTeX          PREFIX = bt_
@@ -96,7 +96,7 @@ bt_split_list (string, delim, filename=NULL, line=0, description=NULL)
        for (i = 0; i < names->num_items; i++)
        {
           if (names->items[i] == NULL)
-             sv_name = &sv_undef;
+             sv_name = &PL_sv_undef;
           else
              sv_name = sv_2mortal (newSVpv (names->items[i], 0));
 

@@ -4,7 +4,7 @@
 #              needed for parsing BibTeX files (both Perl and C code).
 # CREATED    : February 1997, Greg Ward
 # MODIFIED   : 
-# VERSION    : $Id: BibTeX.pm,v 1.27 2000/03/23 02:08:40 greg Exp $
+# VERSION    : $Id: BibTeX.pm,v 1.27 2000/03/23 02:08:40 greg Rel $
 # COPYRIGHT  : Copyright (c) 1997-2000 by Gregory P. Ward.  All rights reserved.
 #
 #              This file is part of the Text::BibTeX library.  This

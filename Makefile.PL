@@ -1,9 +1,9 @@
-require 5.004;
+require 5.005;                          # to compile BibTeX.xs (I think)
 use strict;
 use ExtUtils::MakeMaker;
 use File::Basename;
 
-# $Id: Makefile.PL,v 1.15 2000/03/23 03:31:22 greg Exp $
+# $Id: Makefile.PL,v 1.17 2000/12/23 03:55:10 greg Exp $
 
 # NB. btparse 0.33 hasn't actually been released as I write this
 # (ie. as Text::BibTeX 0.33 is going out the door), but I anticipate
@@ -377,11 +377,11 @@ my @support_files = ('btxs_support$(OBJ_EXT)');
 # the contents of the Makefile that is written.
 WriteMakefile (
     'NAME'	=> 'Text::BibTeX',
-    'VERSION'   => '0.33',
+    'VERSION'   => '0.34',
     'XSPROTOARG' => '-prototypes',
     'LIBS'	=> [''],   # e.g., '-lm' 
     'DEFINE'	=> '',     # e.g., '-DHAVE_SOMETHING' 
-    'INC'	=> '-Ibtparse',
+    'INC'	=> '-Ibtparse/src',
     'MYEXTLIB'  => 'btparse/libbtparse$(LIB_EXT)',
     'OBJECT'    => 'BibTeX$(OBJ_EXT) ' . join (' ', @support_files),
     'dynamic_lib' => { INST_DYNAMIC_DEP => join (' ', @support_files) },

@@ -4,7 +4,7 @@
 @GLOBALS    : 
 @CREATED    : 1997/11/16, Greg Ward (from code in BibTeX.xs)
 @MODIFIED   : 
-@VERSION    : $Id: btxs_support.c,v 1.7 2000/03/23 02:08:39 greg Exp $
+@VERSION    : $Id: btxs_support.c,v 1.8 2000/05/20 02:45:15 greg Exp $
 @COPYRIGHT  : Copyright (c) 1997-2000 by Gregory P. Ward.  All rights reserved.
 -------------------------------------------------------------------------- */
 #include "EXTERN.h"
@@ -160,7 +160,7 @@ convert_value (char * field_name, AST * field, boolean preserve)
 
       DBG_ACTION (2, printf ("  field=%s, value=\"%s\"\n", 
                              field_name, text));
-      sv_field_value = text ? newSVpv (text, 0) : &sv_undef;
+      sv_field_value = text ? newSVpv (text, 0) : &PL_sv_undef;
    }
 
    return sv_field_value;
@@ -297,7 +297,7 @@ convert_value_entry (AST *top, HV *entry, boolean preserve)
    else
    {
       value = bt_get_text (top);
-      sv_value = value ? newSVpv (value, 0) : &sv_undef;
+      sv_value = value ? newSVpv (value, 0) : &PL_sv_undef;
    }
    hv_store (entry, "value", 5, sv_value, 0);
 

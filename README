@@ -1,7 +1,7 @@
                                Text::BibTeX
-                               version 0.33
+                               version 0.34
                        Greg Ward (gward@python.net)
-                              22 March, 2000
+                             22 December, 2000
 
 INTRODUCTION
 ------------
@@ -165,4 +165,4 @@ belong on this list and I forgot to include you.
 
 Also, see the btparse README file for contributors to the C library.
 
-$Id: README,v 1.9 2000/03/23 02:00:15 greg Exp $
+$Id: README,v 1.10 2000/12/23 03:55:10 greg Exp $
