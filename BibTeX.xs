@@ -14,7 +14,7 @@
 @CALLS      : 
 @CREATED    : Jan/Feb 1997, Greg Ward
 @MODIFIED   : 
-@VERSION    : $Id: BibTeX.xs,v 1.12 1997/09/13 16:05:33 greg Exp $
+@VERSION    : $Id: BibTeX.xs,v 1.13 1997/10/03 04:01:47 greg Exp $
 -------------------------------------------------------------------------- */
 #ifdef __cplusplus
 extern "C" {
@@ -127,17 +127,32 @@ convert_assigned_entry (AST *top, HV *entry)
    field = bt_next_field (top, NULL, &field_name);
    while (field)
    {
-      SV *   sv_field_name;
+      AST *  value;
+      bt_nodetype_t 
+             nodetype;
       char * field_value;
+      SV *   sv_field_name;
       SV *   sv_field_value;
+
+      if (!field_name)                  /* this shouldn't happen -- but if */
+         continue;                      /* it does, skipping the field seems */
+                                        /* reasonable to me */
 
       /* Get the field name and value as SVs */
 
-      field_value = bt_get_text (field);
+      value = bt_next_value (field, NULL, &nodetype, &field_value);
+      if (value &&
+          (! (nodetype == BTAST_STRING || nodetype == BTAST_NUMBER) ||
+           bt_next_value (field, value, NULL, NULL) != NULL))
+      {
+         croak ("BibTeX.xs: internal error in entry post-processing--value "
+                "for field %s is not a simple string or number", field_name);
+      }
+
       DBG_ACTION (printf ("  field=%s, value=\"%s\"\n", 
                           field_name, field_value));
       sv_field_name = newSVpv (field_name, 0);
-      sv_field_value = newSVpv (field_value, 0);
+      sv_field_value = field_value ? newSVpv (field_value, 0) : &sv_undef;
 
 
       /* 
@@ -182,6 +197,7 @@ convert_value_entry (AST *top, HV *entry)
        *   prev_item;
    int     last_line;
    char *  value;
+   SV *    sv_value;
 
    /* 
     * Start the line number hash.  For "value" entries, it's a bit simpler --
@@ -204,7 +220,8 @@ convert_value_entry (AST *top, HV *entry)
 
    /* And get the value of the entry as a single string (fully processed) */
    value = bt_get_text (top);
-   hv_store (entry, "value", 5, newSVpv (value, 0), 0);
+   sv_value = value ? newSVpv (value, 0) : &sv_undef;
+   hv_store (entry, "value", 5, sv_value, 0);
 
 } /* convert_value_entry () */
 
@@ -244,7 +261,7 @@ ast_to_hash (SV *entry_ref, AST *top, boolean parse_status)
     */
 
    type = bt_entry_type (top);
-   key = bt_cite_key (top);
+   key = bt_entry_key (top);
    DBG_ACTION (printf ("  inserting type (%s), metatype (%d)\n",
                        type ? type : "*none*", bt_entry_metatype (top)));
    DBG_ACTION (printf ("        ... key (%s) status (%d)\n",
@@ -257,8 +274,6 @@ ast_to_hash (SV *entry_ref, AST *top, boolean parse_status)
 
    if (key)
       hv_store (entry, "key", 3, newSVpv (key, 0), 0);
-/* else
-      hv_store (entry, "key", 3, &sv_undef, 0); */
 
    hv_store (entry, "status", 6, newSViv ((IV) parse_status), 0);
 
@@ -309,7 +324,7 @@ convert_stringlist (char **list, int num_strings)
 } /* convert_stringlist() */
 
 
-static SV *
+static void
 store_stringlist (HV *hash, char *key, char **list, int num_strings)
 {
    SV *  listref;
@@ -365,6 +380,9 @@ FILE *  file;
         CODE:
 
         top = bt_parse_entry (file, filename, options, &status);
+#if BT_DEBUG >= 2
+        dump_ast ("BibTeX.xs:parse: AST from bt_parse_entry():\n", top);
+#endif
 
         if (!top)                  /* at EOF -- return false to perl */
         {

@@ -1,6 +1,6 @@
 package Text::BibTeX::Structure;
 
-# $Id: Structure.pm,v 1.1 1997/04/29 02:04:46 greg Exp $
+# $Id: Structure.pm.old,v 1.2 1997/10/05 23:28:16 greg Exp $
 
 use strict;
 use vars qw(@ISA @EXPORT_OK);
@@ -11,6 +11,14 @@ require Exporter;
 @ISA = qw(Exporter);
 @EXPORT_OK = qw(find_structure);
 
+BEGIN 
+{
+   warn <<WARNING;
+Please don\'t use Text::BibTeX::Structure -- it will be completely
+replaced in release 0.3 of Text::BibTeX.
+WARNING
+}
+
 =head1 NAME
 
 Text::BibTeX::Structure - check/enforce database structure in BibTeX entries
@@ -18,6 +26,10 @@ Text::BibTeX::Structure - check/enforce database structure in BibTeX entries
 =head1 SYNOPSIS
 
 =head1 DESCRIPTION
+
+(Please do not use this module; it will be replaced with a completely
+different interface in release 0.3 of Text::BibTeX.  It's here for
+temporary backwards compatability with release 0.2.)
 
 C<Text::BibTeX::Structure> takes care of checking that BibTeX entries
 adhere to some pre-specified database structure, and optionally coercing

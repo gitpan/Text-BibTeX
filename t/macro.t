@@ -3,7 +3,7 @@ use IO::Handle;
 BEGIN { require "t/common.pl"; }
 
 my $loaded;
-BEGIN { $| = 1; print "1..18\n"; }
+BEGIN { $| = 1; print "1..19\n"; }
 END {print "not ok 1\n" unless $loaded;}
 use Text::BibTeX;
 $loaded = 1;
@@ -42,7 +42,7 @@ $entry->parse_s ($macrodef);
 test (! warnings);
 test_entry ($entry, 'string', undef, 
             [qw(foo sons bar)],
-            ['The Foo Journal', '\& Sons', 'Bar \& Sons']);
+            ['  The Foo   Journal', ' \& Sons', 'Bar    \& Sons']);
 
 # calling a parse or read method on an existing object isn't documented
 # as an "ok thing to do", but it is (at least as the XS code currently

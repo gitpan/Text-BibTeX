@@ -3,7 +3,7 @@ use IO::Handle;
 BEGIN { require "t/common.pl"; }
 
 my $loaded;
-BEGIN { $| = 1; print "1..25\n"; }
+BEGIN { $| = 1; print "1..26\n"; }
 END {print "not ok 1\n" unless $loaded;}
 use Text::BibTeX;
 $loaded = 1;
@@ -29,7 +29,7 @@ test_entry ($entry, 'book', 'abook',
 test ($entry->read ($bibfile));
 test_entry ($entry, 'string', undef,
             ['macro', 'foo'],
-            ['macro text', 'blah blah ding dong']);
+            ['macro  text ', 'blah blah   ding dong ']);
 
 
 test ($entry->read ($bibfile));

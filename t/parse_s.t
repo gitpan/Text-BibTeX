@@ -3,7 +3,7 @@ use IO::Handle;
 BEGIN { require "t/common.pl"; }
 
 my $loaded;
-BEGIN { $| = 1; print "1..29\n"; }
+BEGIN { $| = 1; print "1..36\n"; }
 END {print "not ok 1\n" unless $loaded;}
 use Text::BibTeX;
 $loaded = 1;
@@ -16,8 +16,8 @@ setup_stderr;
 
 my ($text, $entry, @warnings, $result);
 
-$text = <<TEXT;
-\@foo { mykey,
+$text = <<'TEXT';
+@foo { mykey,
   f1 = {hello } # { there},
   f2 = "fancy " # "that!" # foo # 1991,
   f3 = foo
@@ -70,3 +70,20 @@ test_entry ($entry, 'foo', 'mykey',
 
 # $result = $entry->parse_s ('top-level junk that is not caught');
 # test (! warnings && ! $result);
+
+
+# Test the "proper noun at both ends" bug (the bt_get_text() call in
+# BibTeX.xs stripped off the leading and trailing braces; has since
+# been changed to bt_next_value(), under the assumption that compound
+# values will have been collapsed to a single simple value)
+
+# (thanks to Reiner Schotte for reporting this bug)
+
+$text = <<'TEXT';
+@foo{key, title = "{System}- und {Signaltheorie}"}
+TEXT
+
+$entry = new Text::BibTeX::Entry $text;
+test (! warnings && $entry->parse_ok);
+test_entry ($entry, 'foo', 'key', 
+            ['title'], ['{System}- und {Signaltheorie}']);

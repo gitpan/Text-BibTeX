@@ -1,7 +1,7 @@
                               Text::BibTeX
-                              version 0.2
+                              version 0.21
                    Greg Ward (greg@bic.mni.mcgill.ca)
-                           5 September, 1997
+                           6 October, 1997
 
 INTRODUCTION
 ------------
@@ -17,12 +17,6 @@ general (i.e. the input files could hold any kind of data that lends
 itself to a bit of structure) and because I wanted to make this release
 before adding a whole new layer of code.
 
-(An experimental and incomplete new module, Text::BibTeX::Structure, is
-included with this distribution to address the problem of generic
-database structures using the BibTeX file language.  Please see
-BibTeX/Structure.pm if you are interested in this and wish to comment or
-contribute.)
-
 After installing the module, see the Text::BibTeX man page for a brief
 introduction to the system, Text::BibTeX::File for a little more material
 that is essentially introductory, and Text::BibTeX::Entry for the real
@@ -32,10 +26,8 @@ thing.
 DEPENDENCIES
 ------------
 
-Text::BibTeX requires Perl 5.004 or later.
-
-(It also requires the IO::File module, but since it you must be running
-Perl 5.004, then you already have it!)
+Text::BibTeX requires Perl 5.004 or later and an ANSI-compliant C
+compiler.
 
 You must also have the btparse distribution, the C library underlying
 Text::BibTeX.  It is enough to put btparse-0.2.tar.gz in the same
@@ -46,25 +38,38 @@ the btparse tar file right into the Text-BibTeX-0.2 directory.
 BUILDING
 --------
 
-Start by generating the Makefile and other preparatory steps (including
-finding and unpacking the btparse distribution):
+Start by generating the Makefile and other preparatory steps (most
+notably, finding and unpacking the btparse distribution):
 
    perl Makefile.PL
 
-Now, build and test btparse (the C library that is the back-end to
+Note that if Perl was built with a non-ANSI C compiler, you will need to
+specify an ANSI compiler when running Makefile.PL.  For instance, if
+you're running SunOS and Perl was built with 'cc' (non-ANSI), you will
+need to build Text::BibTeX (and btparse as well, for that matter) with
+an ANSI compiler such as 'gcc' or Sun's 'acc'.  This can be done for
+Text::BibTeX as follows:
+
+   perl Makefile.PL CC=gcc      # or acc, or whatever works on your system
+
+Now, configure btparse (the C library that is the back-end to
 Text::BibTeX):
 
    cd btparse
-   <edit Makefile.defs>
+   ./configure
+
+(Again, you might have to jump through some hoops -- although in a
+different way -- to build btparse with an appropriate compiler.  See the
+btparse README for more information.  The only requirement is that you
+build both btparse and Text::BibTeX with an ANSI-compliant compiler, but
+I would recommend that you use the same compiler for both.  If possible
+-- i.e., if you haven't already built Perl with a non-ANSI compiler -- I
+would also recommend using the same compiler to build Perl itself.)
+
+Next, build and test the C library (still in the 'btparse' directory):
+
    make
    make test
-
-(The "edit Makefile.defs" step is merely to ensure that `make' will use
-the right compiler and options.  If "cc -O2" is ANSI-compliant and
-generates correct code on your system, you're fine -- you don't need to
-edit Makefile.defs.  If you're running an antiquated OS such as SunOS,
-however, you will have to edit Makefile.defs.  See the btparse README
-and/or the comments in Makefile.defs itself.)
 
 Return to the main Text::BibTeX distribution directory, and continue as
 usual:
@@ -75,7 +80,7 @@ usual:
    make install
 
 Note that "make install" only installs the Perl modules; if you wish to
-install the C library, see btparse/README.
+install the C library, see the btparse README file.
 
 Please let me know if anything goes wrong with building either btparse
 or Text::BibTeX.
@@ -87,5 +92,3 @@ AVAILABILITY
 The latest version of Text::BibTeX and btparse should be available from
 
    ftp://ftp.bic.mni.mcgill.ca/pub/users/greg/
-
-in Text-BibTeX-x.y.tar.gz, where x.y is the version number.

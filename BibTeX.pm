@@ -6,7 +6,7 @@ package Text::BibTeX;
 #              needed for parsing BibTeX files (both Perl and C code).
 # CREATED    : February 1997, Greg Ward
 # MODIFIED   : 
-# VERSION    : $Id: BibTeX.pm,v 1.6 1997/09/13 16:06:13 greg Exp $
+# VERSION    : $Id: BibTeX.pm,v 1.8 1997/10/06 01:28:35 greg Exp $
 # ----------------------------------------------------------------------
 
 
@@ -22,8 +22,8 @@ Text::BibTeX - interface to read and parse BibTeX files
 
    use Text::BibTeX;
 
-   $bibfile = new Text::BibTeX::File "foo.bib"
-   $newfile = new Text::BibTeX::File ">newfoo.bib"
+   $bibfile = new Text::BibTeX::File "foo.bib";
+   $newfile = new Text::BibTeX::File ">newfoo.bib";
 
    while ($entry = new Text::BibTeX::Entry $bibfile)
    {
@@ -33,7 +33,7 @@ Text::BibTeX - interface to read and parse BibTeX files
          .             # Text::BibTeX::Entry methods
          .
 
-      $entry->put ($newfile);
+      $entry->write ($newfile);
    }
 
 =head1 DESCRIPTION
@@ -65,7 +65,7 @@ require DynaLoader;
                 subs      => [qw(bibloop split_list split_name)]);
 @EXPORT_OK = (@{$EXPORT_TAGS{'subs'}}, @{$EXPORT_TAGS{'nodetypes'}});
 @EXPORT = @{$EXPORT_TAGS{'metatypes'}};
-$VERSION = '0.2';
+$VERSION = '0.21';
 
 sub AUTOLOAD
 {
@@ -90,8 +90,8 @@ sub AUTOLOAD
 }
 
 # BEGIN { print "loading helpers\n"; }
-use Text::BibTeX::File;
-use Text::BibTeX::Entry;
+require Text::BibTeX::File;
+require Text::BibTeX::Entry;
 
 # BEGIN { print "bootstrapping\n"; }
 bootstrap Text::BibTeX $VERSION;

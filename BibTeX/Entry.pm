@@ -1,13 +1,13 @@
 package Text::BibTeX::Entry;
 
-require 5.004;
+require 5.004;                          # for isa, and delete on a slice
 
-# $Id: Entry.pm,v 1.7 1997/09/13 15:36:27 greg Exp $
+# $Id: Entry.pm,v 1.9 1997/10/05 23:46:28 greg Exp $
 
 use strict;
 use Carp;
 use UNIVERSAL 'isa';
-#use Text::BibTeX
+import Text::BibTeX qw(:metatypes);
 
 =head1 NAME
 
@@ -56,7 +56,7 @@ Text::BibTeX::Entry - read and parse BibTeX files
    $entry->set ('title', $new_title);
    # or:
    $entry->set ($field1, $val1, $field2, $val2, ..., $fieldn, $valn);
-   $entry->delete ($field);
+   $entry->delete (@fields);
    $entry->set_fieldlist (\@fieldlist);
 
    # Entry output methods
@@ -164,7 +164,15 @@ sub new
       my $status;
 
       if (@source == 1 && isa ($source[0], 'Text::BibTeX::File'))
-          { $status = $self->read ($source[0]) }
+      { 
+         # XXX err... what if $file doesn't have a structure, or the
+         # structure doesn't have an entry_class???
+
+         my $file = $source[0];
+         $status = $self->read ($file);
+         bless $self, $file->structure->entry_class
+            if ($file->structure);
+      }
       elsif (@source == 2 && ! ref $source[0] && fileno ($source[1]))
           { $status = $self->parse ($source[0], $source[1]) }
       elsif (@source == 1 && ! ref $source[0])
@@ -602,21 +610,13 @@ sub set
 
 sub delete
 {
-   my ($self, $field) = @_;
+   my ($self, @fields) = @_;
+   my (%gone);
 
-   @{$self->{'fields'}} = grep ($_ ne $field, @{$self->{'fields'}});
-   delete $self->{'values'}{$field};
+   %gone = map {$_, 1} @fields;
+   @{$self->{'fields'}} = grep (! $gone{$_}, @{$self->{'fields'}});
+   delete @{$self->{'values'}}{@fields};
 }
-
-# sub delete_fields
-# {
-#    my ($self, @fields) = @_;
-#    my (%goners);
-
-#    @goners{@fields} = ();
-#    @{$self->{'fields'}} = grep (exists $goners{$_}, @{$self->{'fields'}});
-#    map (delete $self->{'values'}{$_}, @fields);
-# }
 
 sub set_fieldlist
 {
@@ -692,15 +692,34 @@ sub print
 sub print_s
 {
    my $self = shift;
-
    my ($field, $output);
 
    carp "entry type undefined" unless defined $self->{'type'};
-   carp "entry key undefined" unless defined $self->{'key'};
-   $output = '';
-   $output .= sprintf ("@%s{%s,\n",
-                       $self->{'type'} || '', 
-                       $self->{'key'} || '');
+
+   # Regular and macro-def entries have to be treated differently when
+   # printing the first line, because the former have keys and the latter
+   # do not.
+   if ($self->{'metatype'} == &BTE_REGULAR)
+   {
+      carp "entry key undefined" unless defined $self->{'key'};
+      $output = sprintf ("@%s{%s,\n",
+                         $self->{'type'} || '', 
+                         $self->{'key'} || '');
+   }
+   elsif ($self->{'metatype'} == &BTE_MACRODEF)
+   {
+      $output = sprintf ("@%s{\n",
+                         $self->{'type'} || '');
+   }
+
+   # Comment and preamble entries are treated the same -- we print out
+   # the entire entry, on one line, right here.
+   else                                 # comment or preamble
+   {
+      return sprintf ("@%s{%s}\n\n", $self->{'type'}, $self->{'value'});
+   }
+
+   # Here we print out all the fields/values of a regular or macro-def entry
    foreach $field (@{$self->{'fields'}})
    {
       carp "field \"$field\" has undefined value\n"
@@ -709,6 +728,8 @@ sub print_s
                           $field, 
                           $self->{'values'}{$field} || '');
    }
+
+   # Tack on the last line, and we're done!
    $output .= "}\n\n";
    $output;
 }

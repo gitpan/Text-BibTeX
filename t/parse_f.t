@@ -3,7 +3,7 @@ use IO::Handle;
 BEGIN { require "t/common.pl"; }
 
 my $loaded;
-BEGIN { $| = 1; print "1..55\n"; }
+BEGIN { $| = 1; print "1..56\n"; }
 END {print "not ok 1\n" unless $loaded;}
 use Text::BibTeX;
 $loaded = 1;

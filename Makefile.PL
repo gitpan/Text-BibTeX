@@ -19,7 +19,7 @@ $(MYEXTLIB):
 ';
 }
 
-my $btparse_version = 0.2;
+my $btparse_version = 0.21;
 my $btparse_release = "btparse-${btparse_version}";
 my $btparse_archive = "${btparse_release}.tar.gz";
 

@@ -1,3 +1,5 @@
+use Carp;
+
 my $err_file = 't/errors';
 
 END { unlink $err_file }
@@ -62,16 +64,20 @@ sub test_entry
    my ($entry, $type, $key, $fields, $values) = @_;
    my ($i, @vals);
 
+   croak "test_entry: num fields != num values"
+      unless $#$fields == $#$values;
    test ($entry->parse_ok);
    test ($entry->type eq $type);
-   test ($entry->key eq $key) if defined $key;
+   test (defined $key ? $entry->key eq $key : !defined $entry->key);
    test (slist_equal ([$entry->fieldlist], $fields));
    for $i (0 .. $#$fields)
    {
-      test ($entry->get ($fields->[$i]) eq $values->[$i]);
+      my $val = $entry->get ($fields->[$i]) || '';
+      test ($entry->exists ($fields->[$i]) &&
+            $val eq $values->[$i]);
    }
 
-   @vals = $entry->get (@$fields);
+   @vals = map ($_ || '', $entry->get (@$fields));
    test (slist_equal (\@vals, $values));
 }
 

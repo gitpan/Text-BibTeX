@@ -3,7 +3,7 @@ use IO::Handle;
 BEGIN { require "t/common.pl"; }
 
 my $loaded;
-BEGIN { $| = 1; print "1..19\n"; }
+BEGIN { $| = 1; print "1..22\n"; }
 END {print "not ok 1\n" unless $loaded;}
 use Text::BibTeX;
 $loaded = 1;
@@ -55,6 +55,7 @@ test (! warnings);
 
 test (slist_equal ([$entry->fieldlist], [qw(author title journal year)]));
 test ($entry->exists ('journal'));
+
 $entry->delete ('journal');
 @fieldlist = $entry->fieldlist;
 test (! $entry->exists ('journal') &&
@@ -70,3 +71,12 @@ test (@warnings == 1 &&
 test ($entry->exists ('journal') &&
       ! defined $entry->get ('journal') &&
       slist_equal (\@fieldlist, [qw(author title journal year)]));
+test (! warnings);
+
+$entry->delete ('journal', 'author', 'year');
+@fieldlist = $entry->fieldlist;
+test (! $entry->exists ('journal') &&
+      ! $entry->exists ('author') &&
+      ! $entry->exists ('year') &&
+      @fieldlist == 1 && $fieldlist[0] eq 'title');
+test (! warnings);

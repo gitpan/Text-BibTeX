@@ -1,6 +1,6 @@
 package Text::BibTeX::File;
 
-# $Id: File.pm,v 1.2 1997/04/22 01:14:42 greg Exp $
+# $Id: File.pm,v 1.3 1997/09/24 14:42:45 greg Exp $
 
 # BEGIN { print "compiling Text::BibTeX::File\n"; }
 
@@ -16,12 +16,17 @@ Text::BibTeX::File - interface to whole BibTeX files
 
    use Text::BibTeX;     # this loads Text::BibTeX::File
 
-   $bib = new Text::BibTeX::File "foo.bib" || die;
+   $bib = new Text::BibTeX::File "foo.bib" or die "foo.bib: $!\n";
 
 OR
 
    $bib = new Text::BibTeX::File;
-   $bib->open ("foo.bib") || die;
+   $bib->open ("foo.bib") || die "foo.bib: $!\n";
+
+   $bib->set_structure ($structure_name,
+                        $option1 => $value1, ...);
+
+   $at_eof = $bib->eof;
 
    $bib->close;
 
@@ -60,7 +65,7 @@ filehandle (ie. if you never called C<open> on the object), does nothing.
 
 =cut
 
-# BEGIN { print "Text::BibTeX::File: defining methods\n"; }
+# Object creation/destruction, file operations
 
 sub new
 {
@@ -72,7 +77,6 @@ sub new
    $self;
 }
 
-
 sub open
 {
    my $self = shift;
@@ -82,27 +86,40 @@ sub open
    $self->{handle}->open (@_);          # filename, maybe mode, maybe perms
 }
 
-
 sub close
 {
    my $self = shift;
    $self->{handle}->close if $self->{handle};   
 }
 
-
 sub eof
 {
    eof (shift->{handle});
 }
       
-
 sub DESTROY
 {
    my $self = shift;
    $self->close;
 }
 
-# BEGIN { print "Text::BibTeX::File: done\n"; }
+
+# Set/query various properties
+
+sub set_structure 
+{
+   my ($self, $structure, @options) = @_;
+
+   require Text::BibTeX::Structure;
+   croak "Text::BibTeX::File::set_structure: options list must have even " .
+         "number of elements"
+      unless @options % 2 == 0;
+   $self->{structure} = new Text::BibTeX::Structure ($structure, @options);
+#   $self->{structure_opts} = \%options;
+}
+
+sub structure { shift->{structure} }
+
 
 1;
 
@@ -115,7 +132,3 @@ Greg Ward <greg@bic.mni.mcgill.ca>
 Copyright (c) 1997 by Gregory P. Ward.  All rights reserved.  This is free
 software; you can redistribute it and/or modify it under the same terms as
 Perl itself.
-
-=cut
-
-# BEGIN { print "Text::BibTeX::File: eof\n"; }
