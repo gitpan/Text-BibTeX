@@ -7,7 +7,7 @@
 #              in a BibTeX-style bibliographic database.
 # CREATED    : 1997/11/24, GPW (taken from Bib.pm)
 # MODIFIED   : 
-# VERSION    : $Id: BibSort.pm,v 1.6 1999/03/11 04:54:06 greg Exp $
+# VERSION    : $Id: BibSort.pm,v 1.7 1999/10/28 23:13:16 greg Exp $
 # COPYRIGHT  : Copyright (c) 1997-98 by Gregory P. Ward.  All rights 
 #              reserved.
 # 
@@ -37,7 +37,7 @@ Text::BibTeX::BibSort - generate sort keys for bibliographic entries
 
 =head1 DESCRIPTION
 
-F<Text::BibTeX::BibSort> is a base class of F<Text::BibTeX::BibEntry>
+C<Text::BibTeX::BibSort> is a base class of C<Text::BibTeX::BibEntry>
 for generating sort keys from bibliography entries.  It could in
 principle (and, someday, might) offer a wide range of highly
 customizable sort-key generators.  Currently, though, it provides only a
@@ -51,7 +51,7 @@ attention to one structure option, C<sortby>.
 =item sort_key ()
 
 Generates a sort key for a single bibliographic entry.  Assumes this
-entry conforms to the F<Bib> database structure.  The nature of this
+entry conforms to the C<Bib> database structure.  The nature of this
 sort key is controlled by the C<sortby> option, which can be either
 C<"name"> or C<"year">.  (The C<namestyle> also has a role, in
 determining how author/editor names are formatted for inclusion in the

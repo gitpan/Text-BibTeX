@@ -1,15 +1,15 @@
                                Text::BibTeX
-                               version 0.30
+                               version 0.31
                        Greg Ward (gward@python.net)
-                              12 March, 1999
+                            28 October, 1999
 
 INTRODUCTION
 ------------
 
-Text::BibTeX is a Perl library for reading, parsing, and writing BibTeX
-files.  It is the Perl half of btOOL, a pair of libraries for dealing
-with BibTeX data; the C half, btparse, is needed to compile Text::BibTeX
-(see below).
+Text::BibTeX is a Perl library for reading, parsing, and processing
+BibTeX files.  It is the Perl half of btOOL, a pair of libraries for
+dealing with BibTeX data; the C half, btparse, is needed to compile
+Text::BibTeX (see below).
 
 Text::BibTeX gives you access to the data at many different levels: you
 may work with BibTeX entries as simple "field -> string" mappings, or
@@ -25,18 +25,18 @@ system.  If you wish to dive straight in without regards for niceties
 such as splitting and formatting names, defining or imposing database
 structures, getting access to unprocessed field values, and other nifty
 features, then you can probably get away with just reading the
-Text::BibTeX::Entry man page.  Much of the documentation is rather raw,
-because no one except me has read it, so comments are most welcome --
-particularly comments that suggest constructive improvements.
+Text::BibTeX::Entry man page.  Comments/criticism of the documentation
+are welcome -- much of it is rather raw braindump, so may need a bit of
+massaging.
 
 In addition to the man pages embedded in each module (and available
 after installation), I have written a technical report describing btOOL,
 with the btparse and Text::BibTeX documentation included as appendices.
 The whole report is just over 100 pages, around 45 of which make up the
 Text::BibTeX documentation (the btparse documentation is a further 30
-pages).  It can be downloaded from the same location as the btOOL code:
+pages).  You can find it at the btOOL home page:
 
-    http://www.aseonline.net/~gward/
+    http://starship.python.net/~gward/btOOL/
 
 I may also make the btparse and Text::BibTeX manuals available as
 separate PostScript files, but they aren't there as of this writing.
@@ -113,20 +113,43 @@ Please let me know if anything goes wrong with building either btparse
 or Text::BibTeX.
 
 
+BUGS AND LIMITIATIONS
+---------------------
+
+See the btparse(3) and Text::BibTeX(3) man pages for details.  Executive
+summary:
+
+  * Text::BibTeX is not thread-safe, due to a heavy dependence on
+    global variables in the parser and lexical scanner components
+    of btparse
+
+  * for the same reason, you can't have multiple files open and
+    being parsed at the same time; attempting to do so is an
+    invalid use of btparse
+
+  * Text::BibTeX cannot be used with an sfio-based Perl, because
+    the Perl I/O API is apparently not yet up to the task of replacing
+    stdio in third-party C libraries
+
+  * there are some weird subtle bugs that I have been unable to isolate;
+    if you see messages like "Subroutine format redefined at
+    /usr/lib/perl5/site_perl/Text/BibTeX/Name.pm ...", please get
+    in touch with me -- you're not the first to have this problem.
+    However, I have been unable to reproduce the bug, much less
+    isolate and fix it -- so if you can reproduce it, I need your help!
+
+
 AVAILABILITY
 ------------
 
-The latest version of Text::BibTeX and btparse should be available from
-
-   http://www.aseonline.net/~gward/
-
-Up-to-date information on btOOL is available at the btOOL web site:
+You can find the latest version of Text::BibTeX, as well as
+documentation, information on known bugs, etc. at the btOOL web site:
 
    http://starship.python.net/~gward/btOOL/
 
-Here you will (eventually) find HTML versions of the documentation and
-technical report describing the project, links to download the code, and
-whatever other goodies I can come up with over time.
+Here you will find HTML versions of the documentation and technical
+report describing the project, links to download the code, and whatever
+other goodies I can come up with over time.
 
 
 CREDITS
@@ -134,4 +157,4 @@ CREDITS
 
 See the btparse README file.
 
-$Id: README,v 1.5 1999/03/11 04:23:06 greg Exp $
+$Id: README,v 1.6 1999/10/28 23:24:50 greg Exp $

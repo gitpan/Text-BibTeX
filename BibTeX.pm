@@ -4,7 +4,7 @@
 #              needed for parsing BibTeX files (both Perl and C code).
 # CREATED    : February 1997, Greg Ward
 # MODIFIED   : 
-# VERSION    : $Id: BibTeX.pm,v 1.20 1999/03/11 04:56:28 greg Exp $
+# VERSION    : $Id: BibTeX.pm,v 1.24 1999/10/28 23:34:48 greg Exp $
 # COPYRIGHT  : Copyright (c) 1997-98 by Gregory P. Ward.  All rights reserved.
 #
 #              This file is part of the Text::BibTeX library.  This
@@ -44,7 +44,7 @@ require DynaLoader;
               @{$EXPORT_TAGS{'joinmethods'}},
               'check_class', 'display_list');
 @EXPORT = @{$EXPORT_TAGS{'metatypes'}};
-$VERSION = '0.30';
+$VERSION = '0.31';
 
 =head1 NAME
 
@@ -70,38 +70,38 @@ Text::BibTeX - interface to read and parse BibTeX files
 
 =head1 DESCRIPTION
 
-The F<Text::BibTeX> module serves mainly as a high-level introduction to
-the F<Text::BibTeX> library, for both code and documentation purposes.
+The C<Text::BibTeX> module serves mainly as a high-level introduction to
+the C<Text::BibTeX> library, for both code and documentation purposes.
 The code loads the two fundamental modules for processing BibTeX files
-(F<Text::BibTeX::File> and F<Text::BibTeX::Entry>), and this
+(C<Text::BibTeX::File> and C<Text::BibTeX::Entry>), and this
 documentation gives a broad overview of the whole library that isn't
 available in the documentation for the individual modules that comprise
 it.
 
-In addition, the F<Text::BibTeX> module provides a number of
+In addition, the C<Text::BibTeX> module provides a number of
 miscellaneous functions that are useful in processing BibTeX data
 (especially the kind that comes from bibliographies as defined by BibTeX
 0.99, rather than generic database files).  These functions don't
 generally fit in the object-oriented class hierarchy centred around the
-F<Text::BibTeX::Entry> class, mainly because they are specific to
+C<Text::BibTeX::Entry> class, mainly because they are specific to
 bibliographic data and operate on generic strings (rather than being
 tied to a particular BibTeX entry).  These are also documented here, in
 L<"MISCELLANEOUS FUNCTIONS">.
 
-Note that every module described here begins with the F<Text::BibTeX>
+Note that every module described here begins with the C<Text::BibTeX>
 prefix.  For brevity, I have dropped this prefix from most class and
 module names in the rest of this manual page (and in most of the other
 manual pages in the library).
 
 =head1 MODULES AND CLASSES
 
-The F<Text::BibTeX> library includes a number of modules, many of which
+The C<Text::BibTeX> library includes a number of modules, many of which
 provide classes.  Usually, the relationship is simple and obvious: a
 module provides a class of the same name---for instance, the
-F<Text::BibTeX::Entry> module provides the F<Text::BibTeX::Entry> class.
-There are a few exceptions, though: most obviously, the F<Text::BibTeX>
+C<Text::BibTeX::Entry> module provides the C<Text::BibTeX::Entry> class.
+There are a few exceptions, though: most obviously, the C<Text::BibTeX>
 module doesn't provide any classes itself, it merely loads two modules
-(F<Text::BibTeX::Entry> and F<Text::BibTeX::File>) that do.  The other
+(C<Text::BibTeX::Entry> and C<Text::BibTeX::File>) that do.  The other
 exceptions are mentioned in the descriptions below, and discussed in
 detail in the documentation for the respective modules.
 
@@ -115,20 +115,20 @@ module is fully documented in its respective manual page.
 
 =over 4
 
-=item F<Text::BibTeX>
+=item C<Text::BibTeX>
 
-Loads the two fundamental modules (F<Entry> and F<File>), and provides a
+Loads the two fundamental modules (C<Entry> and C<File>), and provides a
 number of miscellaneous functions that don't fit anywhere in the class
 hierarchy.
 
-=item F<Text::BibTeX::File>
+=item C<Text::BibTeX::File>
 
 Provides an object-oriented interface to BibTeX database files.  In
 addition to the obvious attributes of filename and filehandle, the
 "file" abstraction manages properties such as the database structure and
 options for it.
 
-=item F<Text::BibTeX::Entry>
+=item C<Text::BibTeX::Entry>
 
 Provides an object-oriented interface to BibTeX entries, which can be
 parsed from C<File> objects, arbitrary filehandles, or strings.  Manages
@@ -136,53 +136,53 @@ all the properties of a single entry: type, key, fields, and values.
 Also serves as the base class for the I<structured entry classes>
 (described in detail in L<Text::BibTeX::Structure>).
 
-=item F<Text::BibTeX::Value>
+=item C<Text::BibTeX::Value>
 
 Provides an object-oriented interface to I<values> and I<simple values>,
 high-level constructs that can be used to represent the strings
 associated with each field in an entry.  Normally, field values are
 returned simply as Perl strings, with macros expanded and multiple
-strings "pasted" together.  If desired, you can instruct F<Text::BibTeX>
-to return F<Text::BibTeX::Value> objects, which give you access to the
+strings "pasted" together.  If desired, you can instruct C<Text::BibTeX>
+to return C<Text::BibTeX::Value> objects, which give you access to the
 original form of the data.
 
-=item F<Text::BibTeX::Structure>
+=item C<Text::BibTeX::Structure>
 
-Provides the F<Structure> and F<StructuredEntry> classes, which serve
+Provides the C<Structure> and C<StructuredEntry> classes, which serve
 primarily as base classes for the two kinds of classes that define
 database structures.  Read this man page for a comprehensive description
 of the mechanism for implementing Perl classes analogous to BibTeX
 "style files".
 
-=item F<Text::BibTeX::Bib>
+=item C<Text::BibTeX::Bib>
 
-Provides the F<BibStructure> and F<BibEntry> classes, which serve two
+Provides the C<BibStructure> and C<BibEntry> classes, which serve two
 purposes: they fulfill the same role as the standard style files of
 BibTeX 0.99, and they give an example of how to write new database
 structures.  These ultimately derive from, respectively, the
-F<Structure> and F<StructuredEntry> classes provided by the F<Structure>
+C<Structure> and C<StructuredEntry> classes provided by the C<Structure>
 module.
 
-=item F<Text::BibTeX::BibSort>
+=item C<Text::BibTeX::BibSort>
 
-One of the F<BibEntry> class's base classes: handles the generation of
+One of the C<BibEntry> class's base classes: handles the generation of
 sort keys for sorting prior to output formatting.
 
-=item F<Text::BibTeX::BibFormat>
+=item C<Text::BibTeX::BibFormat>
 
-One of the F<BibEntry> class's base classes: handles the formatting of
+One of the C<BibEntry> class's base classes: handles the formatting of
 bibliographic data for output in a markup language such as LaTeX.
 
-=item F<Text::BibTeX::Name>
+=item C<Text::BibTeX::Name>
 
-A class used by the F<Bib> structure and specific to bibliographic data
+A class used by the C<Bib> structure and specific to bibliographic data
 as defined by BibTeX itself: parses individual author names into
 "first", "von", "last", and "jr" parts.
 
-=item F<Text::BibTeX::NameFormat>
+=item C<Text::BibTeX::NameFormat>
 
 Also specific to bibliographic data: puts split-up names (as parsed by
-the F<Name> class) back together in a custom way.
+the C<Name> class) back together in a custom way.
 
 =back
 
@@ -191,8 +191,8 @@ your reading to L<Text::BibTeX::File> and L<Text::BibTeX::Entry>.  The
 other modules will come in handy eventually, especially if you need to
 emulate BibTeX in a fairly fine grained way (e.g. parsing names,
 generating sort keys).  But for the simple database hacks that are the
-bread and butter of the F<Text::BibTeX> library, the F<File> and
-F<Entry> classes are the bulk of what you'll need.  You may also find
+bread and butter of the C<Text::BibTeX> library, the C<File> and
+C<Entry> classes are the bulk of what you'll need.  You may also find
 some of the material in this manual page useful, namely L<"CONSTANT
 VALUES"> and L<"UTILITY FUNCTIONS">.
 
@@ -242,7 +242,7 @@ END { &cleanup; }
 
 =head1 EXPORTS
 
-The F<Text::BibTeX> module has a number of optional exports, most of
+The C<Text::BibTeX> module has a number of optional exports, most of
 them constant values described in L<"CONSTANT VALUES"> below.  The
 default exports are a subset of these constant values that are used
 particularly often, the "entry metatypes" (also accessible via the
@@ -255,10 +255,10 @@ Some of the various subroutines provided by the module are also
 exportable.  C<bibloop>, C<split_list>, C<purify_string>, and
 C<change_case> are all useful in everyday processing of BibTeX data, but
 don't really fit anywhere in the class hierarchy.  They may be imported
-from F<Text::BibTeX> using the C<subs> export tag.  C<check_class> and
+from C<Text::BibTeX> using the C<subs> export tag.  C<check_class> and
 C<display_list> are also exportable, but only by name; they are not
 included in any export tag.  (These two mainly exist for use by other
-modules in the library.)  For instance, to use F<Text::BibTeX> and
+modules in the library.)  For instance, to use C<Text::BibTeX> and
 import the entry metatype constants and the common subroutines:
 
    use Text::BibTeX qw(:metatypes :subs);
@@ -273,7 +273,7 @@ imported I<en masse> using the C<macrosubs> export tag:
 
 =head1 CONSTANT VALUES
 
-The F<Text::BibTeX> module makes a number of constant values available.
+The C<Text::BibTeX> module makes a number of constant values available.
 These correspond to the values of various enumerated types in the
 underlying C library, B<btparse>, and their meanings are more fully
 explained in the B<btparse> documentation.  
@@ -286,7 +286,7 @@ given in the descriptions below.
 =item Entry metatypes
 
 C<BTE_UNKNOWN>, C<BTE_REGULAR>, C<BTE_COMMENT>, C<BTE_PREAMBLE>,
-C<BTE_MACRODEF>.  The C<metatype> method in the F<Entry> class always
+C<BTE_MACRODEF>.  The C<metatype> method in the C<Entry> class always
 returns one of these values.  The latter three describe, respectively,
 C<comment>, C<preamble>, and C<string> entries; C<BTE_REGULAR> describes
 all other entry types.  C<BTE_UNKNOWN> should never be seen (it's mainly
@@ -297,7 +297,7 @@ See also L<btparse>.  Export tag: C<metatypes>.
 
 C<BTAST_STRING>, C<BTAST_MACRO>, C<BTAST_NUMBER>.  Used to distinguish
 the three kinds of simple values---strings, macros, and numbers.  The
-F<SimpleValue> class' C<type> method always returns one of these three
+C<SimpleValue> class' C<type> method always returns one of these three
 values.  See also L<Text::BibTeX::Value>, L<btparse>.  Export tag:
 C<nodetypes>.
 
@@ -305,13 +305,13 @@ C<nodetypes>.
 
 C<BTN_FIRST>, C<BTN_VON>, C<BTN_LAST>, C<BTN_JR>, C<BTN_NONE>.  Used to
 specify the various parts of a name after it has been split up.  These
-are mainly useful when using the F<NameFormat> class.  See also
+are mainly useful when using the C<NameFormat> class.  See also
 L<bt_split_names> and L<bt_format_names>.  Export tag: C<nameparts>.
 
 =item Join methods
 
 C<BTJ_MAYTIE>, C<BTJ_SPACE>, C<BTJ_FORCETIE>, C<BTJ_NOTHING>.  Used to
-tell the F<NameFormat> class how to join adjacent tokens together; see
+tell the C<NameFormat> class how to join adjacent tokens together; see
 L<Text::BibTeX::NameFormat> and L<bt_format_names>.  Export tag:
 C<joinmethods>.
 
@@ -319,7 +319,7 @@ C<joinmethods>.
 
 =head1 UTILITY FUNCTIONS
 
-F<Text::BibTeX> provides several functions that operate outside of the
+C<Text::BibTeX> provides several functions that operate outside of the
 normal class hierarchy.  Of these, only C<bibloop> is likely to be of
 much use to you in writing everyday BibTeX-hacking programs; the other
 two (C<check_class> and C<display_list>) are mainly provided for the use
@@ -335,11 +335,11 @@ Loops over all entries in a set of BibTeX files, performing some
 caller-supplied action on each entry.  FILES should be a reference to
 the list of filenames to process, and ACTION a reference to a subroutine
 that will be called on each entry.  DEST, if given, should be a
-F<Text::BibTeX::File> object (opened for output) to which entries might
+C<Text::BibTeX::File> object (opened for output) to which entries might
 be printed.
 
 The subroutine referenced by ACTION is called with exactly one argument:
-the F<Text::BibTeX::Entry> object representing the entry currently being
+the C<Text::BibTeX::Entry> object representing the entry currently being
 processed.  Information about both the entry itself and the file where
 it originated is available through this object; see
 L<Text::BibTeX::Entry>.  The ACTION subroutine is only called if the
@@ -426,7 +426,7 @@ expected to be provided by PACKAGE.  It is used for generating warning
 messages if any of the class requirements are not met.
 
 This is mainly used by the supervisory code in
-F<Text::BibTeX::Structure>, to ensure that user-supplied structure
+C<Text::BibTeX::Structure>, to ensure that user-supplied structure
 modules meet the rules required of them.
 
 =cut
@@ -538,14 +538,14 @@ sub display_list
 
 =head1 MISCELLANEOUS FUNCTIONS
 
-In addition to loading the F<File> and F<Entry> modules, F<Text::BibTeX>
+In addition to loading the C<File> and C<Entry> modules, C<Text::BibTeX>
 loads the XSUB code which bridges the Perl modules to the underlying C
 library, B<btparse>.  This XSUB code provides a number of miscellaneous
 utility functions, most of which are put into other packages in the
-F<Text::BibTeX> family for use by the corresponding classes.  (For
-instance, the XSUB code loaded by F<Text::BibTeX> provides a function
+C<Text::BibTeX> family for use by the corresponding classes.  (For
+instance, the XSUB code loaded by C<Text::BibTeX> provides a function
 C<Text::BibTeX::Entry::parse>, which is actually documented as the
-C<parse> method of the F<Text::BibTeX::Entry> class---see
+C<parse> method of the C<Text::BibTeX::Entry> class---see
 L<Text::BibTeX::Entry>.  However, for completeness this function---and
 all the other functions that become available when you C<use
 Text::BibTeX>---are at least mentioned here.  The only functions from
@@ -555,7 +555,7 @@ string-processing functions">.
 =head2 Startup/shutdown functions
 
 These just initialize and shutdown the underlying C library.  Don't call
-either one of them; the F<Text::BibTeX> startup/shutdown code takes care
+either one of them; the C<Text::BibTeX> startup/shutdown code takes care
 of it as appropriate.  They're just mentioned here for completeness.
 
 =over 4 
@@ -604,11 +604,11 @@ transformed copy is returned.
 
 =head2 Entry-parsing functions
 
-Although these functions are provided by the F<Text::BibTeX> module,
-they are actually in the F<Text::BibTeX::Entry> package.  That's because
+Although these functions are provided by the C<Text::BibTeX> module,
+they are actually in the C<Text::BibTeX::Entry> package.  That's because
 they are implemented in C, and thus loaded with the XSUB code that
-F<Text::BibTeX> loads; however, they are actually methods in the
-F<Text::BibTeX::Entry> class.  Thus, they are documented as methods in
+C<Text::BibTeX> loads; however, they are actually methods in the
+C<Text::BibTeX::Entry> class.  Thus, they are documented as methods in
 L<Text::BibTeX::Entry>.
 
 =over 4
@@ -622,7 +622,7 @@ L<Text::BibTeX::Entry>.
 =head2 Macro table functions
 
 These functions allow direct access to the macro table maintained by
-B<btparse>, the C library underlying F<Text::BibTeX>.  In the normal
+B<btparse>, the C library underlying C<Text::BibTeX>.  In the normal
 course of events, macro definitions always accumulate, and are only
 defined as a result of parsing a macro definition (C<@string>) entry.
 B<btparse> never deletes old macro definitions for you, and doesn't have
@@ -670,7 +670,7 @@ looking up the macro as a result of finding it in a file.
 
 =head2 Name-parsing functions
 
-These are both private functions for the use of the F<Name> class, and
+These are both private functions for the use of the C<Name> class, and
 therefore are put in the C<Text::BibTeX::Name> package.  You should use
 the interface provided by that class for parsing names in the BibTeX
 style.
@@ -685,7 +685,7 @@ style.
 
 =head2 Name-formatting functions
 
-These are private functions for the use of the F<NameFormat> class, and
+These are private functions for the use of the C<NameFormat> class, and
 therefore are put in the C<Text::BibTeX::NameFormat> package.  You
 should use the interface provided by that class for formatting names in
 the BibTeX style.
@@ -704,6 +704,20 @@ the BibTeX style.
 
 =back
 
+=head1 BUGS AND LIMITATIONS
+
+C<Text::BibTeX> inherits several limitations from its base C library,
+B<btparse>; see L<btparse/BUGS AND LIMITATIONS> for details.  In addition,
+C<Text::BibTeX> will not work with a Perl binary built using the C<sfio>
+library.  This is because Perl's I/O abstraction layer does not extend to
+third-party C libraries that use stdio, and B<btparse> most certainly does
+use stdio.
+
+=head1 SEE ALSO
+
+L<btool_faq>, L<Text::BibTeX::File>, L<Text::BibTeX::Entry>,
+L<Text::BibTeX::Value>
+
 =head1 AUTHOR
 
 Greg Ward <gward@python.net>
@@ -716,25 +730,27 @@ may redistribute it and/or modify it under the same terms as Perl itself.
 
 =head1 AVAILABILITY
 
-The latest version of F<Text::BibTeX> (and B<btparse>, its sister library)
-is always available from
+The btOOL home page, where you can get up-to-date information about
+C<Text::BibTeX> (and download the latest version) is
 
-   ftp://ftp.bic.mni.mcgill.ca/pub/btOOL/
+   http://starship.python.net/~gward/btOOL/
 
-in F<Text-BibTeX-x.y.tar.gz>, where F<x.y> is the version number.  You
-will also find the latest version of B<btparse>, the C library
-underlying F<Text::BibTeX>, at that location.  B<btparse> is necessary
-to build F<Text::BibTeX>, and must be downloaded separately.
+You will also find the latest version of B<btparse>, the C library
+underlying C<Text::BibTeX>, there.  B<btparse> is needed to build
+C<Text::BibTeX>, and must be downloaded separately.
 
 Both libraries are also available on CTAN (the Comprehensive TeX Archive
-Network, C<ftp://ctan.tug.org/tex-archive/>) and CPAN (the Comprehensive
-Perl Archive Network, C<http://www.perl.com/CPAN-local/>).  Look in
-F</biblio/bibtex/utils/btparse> on CTAN, and F</modules/by-module/Text>
-on CPAN.
+Network, C<http://www.ctan.org/tex-archive/>) and CPAN (the Comprehensive
+Perl Archive Network, C<http://www.cpan.org/>).  Look in
+F<biblio/bibtex/utils/btOOL/> on CTAN, and F<authors/Greg_Ward/> on
+CPAN.  For example,
 
-Up-to-date information on F<Text::BibTeX> and B<btparse> is available at
+   http://www.ctan.org/tex-archive/biblio/bibtex/utils/btOOL/
+   http://www.cpan.org/authors/Greg_Ward
 
-   http://www.bic.mni.mcgill.ca/~greg/btOOL/
+will both get you to the latest version of C<Text::BibTeX> and B<btparse>
+-- but of course, you should always access busy sites like CTAN and CPAN
+through a mirror.
 
 =cut
 

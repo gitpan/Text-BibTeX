@@ -23,7 +23,7 @@
 @CALLS      : 
 @CREATED    : Jan/Feb 1997, Greg Ward
 @MODIFIED   : 
-@VERSION    : $Id: BibTeX.xs,v 1.27 1999/02/22 03:27:40 greg Exp $
+@VERSION    : $Id: BibTeX.xs,v 1.28 1999/10/06 01:43:21 greg Exp $
 -------------------------------------------------------------------------- */
 #include "EXTERN.h"
 #include "perl.h"
@@ -155,9 +155,6 @@ bt_change_case (transform, string, options=0)
        if (string == NULL)
           XSRETURN_EMPTY;
        RETVAL = newSVpv (string, 0);
-       DBG_ACTION
-          (1, printf ("                  passing string %p (%s) to lib\n",
-                      copystr, copystr))
        bt_change_case (transform, SvPVX (RETVAL), (ushort) options);
 
     OUTPUT:
@@ -234,7 +231,7 @@ MODULE = Text::BibTeX           PACKAGE = Text::BibTeX::Name
 #if BT_DEBUG
 
 void
-dump (hashref)
+dump_name (hashref)
     SV *   hashref
 
     PREINIT:
@@ -402,7 +399,7 @@ free (format)
 #if BT_DEBUG
 
 void
-dump (hashref)
+dump_format (hashref)
     SV *   hashref
 
     PREINIT:
@@ -479,6 +476,10 @@ _set_options (format, part, abbrev, join_tokens, join_part)
     bt_joinmethod    join_part
 
     CODE:
+       DBG_ACTION (2,
+          printf ("XS _set_options: format=%p, part=%d, "
+                  "abbrev=%d, join_tokens=%d, join_part=%d\n",
+                  format, part, abbrev, join_tokens, join_part))
        bt_set_format_options (format, part, 
                               abbrev, join_tokens, join_part);
 

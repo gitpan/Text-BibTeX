@@ -1,4 +1,11 @@
-Release 0.30 - ?? March, 1998
+Release 0.31 - 28 October, 1999
+-------------------------------
+* fixed small bug in Text::BibTeX::BibFormat
+* better documentation for Text::BibTeX::Name example
+* better adherence to POD standard
+
+
+Release 0.30 - 12 March, 1999
 -----------------------------
 * the "structure module" system is in place -- lets you write classes
   analogous to BibTeX style files, but with all the advantages of

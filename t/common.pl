@@ -42,7 +42,7 @@ sub list_equal
 {
    my ($eq, $a, $b) = @_;
 
-   die "lequal: \$a and \$b not lists" 
+   croak "list_equal: \$a and \$b not lists" 
       unless ref $a eq 'ARRAY' && ref $b eq 'ARRAY';
 
    return 0 unless @$a == @$b;          # compare lengths

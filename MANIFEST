@@ -21,8 +21,10 @@ BibTeX/Bib.pm
 BibTeX/BibFormat.pm
 BibTeX/BibSort.pm
 t/common.pl
+t/bib.t
 t/macro.t
 t/modify.t
+t/nameformat.t
 t/namelist.t
 t/names.t
 t/output.t
@@ -30,4 +32,5 @@ t/parse.t
 t/parse_f.t
 t/parse_s.t
 t/purify.t
+t/split_names
 examples/append_entries

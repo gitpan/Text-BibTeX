@@ -6,7 +6,7 @@
 # DESCRIPTION: Provides an object-oriented interface to BibTeX entries.
 # CREATED    : March 1997, Greg Ward
 # MODIFIED   : 
-# VERSION    : $Id: Entry.pm,v 1.17 1999/03/11 04:54:06 greg Exp $
+# VERSION    : $Id: Entry.pm,v 1.18 1999/10/28 23:13:16 greg Exp $
 # COPYRIGHT  : Copyright (c) 1997-98 by Gregory P. Ward.  All rights
 #              reserved.
 # 
@@ -87,18 +87,18 @@ Text::BibTeX::Entry - read and parse BibTeX files
 
 =head1 DESCRIPTION
 
-F<Text::BibTeX::Entry> does all the real work of reading and parsing
+C<Text::BibTeX::Entry> does all the real work of reading and parsing
 BibTeX files.  (Well, actually it just provides an object-oriented Perl
 front-end to a C library that does all that.  But that's not important
 right now.)
 
-BibTeX entries can be read either from F<Text::BibTeX::File> objects (using
+BibTeX entries can be read either from C<Text::BibTeX::File> objects (using
 the C<read> method), or directly from a filehandle (using the C<parse>
 method), or from a string (using C<parse_s>).  The first is preferable,
 since you don't have to worry about supplying the filename, and because of
-the extra functionality provided by the F<Text::BibTeX::File> class.
+the extra functionality provided by the C<Text::BibTeX::File> class.
 Currently, this means that you may specify the I<database structure> to
-which entries are expected to conform via the F<File> class.  This lets you
+which entries are expected to conform via the C<File> class.  This lets you
 ensure that entries follow the rules for required fields and mutually
 constrained fields for a particular type of database, and also gives you
 access to all the methods of the I<structured entry class> for this
@@ -111,10 +111,10 @@ C<fieldlist>, C<exists>, and C<get>.  Methods for changing the entry are
 C<set_type>, C<set_key>, C<set_fieldlist>, C<delete>, and C<set>.
 
 Finally, you can output BibTeX entries, again either to an open
-F<Text::BibTeX::File> object, a filehandle or a string.  (A filehandle or
-F<File> object must, of course, have been opened in write mode.)  Output to
-a F<File> object is done with the C<write> method, to a filehandle via
-C<print>, and to a string with C<print_s>.  Using the F<File> class is
+C<Text::BibTeX::File> object, a filehandle or a string.  (A filehandle or
+C<File> object must, of course, have been opened in write mode.)  Output to
+a C<File> object is done with the C<write> method, to a filehandle via
+C<print>, and to a string with C<print_s>.  Using the C<File> class is
 recommended for future extensibility, although it currently doesn't offer
 anything extra.
 
@@ -126,18 +126,18 @@ anything extra.
 
 =item new ([SOURCE])
 
-Creates a new F<Text::BibTeX::Entry> object.  If the SOURCE parameter is
-supplied, it must be one of the following: a F<Text::BibTeX::File> (or
+Creates a new C<Text::BibTeX::Entry> object.  If the SOURCE parameter is
+supplied, it must be one of the following: a C<Text::BibTeX::File> (or
 descendant class) object, a filename/filehandle pair, or a string.  Calls
-C<read> to read from a F<Text::BibTeX::File> object, C<parse> to read from
+C<read> to read from a C<Text::BibTeX::File> object, C<parse> to read from
 a filehandle, and C<parse_s> to read from a string.
 
 A filehandle can be specified as a GLOB reference, or as an
 C<IO::Handle> (or descendants) object, or as a C<FileHandle> (or
 descendants) object.  (But there's really no point in using
-C<FileHandle> objects, since F<Text::BibTeX> requires Perl 5.004, which
+C<FileHandle> objects, since C<Text::BibTeX> requires Perl 5.004, which
 always includes the C<IO> modules.)  You can I<not> pass in the name of
-a filehandle as a string, though, because F<Text::BibTeX::Entry>
+a filehandle as a string, though, because C<Text::BibTeX::Entry>
 conforms to the C<use strict> pragma (which disallows such symbolic
 references).
 
@@ -158,7 +158,7 @@ C<$filename> (error handling ignored):
    $file = new IO::File $filename;
    $entry = new Text::BibTeX::Entry ($filename, $file);
 
-But using a F<Text::BibTeX::File> object is simpler and preferred:
+But using a C<Text::BibTeX::File> object is simpler and preferred:
 
    $file = new Text::BibTeX::File $filename;
    $entry = new Text::BibTeX::Entry $file;
@@ -212,7 +212,7 @@ sub new
 =item read (BIBFILE)
 
 Reads and parses an entry from BIBFILE, which must be a
-F<Text::BibTeX::File> object (or descendant).  The next entry will be read
+C<Text::BibTeX::File> object (or descendant).  The next entry will be read
 from the file associated with that object.
 
 Returns the same as C<parse> (or C<parse_s>): false if no entry found
@@ -244,7 +244,7 @@ but not the second one -- it's pushed back onto the input stream for the
 next entry] is parsed as a BibTeX entry, with the simultaneous
 construction of an abstract syntax tree [AST].  The AST is traversed to
 ferret out the most interesting information, and this is stuffed into a
-Perl hash, which coincidentally is the F<Text::BibTeX::Entry> object
+Perl hash, which coincidentally is the C<Text::BibTeX::Entry> object
 you've been tossing around.  But you don't need to know any of that -- I
 just figured if you've read this far, you might want to know something
 about the inner workings of this module.)
@@ -333,7 +333,7 @@ BibTeX styles.)
 Returns the metatype of the entry.  (The `metatype' is a numeric value used
 to classify entry types into four groups: comment, preamble, macro
 definition (C<@string> entries), and regular (all other entry types).
-F<Text::BibTeX> exports four constants for these metatypes: C<BTE_COMMENT>,
+C<Text::BibTeX> exports four constants for these metatypes: C<BTE_COMMENT>,
 C<BTE_PREAMBLE>, C<BTE_MACRODEF>, and C<BTE_REGULAR>.)
 
 =item key ()
@@ -414,11 +414,11 @@ C<foobar> entry would give the string "The Mating Habits of Adult Foobars".
 However, in certain circumstances you may wish to preserve the values as
 they appear in the input.  This is done by setting a C<preserve_values>
 flag at some point; then, C<get> will return not strings but
-F<Text::BibTeX::Value> objects.  Each F<Value> object is a list of
-F<Text::BibTeX::SimpleValue> objects, which in turn consists of a simple
+C<Text::BibTeX::Value> objects.  Each C<Value> object is a list of
+C<Text::BibTeX::SimpleValue> objects, which in turn consists of a simple
 value type (string, macro, or number) and the text of the simple value.
 Various ways to set the C<preserve_values> flag and the interface to
-both F<Value> and F<SimpleValue> objects are described in
+both C<Value> and C<SimpleValue> objects are described in
 L<Text::BibTeX::Value>.
 
 =item value ()
@@ -433,7 +433,7 @@ would return a value of "This is a preamble---the concatenation of
 several strings".
 
 If this entry was parsed in "value preservation" mode, then C<value>
-acts like C<get>, and returns a F<Value> object rather than a simple
+acts like C<get>, and returns a C<Value> object rather than a simple
 string.
 
 =back
@@ -476,8 +476,8 @@ Incidentally, both of these methods assume that the strings being split
 have already been "collapsed" in the BibTeX way, i.e. all leading and
 trailing whitespace removed and internal whitespace reduced to single
 spaces.  This should always be the case when using these two methods on
-a F<Text::BibTeX::Entry> object, but these are actually just front ends
-to more general functions in F<Text::BibTeX>.  (More general in that you
+a C<Text::BibTeX::Entry> object, but these are actually just front ends
+to more general functions in C<Text::BibTeX>.  (More general in that you
 supply the string to be parsed, rather than supplying the name of an
 entry field.)  Should you ever use those more general functions
 directly, you might have to worry about collapsing whitespace; see
@@ -519,7 +519,7 @@ It is only used for generating warning messages.
 Splits FIELD as described above, and further splits each name into four
 components: first, von, last, and jr.  
 
-Returns a list of F<Text::BibTeX::Name> objects, each of which represents
+Returns a list of C<Text::BibTeX::Name> objects, each of which represents
 one name.  Use the C<part> method to query these objects; see
 L<Text::BibTeX::Name> for details on the interface to name objects (and on
 name-parsing as well).
@@ -532,11 +532,11 @@ For example if this entry:
                       Ludwig van Beethoven and
                       {Foo, Bar and Company}}}
 
-has been parsed into a F<Text::BibTeX::Entry> object C<$entry>, then
+has been parsed into a C<Text::BibTeX::Entry> object C<$entry>, then
 
    @names = $entry->names ('author');
 
-will put a list of F<Text::BibTeX::Name> objects in C<@names>.  These can
+will put a list of C<Text::BibTeX::Name> objects in C<@names>.  These can
 be queried individually as described in L<Text::BibTeX::Name>; for instance,
 
    @last = $names[0]->part ('last');
@@ -610,7 +610,7 @@ order (i.e. the input is treated like a list, not a hash).  For example:
    $entry->set ('author', $author);
    $entry->set ('author', $author, 'editor', $editor);
 
-VALUE can be either a simple string or a F<Text::BibTeX::Value> object;
+VALUE can be either a simple string or a C<Text::BibTeX::Value> object;
 it doesn't matter if the entry was parsed in "full post-processing" or
 "preserve input values" mode.
 
@@ -714,7 +714,7 @@ sub set_fieldlist
 =item write (BIBFILE)
 
 Prints a BibTeX entry on the filehandle associated with BIBFILE (which
-should be a F<Text::BibTeX::File> object, opened for output).  Currently
+should be a C<Text::BibTeX::File> object, opened for output).  Currently
 the printout is not particularly human-friendly; a highly configurable
 pretty-printer will be developed eventually.
 
@@ -921,7 +921,7 @@ sub line
 =item filename ()
 
 Returns the name of the file from which the entry was parsed.  Only
-works if the file is represented by a F<Text::BibTeX::File> object---if
+works if the file is represented by a C<Text::BibTeX::File> object---if
 you just passed a filename/filehandle pair to C<parse>, you can't get
 the filename back.  (Sorry.)
 

@@ -7,7 +7,7 @@
 # CREATED    : in original form: Apr 1997
 #              completely redone: Oct 1997
 # MODIFIED   : 
-# VERSION    : $Id: Structure.pm,v 2.10 1999/03/11 04:54:06 greg Exp $
+# VERSION    : $Id: Structure.pm,v 2.11 1999/10/28 23:13:16 greg Exp $
 # COPYRIGHT  : Copyright (c) 1997-98 by Gregory P. Ward.  All rights
 #              reserved.
 # 
@@ -72,7 +72,7 @@ Text::BibTeX::Structure - provides base classes for user structure modules
 
 =head1 DESCRIPTION
 
-The module F<Text::BibTeX::Structure> provides two classes that form the
+The module C<Text::BibTeX::Structure> provides two classes that form the
 basis of the B<btOOL> "structure module" system.  This system is how
 database structures are defined and imposed on BibTeX files, and
 provides an elegant synthesis of object-oriented techniques with
@@ -95,12 +95,12 @@ class> and the I<structured entry class>.  The former defines everything
 that applies to the structure as a whole (allowed types and field
 rules).  The latter provides methods that operate on individual entries
 which conform (or are supposed to conform) to the structure.  The two
-classes provided by the F<Text::BibTeX::Structure> module are
-F<Text::BibTeX::Structure> and F<Text::BibTeX::StructuredEntry>; these
+classes provided by the C<Text::BibTeX::Structure> module are
+C<Text::BibTeX::Structure> and C<Text::BibTeX::StructuredEntry>; these
 serve as base classes for, respectively, all structure classes and all
 structured entry classes.  One canonical structure is provided as an
 example with B<btOOL>: the C<Bib> structure, which (via the
-F<BibStructure> and F<BibEntry> classes) provides the same functionality
+C<BibStructure> and C<BibEntry> classes) provides the same functionality
 as the standard style files of BibTeX 0.99.  It is hoped that other
 programmers will write new bibliography-related structures, possibly
 deriving from the C<Bib> structure, to emulate some of the functionality
@@ -184,11 +184,11 @@ this mechanism can't capture "x must be present if y is" relationships.
 The requirements imposed on the actual structure class are simple: it
 must provide a method C<describe_entry> which sets up a fancy data
 structure describing the allowed entry types and all the field rules for
-those types.  The F<Structure> class provides methods (inherited by a
+those types.  The C<Structure> class provides methods (inherited by a
 particular structure class) to help particular structure classes create
 this data structure in a consistent, controlled way.  For instance, the
 C<describe_structure> method in the BibTeX 0.99-emulating
-F<BibStructure> class is quite simple:
+C<BibStructure> class is quite simple:
 
    sub describe_entry
    {
@@ -235,13 +235,13 @@ The easy way to handle structure options is to provide two methods,
 C<known_option> and C<default_option>.  These return, respectively,
 whether a given option is supported, and what its default value is.  (If
 your structure doesn't support any options, you can just inherit these
-methods from the F<Structure> class.  The default C<known_option>
+methods from the C<Structure> class.  The default C<known_option>
 returns false for all options, and its companion C<default_option>
 crashes with an "unknown option" error.)
 
 Once C<known_option> and C<default_option> are provided, the structure
 class can sit back and inherit the more visible C<set_options> and
-C<get_options> methods from the F<Structure> class.  These are the
+C<get_options> methods from the C<Structure> class.  These are the
 methods actually used to modify/query options, and will be used by
 application programs to customize the structure module's behaviour, and
 by the structure module itself to pay attention to the user's wishes.
@@ -253,7 +253,7 @@ value, so if the structure module clearly documents its requirements,
 the application program could supply a structure that meets its needs.
 Keep in mind that this requires cooperation between the application and
 the structure module; the intermediary code in
-F<Text::BibTeX::Structure> knows nothing about the format or syntax of
+C<Text::BibTeX::Structure> knows nothing about the format or syntax of
 your structure's options, and whatever scalar the application passes via
 C<set_options> will be stored for your module to retrieve via
 C<get_options>.
@@ -284,14 +284,14 @@ individual entries.  Because this is completely open-ended, the
 requirements of a structured entry class are much less rigid than for a
 structure class.  In fact, all of the requirements of a structured entry
 class can be met simply by inheriting from
-F<Text::BibTeX::StructuredEntry>, the other class provided by the
-F<Text::BibTeX::Structure> module.  (For the record, those requirements
+C<Text::BibTeX::StructuredEntry>, the other class provided by the
+C<Text::BibTeX::Structure> module.  (For the record, those requirements
 are: a structured entry class must provide the entry
-parse/query/manipulate methods of the F<Entry> class, and it must
+parse/query/manipulate methods of the C<Entry> class, and it must
 provide the C<check>, C<coerce>, and C<silently_coerce> methods of the
-F<StructuredEntry> class.  Since F<StructuredEntry> inherits from
-F<Entry>, both of these requirements are met "for free" by structured
-entry classes that inherit from F<Text::BibTeX::StructuredEntry>, so
+C<StructuredEntry> class.  Since C<StructuredEntry> inherits from
+C<Entry>, both of these requirements are met "for free" by structured
+entry classes that inherit from C<Text::BibTeX::StructuredEntry>, so
 naturally this is the recommended course of action!)
 
 There are deliberately no other methods required of structured entry
@@ -303,10 +303,10 @@ documentation.
 =head1 CLASS INTERACTIONS
 
 Imposing a database structure on your entries sets off a chain reaction
-of interactions between various classes in the F<Text::BibTeX> library
+of interactions between various classes in the C<Text::BibTeX> library
 that should be transparent when all goes well.  It could prove confusing
 if things go wrong and you have to go wading through several levels of
-application program, core F<Text::BibTeX> classes, and some structure
+application program, core C<Text::BibTeX> classes, and some structure
 module.
 
 The justification for this complicated behaviour is that it allows you
@@ -316,7 +316,7 @@ user can supply a database structure, and ultimately the entry objects
 you manipulate will be blessed into a class supplied by the structure
 module.  A short example will illustrate this.
 
-Typically, a F<Text::BibTeX>-based program is based around a kernel of
+Typically, a C<Text::BibTeX>-based program is based around a kernel of
 code like this:
 
    $bibfile = new Text::BibTeX::File "foo.bib";
@@ -326,8 +326,8 @@ code like this:
    }
 
 In this case, nothing fancy is happening behind the scenes: the
-C<$bibfile> object is blessed into the F<Text::BibTeX::File> class, and
-C<$entry> is blessed into F<Text::BibTeX::Entry>.  This is the
+C<$bibfile> object is blessed into the C<Text::BibTeX::File> class, and
+C<$entry> is blessed into C<Text::BibTeX::Entry>.  This is the
 conventional behaviour of Perl classes, but it is not the only possible
 behaviour.  Let us now suppose that C<$bibfile> is expected to conform
 to a database structure specified by C<$structure> (presumably a
@@ -344,7 +344,7 @@ A lot happens behind the scenes with the call to C<$bibfile>'s
 C<set_structure> method.  First, a new structure object is created from
 C<$structure>.  The structure name implies the name of a Perl
 module---the structure module---which is C<require>'d by the
-F<Structure> constructor.  (The main consequence of this is that any
+C<Structure> constructor.  (The main consequence of this is that any
 compile-time errors in your structure module will not be revealed until
 a C<Text::BibTeX::File::set_structure> or
 C<Text::BibTeX::Structure::new> call attempts to load it.)
@@ -357,42 +357,42 @@ scenes) is blessed into a class whose name is not known until run-time.
 
 Now, the behaviour of the C<Text::BibTeX::Entry::new> constructor
 changes subtly: rather than returning an object blessed into the
-F<Text::BibTeX::Entry> class as you might expect from the code, the
+C<Text::BibTeX::Entry> class as you might expect from the code, the
 object is blessed into the structured entry class associated with
 C<$structure>.  
 
 For example, if the value of C<$structure> is C<"Foo">, that means the
 user has supplied a module implementing the C<Foo> structure.
-(Ordinarily, this module would be called F<Text::BibTeX::Foo>---but you
+(Ordinarily, this module would be called C<Text::BibTeX::Foo>---but you
 can customize this.)  Calling the C<set_structure> method on C<$bibfile>
 will attempt to create a new structure object via the
-F<Text::BibTeX::Structure> constructor, which loads the structure module
-F<Text::BibTeX::Foo>.  Once this module is successfully loaded, the new
+C<Text::BibTeX::Structure> constructor, which loads the structure module
+C<Text::BibTeX::Foo>.  Once this module is successfully loaded, the new
 object is blessed into its structure class, which will presumably be
-called F<Text::BibTeX::FooStructure> (again, this is customizable).  The
+called C<Text::BibTeX::FooStructure> (again, this is customizable).  The
 new object is supplied with the user's structure options via the
 C<set_options> method (usually inherited), and then it is asked to
 describe the actual entry layout by calling its C<describe_entry>
 method.  This, in turn, will usually call the inherited C<set_fields>
 method for each entry type in the database structure.  When the
-F<Structure> constructor is finished, the new structure object is stored
-in the F<File> object (remember, we started all this by calling
-C<set_structure> on a F<File> object) for future reference.
+C<Structure> constructor is finished, the new structure object is stored
+in the C<File> object (remember, we started all this by calling
+C<set_structure> on a C<File> object) for future reference.
 
-Then, when a new F<Entry> object is created and parsed from that
-particular F<File> object, some more trickery happens.  Trivially, the
-structure object stored in the F<File> object is also stored in the
-F<Entry> object.  (The idea is that entries could belong to a database
+Then, when a new C<Entry> object is created and parsed from that
+particular C<File> object, some more trickery happens.  Trivially, the
+structure object stored in the C<File> object is also stored in the
+C<Entry> object.  (The idea is that entries could belong to a database
 structure independently of any file, but usually they will just get the
 structure that was assigned to their database file.)  More importantly,
-the new F<Entry> object is re-blessed into the structured entry class
+the new C<Entry> object is re-blessed into the structured entry class
 supplied by the structure module---presumably, in this case,
-F<Text::BibTeX::FooEntry> (also customizable).
+C<Text::BibTeX::FooEntry> (also customizable).
 
 Once all this sleight-of-hand is accomplished, the application may treat
 its entry objects as objects of the structured entry class for the
 C<Foo> structure---they may call the check/coerce methods inherited from
-F<Text::BibTeX::StructuredEntry>, and they may also call any methods
+C<Text::BibTeX::StructuredEntry>, and they may also call any methods
 specific to entries for this particular database structure.  What these
 methods might be is up to the structure implementor to decide and
 document; thus, applications may be specific to one particular database
@@ -403,14 +403,14 @@ provide.
 
 =head1 EXAMPLE
 
-For example code, please refer to the source of the F<Bib> module and
+For example code, please refer to the source of the C<Bib> module and
 the C<btcheck>, C<btsort>, and C<btformat> applications supplied with
-F<Text::BibTeX>.
+C<Text::BibTeX>.
 
 =head1 METHODS 1: BASE STRUCTURE CLASS
 
-The first class provided by the F<Text::BibTeX::Structure> module is
-F<Text::BibTeX::Structure>.  This class is intended to provide methods
+The first class provided by the C<Text::BibTeX::Structure> module is
+C<Text::BibTeX::Structure>.  This class is intended to provide methods
 that will be inherited by user-supplied structure classes; such classes
 should not override any of the methods described here (except
 C<known_option> and C<default_option>) without very good reason.
@@ -432,7 +432,7 @@ C<add_constraints> methods described here.
 
 =item new (STRUCTURE, [OPTION =E<gt> VALUE, ...])
 
-Constructs a new structure object---I<not> a F<Text::BibTeX::Structure>
+Constructs a new structure object---I<not> a C<Text::BibTeX::Structure>
 object, but rather an object blessed into the structure class associated
 with STRUCTURE.  More precisely:
 
@@ -442,10 +442,10 @@ with STRUCTURE.  More precisely:
 
 Loads (with C<require>) the module implementing STRUCTURE.  In the
 absence of other information, the module name is derived by appending
-STRUCTURE to C<"Text::BibTeX::">---thus, the module F<Text::BibTeX::Bib>
+STRUCTURE to C<"Text::BibTeX::">---thus, the module C<Text::BibTeX::Bib>
 implements the C<Bib> structure.  Use the pseudo-option C<module> to
 override this module name.  For instance, if the structure C<Foo> is
-implemented by the module F<Foo>:
+implemented by the module C<Foo>:
 
    $structure = new Text::BibTeX::Structure
       ('Foo', module => 'Foo');
@@ -460,7 +460,7 @@ structured entry class.  The structure class is named by appending
 C<"Structure"> to the name of the module, and the structured entry class
 by appending C<"Entry">.  Thus, in the absence of a C<module> option,
 these two classes (for the C<Bib> structure) would be named
-F<Text::BibTeX::BibStructure> and F<Text::BibTeX::BibEntry>.  Either or
+C<Text::BibTeX::BibStructure> and C<Text::BibTeX::BibEntry>.  Either or
 both of the default class names may be overridden by having the
 structure module return a reference to a hash (as opposed to the
 traditional C<1> returned by modules).  This hash could then supply a
@@ -468,8 +468,8 @@ C<structure_class> element to name the structure class, and an
 C<entry_class> element to name the structured entry class.
 
 Apart from ensuring that the two classes actually exist, C<new> verifies
-that they inherit correctly (from F<Text::BibTeX::Structure> and
-F<Text::BibTeX::StructuredEntry> respectively), and that the structure
+that they inherit correctly (from C<Text::BibTeX::Structure> and
+C<Text::BibTeX::StructuredEntry> respectively), and that the structure
 class provides the required C<known_option>, C<default_option>, and
 C<describe_entry> methods.
 
@@ -874,22 +874,22 @@ BEGIN { import Text::BibTeX qw(:metatypes display_list) }
 
 =head1 METHODS 2: BASE STRUCTURED ENTRY CLASS
 
-The other class provided by the F<Structure> module is
-F<StructuredEntry>, the base class for all structured entry classes.
-This class inherits from F<Entry>, so all of its entry
-query/manipulation methods are available.  F<StructuredEntry> adds
+The other class provided by the C<Structure> module is
+C<StructuredEntry>, the base class for all structured entry classes.
+This class inherits from C<Entry>, so all of its entry
+query/manipulation methods are available.  C<StructuredEntry> adds
 methods for checking that an entry conforms to the database structure
 defined by a structure class.
 
-It only makes sense for F<StructuredEntry> to be used as a base class;
-you would never create standalone F<StructuredEntry> objects.  The
+It only makes sense for C<StructuredEntry> to be used as a base class;
+you would never create standalone C<StructuredEntry> objects.  The
 superficial reason for this is that only particular structured-entry
 classes have an actual structure class associated with them,
-F<StructuredEntry> on its own doesn't have any information about allowed
+C<StructuredEntry> on its own doesn't have any information about allowed
 types, required fields, field constraints, and so on.  For a deeper
 understanding, consult L<"CLASS INTERACTIONS"> above.
 
-Since F<StructuredEntry> derives from F<Entry>, it naturally operates on
+Since C<StructuredEntry> derives from C<Entry>, it naturally operates on
 BibTeX entries.  Hence, the following descriptions refer to "the
 entry"---this is just the object (entry) being operated on.  Note that
 these methods are presented in bottom-up order, meaning that the methods

@@ -6,7 +6,7 @@
 #              files.
 # CREATED    : March 1997, Greg Ward
 # MODIFIED   : 
-# VERSION    : $Id: File.pm,v 1.8 1999/03/11 04:54:06 greg Exp $
+# VERSION    : $Id: File.pm,v 1.9 1999/10/28 23:13:16 greg Exp $
 # COPYRIGHT  : Copyright (c) 1997-98 by Gregory P. Ward.  All rights
 #              reserved.
 # 
@@ -43,9 +43,9 @@ Text::BibTeX::File - interface to whole BibTeX files
 
 =head1 DESCRIPTION
 
-F<Text::BibTeX::File> provides an object-oriented interface to BibTeX
+C<Text::BibTeX::File> provides an object-oriented interface to BibTeX
 files.  Its most obvious purpose is to keep track of a filename and
-filehandle together for use by the F<Text::BibTeX::Entry> module (which
+filehandle together for use by the C<Text::BibTeX::Entry> module (which
 is much more interesting).  In addition, it allows you to specify
 certain options which are applicable to a whole database (file), rather
 than having to specify them for each entry in the file.  Currently, you
@@ -60,7 +60,7 @@ These concepts are fully documented in L<Text::BibTeX::Structure>.
 
 =item new ([FILENAME [,MODE [,PERMS]]]) 
 
-Creates a new F<Text::BibTeX::File> object.  If FILENAME is supplied,
+Creates a new C<Text::BibTeX::File> object.  If FILENAME is supplied,
 passes it to the C<open> method (along with MODE and PERMS if they
 are supplied).  If the C<open> fails, C<new> fails and returns false; if
 the C<open> succeeds (or if FILENAME isn't supplied), C<new> returns the
@@ -135,7 +135,7 @@ gives you full access to the methods of the particular I<structured
 entry class> for this structure, allowing you to perform operations
 specific to this kind of database.  See L<Text::BibTeX::Structure/"CLASS
 INTERACTIONS"> for all the consequences of setting the database
-structure for a F<Text::BibTeX::File> object.
+structure for a C<Text::BibTeX::File> object.
 
 =item structure ()
 

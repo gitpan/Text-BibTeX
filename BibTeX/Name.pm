@@ -7,7 +7,7 @@
 #              them is done by the Text::BibTeX::NameFormat class).
 # CREATED    : Nov 1997, Greg Ward
 # MODIFIED   : 
-# VERSION    : $Id: Name.pm,v 1.6 1999/03/11 04:54:06 greg Exp $
+# VERSION    : $Id: Name.pm,v 1.8 1999/10/28 23:13:16 greg Exp $
 # COPYRIGHT  : Copyright (c) 1997-98 by Gregory P. Ward.  All rights
 #              reserved.
 # 
@@ -43,7 +43,7 @@ Text::BibTeX::Name - interface to BibTeX-style author names
 
 =head1 DESCRIPTION
 
-F<Text::BibTeX::Name> provides an abstraction for BibTeX-style names and
+C<Text::BibTeX::Name> provides an abstraction for BibTeX-style names and
 some basic operations on them.  A name, in the BibTeX world, consists of
 a list of I<tokens> which are divided amongst four I<parts>: `first',
 `von', `last', and `jr'.
@@ -57,7 +57,9 @@ has five tokens, whereas the name
 
    {Foo, Bar, and Sons}
 
-consists of a single token.
+consists of a single token.  Skip down to L<"EXAMPLES"> for more examples, or
+read on if you want to know the exact details of how names are split into
+tokens and parts.
 
 How tokens are divided into parts depends on the form of the name.  If
 the name has no commas at brace-level zero (as in the second example),
@@ -73,7 +75,7 @@ If a name has a single comma, then it is assumed to be in "von last,
 first" form.  A leading sequence of tokens with initial lower-case
 letters, if any, forms the `von' part; tokens between the `von' and the
 comma form the `last' part; tokens following the comma form the `first'
-part.  Again, if there are no token following a leading sequence of
+part.  Again, if there are no tokens following a leading sequence of
 lowercase tokens, a warning is printed and the token immediately
 preceding the comma is taken to be the `last' part.
 
@@ -85,21 +87,179 @@ first" form.  (This is the only way to represent a name with a `jr'
 part.)  The parsing of the name is the same as for a one-comma name,
 except that tokens between the two commas are taken to be the `jr' part.
 
+=head1 CAVEAT
+
+The C code that does the actual work of splitting up names takes a shortcut
+and makes few assumptions about whitespace.  In particular, there must be
+no leading whitespace, no trailing whitespace, no consecutive whitespace
+characters in the string, and no whitespace characters other than space.
+In other words, all whitespace must consist of lone internal spaces.
+
 =head1 EXAMPLES
 
-The names C<'van der Graaf, Horace Q.'> and 
-C<'Horace Q. van der Graaf'> split into identical sets of token lists:
+The strings C<"John Smith"> and C<"Smith, John"> are different
+representations of the same name, so split into parts and tokens the
+same way, namely as:
 
-   first => ('Horace', 'Q.')
-   von   => ('van', 'der')
-   last  => ('Graaf')
+   first => ('John')
+   von   => ()
+   last  => ('Smith')
+   jr    => ()
 
-with no `jr' part.
+Note that every part is a list of tokens, even if there is only one
+token in that part; empty parts get empty token lists.  Every token is
+just a string.  Writing this example in actual code is simple:
 
-Since C<'{Foo, Bar, and Sons}'> consists of a single token with no
-commas at brace-level zero (if there were any, it would have more than
-one token!), it falls under the "first last" rule: the whole name
-becomes the only token in the `last' part, and no other parts exist.
+   $name = new Text::BibTeX::Name ("John Smith");  # or "Smith, John"
+   $name->part ('first');       # returns list ("John")
+   $name->part ('last');        # returns list ("Smith")
+   $name->part ('von');         # returns list ()
+   $name->part ('jr');          # returns list ()
+
+(We'll omit the empty parts in the rest of the examples: just assume
+that any unmentioned part is an empty list.)  If more than two tokens
+are included and there's no comma, they'll go to the first name: thus
+C<"John Q. Smith"> splits into
+
+   first => ("John", "Q."))
+   last  => ("Smith")
+
+and C<"J. R. R. Tolkein"> into
+
+   first => ("J.", "R.", "R.")
+   last  => ("Tolkein")
+
+The ambiguous name C<"Kevin Philips Bong"> splits into
+
+   first => ("Kevin", "Philips")
+   last  => ("Bong")
+
+which may or may not be the right thing, depending on the particular
+person.  There's no way to know though, so if this fellow's last name is
+"Philips Bong" and not "Bong", the string representation of his name
+must disambiguate.  One possibility is C<"Philips Bong, Kevin"> which
+splits into
+
+   first => ("Kevin")
+   last  => ("Philips", "Bong")
+
+Alternately, C<"Kevin {Philips Bong}"> takes advantage of the fact that
+tokes are only split on whitespace I<at brace-level zero>, and becomes
+
+   first => ("Kevin")
+   last  => ("{Philips Bong}")
+
+which is fine if your names are destined to be processed by TeX, but
+might be problematic in other contexts.  Similarly, C<"St John-Mollusc,
+Oliver"> becomes
+
+   first => ("Oliver")
+   last  => ("St", "John-Mollusc")
+
+which can also be written as C<"Oliver {St John-Mollusc}">:
+
+   first => ("Oliver")
+   last  => ("{St John-Mollusc}")
+
+Since tokens are separated purely by whitespace, hyphenated names will
+work either way: both C<"Nigel Incubator-Jones"> and C<"Incubator-Jones,
+Nigel"> come out as
+
+   first => ("Nigel")
+   last  => ("Incubator-Jones")
+
+Multi-token last names with lowercase components -- the "von part" --
+work fine: both C<"Ludwig van Beethoven"> and C<"van Beethoven, Ludwig">
+parse (correctly) into
+
+   first => ("Ludwig")
+   von   => ("van")
+   last  => ("Beethoven")
+
+This allows these European aristocratic names to sort properly,
+i.e. I<van Beethoven> under I<B> rather than I<v>.  Speaking of
+aristocratic European names, C<"Charles Louis Xavier Joseph de la
+Vall{\'e}e Poussin"> is handled just fine, and splits into
+
+   first => ("Charles", "Louis", "Xavier", "Joseph")
+   von   => ("de", "la")
+   last  => ("Vall{\'e}e", "Poussin")
+
+so could be sorted under I<V> rather than I<d>.  (Note that the sorting
+algorithm in L<Text::BibTeX::BibSort> is a slavish imitiation of BibTeX
+0.99, and therefore does the wrong thing with these names: the sort key
+starts with the "von" part.)
+
+However, capitalized "von parts" don't work so well: C<"R. J. Van de
+Graaff"> splits into
+
+   first => ("R.", "J.", "Van")
+   von   => ("de")
+   last  => ("Graaff")
+
+which is clearly wrong.  This name should be represented as C<"Van de
+Graaff, R. J.">
+
+   first => ("R.", "J.")
+   last  => ("Van", "de", "Graaff")
+
+which is probably right.  (This particular Van de Graaff was an
+American, so he probably belongs under I<V> -- which is where my
+(British) dictionary puts him.  Other Van de Graaff's mileages may
+vary.)
+
+Finally, many names include a suffix: "Jr.", "III", "fils", and so
+forth.  These are handled, but with some limitations.  If there's a
+comma before the suffix (the usual U.S. convention for "Jr."), then the
+name should be in I<last, jr, first> form, e.g. C<"Doe, Jr., John">
+comes out (correctly) as
+
+   first => ("John")
+   last  => ("Doe")
+   jr    => ("Jr.")
+
+but C<"John Doe, Jr."> is ambiguous and is parsed as
+
+   first => ("Jr.")
+   last  => ("John", "Doe")
+
+(so don't do it that way).  If there's no comma before the suffix -- the
+usual for Roman numerals, and occasionally seen with "Jr." -- then
+you're stuck and have to make the suffix part of the last name.  Thus,
+C<"Gates III, William H."> comes out
+
+   first => ("William", "H.")
+   last  => ("Gates", "III")
+
+but C<"William H. Gates III"> is ambiguous, and becomes
+
+   first => ("William", "H.", "Gates")
+   last  => ("III")
+
+-- not what you want.  Again, the curly-brace trick comes in handy, so
+C<"William H. {Gates III}"> splits into
+
+   first => ("William", "H.")
+   last  => ("{Gates III}")
+
+There is no way to make a comma-less suffix the C<jr> part.  (This is an
+unfortunate consequence of slavishly imitating BibTeX 0.99.)
+
+Finally, names that aren't really names of people but rather are
+organization or company names should be forced into a single token by
+wrapping them in curly braces.  For example, "Foo, Bar and Sons" should
+be written C<"{Foo, Bar and Sons}">, which will split as
+
+   last  => ("{Foo, Bar and Sons}")
+
+Of course, if this is one name in a BibTeX C<authors> or C<editors>
+list, this name has to be wrapped in braces anyways (because of the C<"
+and ">), but that's another story.
+
+=head1 FORMATTING NAMES
+
+Putting a split-up name back together again in a flexible, customizable
+way is the job of another module: see L<Text::BibTeX::NameFormat>.
 
 =head1 METHODS
 
@@ -107,7 +267,7 @@ becomes the only token in the `last' part, and no other parts exist.
 
 =item new (CLASS [, NAME [, FILENAME, LINE, NAME_NUM]])
 
-Creates a new F<Text::BibTeX::Name> object.  If NAME is supplied, it
+Creates a new C<Text::BibTeX::Name> object.  If NAME is supplied, it
 must be a string containing a single name, and it will be be passed to
 the C<split> method for further processing.  FILENAME, LINE, and
 NAME_NUM, if present, are all also passed to C<split> to allow better
@@ -143,7 +303,7 @@ by whitespace or commas at brace-depth zero.  See above for full details
 on how a name is split into its component parts.)
 
 The token-lists that make up each part of the name are then stored in
-the F<Text::BibTeX::Name> object for later retrieval or formatting with
+the C<Text::BibTeX::Name> object for later retrieval or formatting with
 the C<part> and C<format> methods.
 
 =cut
@@ -163,7 +323,7 @@ sub split
 =item part (PARTNAME)
 
 Returns the list of tokens in part PARTNAME of a name previously split with
-C<split>.  For example, suppose a F<Text::BibTeX::Name> object is created and
+C<split>.  For example, suppose a C<Text::BibTeX::Name> object is created and
 initialized like this:
 
    $name = new Text::BibTeX::Name;
@@ -190,8 +350,8 @@ sub part
 =item format (FORMAT)
 
 Formats a name according to the specifications encoded in FORMAT, which
-should be a F<Text::BibTeX::NameFormat> (or descendant) object.  (In short,
-it must supply a method C<apply> which takes a F<Text::BibTeX::NameFormat>
+should be a C<Text::BibTeX::NameFormat> (or descendant) object.  (In short,
+it must supply a method C<apply> which takes a C<Text::BibTeX::NameFormat>
 object as its only argument.)  Returns the formatted name as a string.
 
 See L<Text::BibTeX::NameFormat> for full details on formatting names.

@@ -12,7 +12,7 @@
 #              style files of BibTeX 0.99.
 # CREATED    : 1997/09/21, Greg Ward
 # MODIFIED   : 
-# VERSION    : $Id: Bib.pm,v 1.11 1999/03/11 04:54:06 greg Exp $
+# VERSION    : $Id: Bib.pm,v 1.13 1999/10/28 23:13:16 greg Exp $
 # COPYRIGHT  : Copyright (c) 1997-98 by Gregory P. Ward.  All rights
 #              reserved.
 # 
@@ -25,19 +25,60 @@
 
 Text::BibTeX::Bib - defines the "Bib" database structure
 
+=head1 SYNOPSIS
+
+   $bibfile = new Text::BibTeX::File $filename;
+   $bibfile->set_structure ('Bib',
+                            # Default option values:
+                            sortby => 'name',
+                            namestyle => 'full'
+                            nameorder => 'first',
+                            atitle => 1,
+                            labels => 'numeric');
+
+   # Alternate option values:
+   $bibfile->set_option (sortby => 'year');
+   $bibfile->set_option (namestyle => 'nopunct');
+   $bibfile->set_option (namestyle => 'nospace');
+   $bibfile->set_option (nameorder => 'last');
+   $bibfile->set_option (atitle => 0);   
+   $bibfile->set_option (labels => 'alpha');   # not implemented yet!
+
+   # parse entry from $bibfile and automatically make it a BibEntry
+   $entry = new Text::BibTeX::Entry $bibfile;
+
+   # or get an entry from somewhere else which is hard-coded to be
+   # a BibEntry
+   $entry = new Text::BibTeX::BibEntry ...;
+
+   $sortkey = $entry->sort_key;
+   @blocks = $entry->format;
+
 =head1 DESCRIPTION
 
-F<Text::BibTeX::Bib> implements the database structure for
+(B<NOTE!> Do not believe everything you read in this document.  The
+classes described here are unfinished and only lightly tested.  The
+current implementation is a proof-of-principle, to convince myself (and
+anyone who might be interested) that it really is possible to
+reimplement BibTeX 0.99 in Perl using the core C<Text::BibTeX> classes;
+this principle is vaguely demonstrated by the current C<Bib*> modules,
+but not really proved.  Many important features needed to reimplement
+the standard styles of BibTeX 0.99 are missing, even though this
+document may brashly assert otherwise.  If you are interested in using
+these classes, you should start by reading and grokking the code, and
+contributing the missing bits and pieces that you need.)
+
+C<Text::BibTeX::Bib> implements the database structure for
 bibliographies as defined by the standard styles of BibTeX 0.99.  It
-does this by providing two classes, F<BibStructure> and F<BibEntry> (the
-leading F<Text::BibTeX> is implied, and will be omitted for the rest of
-this manual page).  These two classes, being specific to bibliographic
-data, are outside of the core F<Text::BibTeX> class hierarchy, but are
+does this by providing two classes, C<BibStructure> and C<BibEntry> (the
+leading C<Text::BibTeX> is implied, and will be omitted for the rest of
+this document).  These two classes, being specific to bibliographic
+data, are outside of the core C<Text::BibTeX> class hierarchy, but are
 distributed along with it as they provide a canonical example of a
 specific database structure using classes derived from the core
 hierarchy.
 
-F<BibStructure>, which derives from the F<Structure> class, deals with
+C<BibStructure>, which derives from the C<Structure> class, deals with
 the structure as a whole: it handles structure options and describes all
 the types and fields that make up the database structure.  If you're
 interested in writing your own database structure modules, the standard
@@ -50,12 +91,12 @@ styles of BibTeX 0.99, and second, to provide an example for other
 programmers wishing to implement new or derived database structure
 modules.)
 
-F<BibEntry> derives from the F<StructuredEntry> class and provides
+C<BibEntry> derives from the C<StructuredEntry> class and provides
 methods that operate on individual entries presumed to come from a
-database conforming to the structure defined by the F<BibStructure>
-class.  (Actually, to be completely accurate, F<BibEntry> inherits from
-two intermediate classes, F<BibSort> and F<BibFormat>.  These two
-classes just exist to reduce the amount of code in the F<Bib> module,
+database conforming to the structure defined by the C<BibStructure>
+class.  (Actually, to be completely accurate, C<BibEntry> inherits from
+two intermediate classes, C<BibSort> and C<BibFormat>.  These two
+classes just exist to reduce the amount of code in the C<Bib> module,
 and thanks to the magic of inheritance, their existence is usually
 irrelevant.  But you might want to consult those two classes if you're
 interested in the gory details of sorting and formatting entries from
@@ -73,9 +114,9 @@ use vars qw(@ISA);
 
 =head1 STRUCTURE OPTIONS
 
-F<BibStructure> handles several user-supplied "structure options" and
+C<BibStructure> handles several user-supplied "structure options" and
 methods for dealing with them.  The options currently supported by the
-F<Bib> database structure, and the values allowed for them, are:
+C<Bib> database structure, and the values allowed for them, are:
 
 =over 4
 
@@ -123,10 +164,10 @@ markup language, and the second to turn it off.  For example, if your
 target language is LaTeX2e and you want journal names emphasized, you
 would supply a list reference C<['\emph{','}']> for the C<journal_mkup>
 option.  If you were instead generating HTML, you might supply
-C<['<emph>','</emph>']>.  To keep the structure module general with
-respect to markup languages, all markup options are empty by default.
-(Or, rather, they are all references to lists consisting of two empty
-strings.)
+C<['E<lt>emphE<gt>','E<lt>/emphE<gt>']>.  To keep the structure module
+general with respect to markup languages, all markup options are empty
+by default.  (Or, rather, they are all references to lists consisting of
+two empty strings.)
 
 =over 4
 
@@ -165,11 +206,11 @@ my %default_options =
 
 =head2 Option methods
 
-As required by the F<Text::BibTeX::Structure> module,
-F<Text::BibTeX::Bib> provides two methods for handling options:
+As required by the C<Text::BibTeX::Structure> module,
+C<Text::BibTeX::Bib> provides two methods for handling options:
 C<known_option> and C<default_option>.  (The other two option methods,
 C<set_options> and C<get_options>, are just inherited from
-F<Text::BibTeX::Structure>.)
+C<Text::BibTeX::Structure>.)
 
 =over 4
 
@@ -214,7 +255,7 @@ C<describe_entry>, that lists the allowed entry types and the known
 fields for the structure.  Programmers wishing to write their own
 database structure module should consult L<Text::BibTeX::Structure> for
 the conventions and requirements of this method; the purpose of the
-present documentation is to describe the C<Bib> database structure.
+present document is to describe the C<Bib> database structure.
 
 The allowed entry types, and the fields recognized for them, are:
 
@@ -380,19 +421,19 @@ sub describe_entry
 
 =head1 STRUCTURED ENTRY CLASS
 
-The second class provided by the F<Text::BibTeX::Bib> module is
-F<BibEntry> (again, a leading F<Text::BibTeX> is implied).  This being a
-structured entry class, it derives from F<StructuredEntry>.  The
+The second class provided by the C<Text::BibTeX::Bib> module is
+C<BibEntry> (again, a leading C<Text::BibTeX> is implied).  This being a
+structured entry class, it derives from C<StructuredEntry>.  The
 conventions and requirements for such a class are documented in
 L<Text::BibTeX::Structure> for the benefit of programmers implementing
 their own structure modules.
 
 If you wish to write utilities making use of the C<Bib> database
 structure, then you should call one of the "officially supported"
-methods provided by the F<BibEntry> class.  Currently, there are only
+methods provided by the C<BibEntry> class.  Currently, there are only
 two of these: C<sort_key> and C<format>.  These are actually implemented
-in the F<BibSort> and F<BibFormat> classes, respectively, which are base
-classes of F<BibEntry>.  Thus, see L<Text::BibTeX::BibSort> and
+in the C<BibSort> and C<BibFormat> classes, respectively, which are base
+classes of C<BibEntry>.  Thus, see L<Text::BibTeX::BibSort> and
 L<Text::BibTeX::BibFormat> for details on these two methods.
 
 =cut

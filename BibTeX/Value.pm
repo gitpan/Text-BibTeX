@@ -6,7 +6,7 @@
 #              values) and simple values (string/macro/number).
 # CREATED    : 1998/03/12, Greg Ward
 # MODIFIED   : 
-# VERSION    : $Id: Value.pm,v 1.2 1999/03/11 04:54:06 greg Exp $
+# VERSION    : $Id: Value.pm,v 1.3 1999/10/28 23:13:16 greg Exp $
 # COPYRIGHT  : Copyright (c) 1997-98 by Gregory P. Ward.  All rights
 #              reserved.
 # 
@@ -51,13 +51,13 @@ Text::BibTeX::Value - interfaces to BibTeX values and simple values
 
 =head1 DESCRIPTION
 
-The F<Text::BibTeX::Value> module provides two classes,
-F<Text::BibTeX::Value> and F<Text::BibTeX::SimpleValue>, which respectively
+The C<Text::BibTeX::Value> module provides two classes,
+C<Text::BibTeX::Value> and C<Text::BibTeX::SimpleValue>, which respectively
 give you access to BibTeX "compound values" and "simple values".  Recall
 that every field value in a BibTeX entry is the concatenation of one or
 more simple values, and that each of those simple values may be a literal
 string, a macro (abbreviation), or a number.  Normally with
-F<Text::BibTeX>, field values are "fully processed," so that you only have
+C<Text::BibTeX>, field values are "fully processed," so that you only have
 access to the string that results from expanding macros, converting numbers
 to strings, concatenating all sub-strings, and collapsing whitespace in the
 resulting string.
@@ -90,7 +90,7 @@ However, you can also request that the library preserve the input values
 in your entries, i.e. not lose the information about which values use
 macros, which values are composed of multiple simple values, and so on.
 There are two ways to make this request: per-file and per-entry.  For a
-per-file request, use the C<preserve_values> method on your F<File>
+per-file request, use the C<preserve_values> method on your C<File>
 object:
 
    $bibfile = new Text::BibTeX::File $filename;
@@ -103,9 +103,9 @@ object:
    $entry = new Text::BibTeX::Entry $bibfile;
    $entry->get ($field);        # returns a string
 
-If you're not using a F<File> object, or want to control things at a
+If you're not using a C<File> object, or want to control things at a
 finer scale, then you have to pass in the C<preserve_values> flag when
-invoking C<read>, C<parse>, or C<parse_s> on your F<Entry> objects:
+invoking C<read>, C<parse>, or C<parse_s> on your C<Entry> objects:
 
    # no File object, parsing from a string
    $entry = new Text::BibTeX::Entry;
@@ -120,10 +120,10 @@ invoking C<read>, C<parse>, or C<parse_s> on your F<Entry> objects:
    $entry->read ($bibfile, 1);  # now get will return Value objects
    
 A compound value, usually just called a value, is simply a list of
-simple values.  The F<Text::BibTeX::Value> class (hereinafter
-abbreviated as F<Value>) provides a simple interface to this list; you
+simple values.  The C<Text::BibTeX::Value> class (hereinafter
+abbreviated as C<Value>) provides a simple interface to this list; you
 can request the whole list, or an individual member of the list.  The
-F<SimpleValue> class gives you access to the innards of each simple
+C<SimpleValue> class gives you access to the innards of each simple
 value, which consist of the I<type> and the I<text>.  The type just
 tells you if this simple value is a string, macro, or number; it is
 represented using the Perl translation of the "node type" enumeration
@@ -137,14 +137,14 @@ follows:
    $entry->parse_s ($entry_text, 1);   # preserve_values is 1
 
 Then, using the C<get> method on C<$entry> would return not a string,
-but a F<Value> object.  We can get the list of all simple values using
+but a C<Value> object.  We can get the list of all simple values using
 the C<values> method, or a single value using C<value>:
 
    $author = $entry->get ('author');   # now a Text::BibTeX::Value object
    @all_values = $author->values;      # array of Text::BibTeX::SimpleValue
    $second = $author->value (1);       # same as $all_values[1]
 
-The simple values may be queried using the F<Text::BibTeX::SimpleValue>
+The simple values may be queried using the C<Text::BibTeX::SimpleValue>
 methods, C<type> and C<text>:
 
    $all_values[0]->type;               # returns BTAST_STRING
@@ -157,14 +157,14 @@ methods, C<type> and C<text>:
 
 =head1 METHODS
 
-Normally, you won't need to create F<Value> or F<SimpleValue>
+Normally, you won't need to create C<Value> or C<SimpleValue>
 objects---they'll be created for you when an entry is parsed, and
-returned to you by the C<get> method in the F<Entry> class.  Thus, the
-query methods (C<values> and C<value> for the F<Value> class, C<type>
-and C<text> for F<SimpleValue>) are probably all you need to worry
+returned to you by the C<get> method in the C<Entry> class.  Thus, the
+query methods (C<values> and C<value> for the C<Value> class, C<type>
+and C<text> for C<SimpleValue>) are probably all you need to worry
 about.  If you wish, though, you can create new values and simple values
 using the two classes' respective constructors.  You can also put
-newly-created F<Value> objects back into an existing F<Entry> object
+newly-created C<Value> objects back into an existing C<Entry> object
 using the C<set> entry method; it doesn't matter how the entry was
 parsed, this is acceptable anytime.
 
@@ -174,8 +174,8 @@ parsed, this is acceptable anytime.
 
 =item new (SVAL, ...)
 
-Creates a new F<Value> object from a list of simple values.  Each simple
-value, SVAL, may be either a F<SimpleValue> object or a reference to a
+Creates a new C<Value> object from a list of simple values.  Each simple
+value, SVAL, may be either a C<SimpleValue> object or a reference to a
 two-element list containing the type and text of the simple value.  For
 example, one way to recreate the C<author> field of the example entry in
 L<"DESCRIPTION"> would be:
@@ -186,8 +186,8 @@ L<"DESCRIPTION"> would be:
        $and_macro,
        [BTAST_STRING, 'Ned Flanders']);
 
-The resulting F<Value> object could then be installed into an entry
-using the C<set> method of the F<Entry> class.
+The resulting C<Value> object could then be installed into an entry
+using the C<set> method of the C<Entry> class.
 
 =cut
 
@@ -212,12 +212,12 @@ sub new
 
 =item values ()
 
-Returns the list of F<SimpleValue> objects that make up a F<Value> object.
+Returns the list of C<SimpleValue> objects that make up a C<Value> object.
 
 =item value (NUM)
 
-Returns the NUM'th F<SimpleValue> object from the list of F<SimpleValue>
-objects that make up a F<Value> object.  This is just like a Perl array
+Returns the NUM'th C<SimpleValue> object from the list of C<SimpleValue>
+objects that make up a C<Value> object.  This is just like a Perl array
 reference: NUM is zero-based, and negative numbers count from the end of
 the array.
 
@@ -247,16 +247,16 @@ import Text::BibTeX qw(:nodetypes);
 
 =item new (TYPE, TEXT)
 
-Creates a new F<SimpleValue> object with the specified TYPE and TEXT.
+Creates a new C<SimpleValue> object with the specified TYPE and TEXT.
 TYPE must be one of the allowed types for BibTeX simple values,
 i.e. C<BTAST_STRING>, C<BTAST_NUMBER>, or C<BTAST_MACRO>.  You'll
-probably want to import these constants from F<Text::BibTeX> using the
+probably want to import these constants from C<Text::BibTeX> using the
 C<nodetypes> export tag:
 
    use Text::BibTeX qw(:nodetypes);
 
 TEXT may be any string.  Note that if TYPE is C<BTAST_NUMBER> and TEXT
-is not a string of digits, the F<SimpleValue> object will be created
+is not a string of digits, the C<SimpleValue> object will be created
 anyways, but a warning will be issued.  No warning is issued about
 non-existent macros.
 

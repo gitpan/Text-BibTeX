@@ -7,7 +7,7 @@
 #              Text::BibTeX:Name class.)
 # CREATED    : Nov 1997, Greg Ward
 # MODIFIED   : 
-# VERSION    : $Id: NameFormat.pm,v 1.7 1999/03/11 04:54:06 greg Exp $
+# VERSION    : $Id: NameFormat.pm,v 1.10 1999/10/28 23:13:16 greg Exp $
 # COPYRIGHT  : Copyright (c) 1997-98 by Gregory P. Ward.  All rights
 #              reserved.
 # 
@@ -31,7 +31,9 @@ Text::BibTeX::NameFormat - format BibTeX-style author names
 
    $format = new Text::BibTeX::NameFormat ($parts, $abbrev_first);
 
-   $format->set_text ($part, $where => $text, ...);
+   $format->set_text ($part,
+                      $pre_part, $post_part,
+                      $pre_token, $post_token);
 
    $format->set_options ($part, $abbrev, $join_tokens, $join_part
 
@@ -40,21 +42,21 @@ Text::BibTeX::NameFormat - format BibTeX-style author names
 =head1 DESCRIPTION
 
 After splitting a name into its components parts (represented as a
-F<Text::BibTeX::Name> object), you often want to put it back together
+C<Text::BibTeX::Name> object), you often want to put it back together
 again as a single string formatted in a consistent way.
-F<Text::BibTeX::NameFormat> provides a very flexible way to do this,
+C<Text::BibTeX::NameFormat> provides a very flexible way to do this,
 generally in two stages: first, you create a "name format" which
 describes how to put the tokens and parts of any name back together, and
 then you apply the format to a particular name.
 
-The "name format" is encapsulated in a F<Text::BibTeX::NameFormat>
-object.  The C<new> constructor includes some clever behind-the-scenes
+The "name format" is encapsulated in a C<Text::BibTeX::NameFormat>
+object.  The constructor (C<new>) includes some clever behind-the-scenes
 trickery that means you can usually get away with calling it alone, and
-not need to do any customization of the format.  If you do need to
-customize the format, though, the C<set_text()> and C<set_options()>
+not need to do any customization of the format object.  If you do need
+to customize the format, though, the C<set_text()> and C<set_options()>
 methods provide that capability.
 
-Note that F<Text::BibTeX::NameFormat> is a fairly direct translation of
+Note that C<Text::BibTeX::NameFormat> is a fairly direct translation of
 the name-formatting C interface in the B<btparse> library.  This manual
 page is meant to provide enough information to use the Perl class, but
 for more details and examples, consult L<bt_format_names>.
@@ -67,10 +69,10 @@ see references to C<bt_namepart> and C<bt_joinmethod>.  The former lists
 the four "parts" of a BibTeX name: first, von, last, and jr; its values
 (in both C and Perl) are C<BTN_FIRST>, C<BTN_VON>, C<BTN_LAST>, and
 C<BTN_JR>.  The latter lists the ways in which C<bt_format_name()> (the
-C function that corresponds to F<Text::BibTeX::NameFormat>'s C<apply>
+C function that corresponds to C<Text::BibTeX::NameFormat>'s C<apply>
 method) can join adjacent tokens together: C<BTJ_MAYTIE>, C<BTJ_SPACE>,
 C<BTJ_FORCETIE>, and C<BTJ_NOTHING>.  Both sets of values may be
-imported from the F<Text::BibTeX> module, using the import tags
+imported from the C<Text::BibTeX> module, using the import tags
 C<nameparts> and C<joinmethods>.  For instance:
 
    use Text::BibTeX qw(:nameparts :joinmethods);
@@ -164,7 +166,7 @@ sub set_text
    # set_text is called, the old references are overridden (ref count
    # drops), and when the NameFormat object is destroyed, we destroy
    # them (ref count drops).  Other than that, there will always be some
-   # refernce to the strings passed in to set_text.
+   # reference to the strings passed in to set_text.
 
    # XXX what if some of these are undef?
 
@@ -218,9 +220,9 @@ sub set_options
 
 Once a name format has been created and customized to your heart's
 content, you can use it to format any number of names using the C<apply>
-method.  NAME must be a F<Text::BibTeX::Name> object (i.e., a pre-split
+method.  NAME must be a C<Text::BibTeX::Name> object (i.e., a pre-split
 name); C<apply> returns a string containing the parts of the name
-formatted according to the F<Text::BibTeX::NameFormat> structure it is
+formatted according to the C<Text::BibTeX::NameFormat> structure it is
 called on.
 
 =cut
@@ -244,8 +246,8 @@ Although the process of splitting and formatting names may sound
 complicated and convoluted from reading the above (along with
 L<Text::BibTeX::Name>), it's actually quite simple.  There are really
 only three steps to worry about: split the name (create a
-F<Text::BibTeX::Name> object), create and customize the format
-(F<Text::BibTeX::NameFormat> object), and apply the format to the name.
+C<Text::BibTeX::Name> object), create and customize the format
+(C<Text::BibTeX::NameFormat> object), and apply the format to the name.
 
 The first step is covered in L<Text::BibTeX::Name>; here's a brief
 example:
@@ -254,7 +256,7 @@ example:
    $name = new Text::BibTeX::Name $orig_name;
 
 The various parts of the name can now be accessed through
-F<Text::BibTeX::Name> methods; for instance C<$name-E<gt>part('von')>
+C<Text::BibTeX::Name> methods; for instance C<$name-E<gt>part('von')>
 returns the list C<("de","la")>.
 
 Creating the name format is equally simple:
@@ -270,15 +272,15 @@ For instance, we can perform no further customization on this format,
 and apply it immediately to C<$name>.  There are in fact two ways to do
 this, depending on whether you prefer to think of it in terms of
 "Applying the format to a name" or "formatting a name".  The first is
-done with F<Text::BibTeX::NameFormat>'s C<apply> method:
+done with C<Text::BibTeX::NameFormat>'s C<apply> method:
 
    $formatted_name = $format->apply ($name);
 
-while the second uses F<Text::BibTeX::Name>'s C<format> method:
+while the second uses C<Text::BibTeX::Name>'s C<format> method:
 
    $formatted_name = $name->format ($format);
 
-which is implemented using of C<Text::BibTeX::NameFormat::apply>.  In
+which is just a wrapper around C<Text::BibTeX::NameFormat::apply>.  In
 either case, the result with the example name and format shown is
 
    de~la Vall{\'e}e~Poussin, C.~L. X.~J.
