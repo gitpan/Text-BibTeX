@@ -3,7 +3,7 @@ use IO::File;
 BEGIN { require "t/common.pl"; }
 
 my $loaded;
-BEGIN { $| = 1; print "1..10\n"; }
+BEGIN { $| = 1; print "1..12\n"; }
 END {print "not ok 1\n" unless $loaded;}
 use Text::BibTeX;
 $loaded = 1;
@@ -19,27 +19,35 @@ my ($new_text, $new_entry);
 
 $text = <<'TEXT';
 @article{homer97,
-  author = {Homer Simpson} # " and " # {Ned Flanders},
+  author = "H{\"o}mer Simpson" # { \"und } # "Ned Flanders",
   title = {Territorial Imperatives in Modern Suburbia},
   journal = {Journal of Suburban Studies},
   year = 1997
 }
 TEXT
 
+my $quote_warning = 'found \" (at brace-depth zero )?in string';
+
 test ($entry = new Text::BibTeX::Entry $text);
 test ($entry->parse_ok);
-test (! warnings);
+@warnings = warnings;
+test (@warnings == 1 &&
+      $warnings[0] =~ /$quote_warning/);
 
 $new_text = $entry->print_s;
 
 test ($new_text =~ /^\@article\{homer97,$/m &&
-      $new_text =~ /^\s*author\s*=\s*[\{\"]Homer Simpson and Ned Flanders[\}\"],$/m &&
-      $new_text =~ /^\s*title\s*=\s*[\{\"]Territorial[^\}\"]*Suburbia[\}\"],$/m &&
-      $new_text =~ /^\s*journal\s*=\s*[\{\"]Journal[^\}]*Studies[\}\"],$/m &&
-      $new_text =~ /^\s*year\s*=\s*[\{\"]1997[\}\"],?$/m);
+      $new_text =~ /^\s*author\s*=\s*{H{\\"o}mer Simpson \\"und Ned Flanders},$/m &&
+      $new_text =~ /^\s*title\s*=\s*[{"]Territorial[^}"]*Suburbia[}"],$/m &&
+      $new_text =~ /^\s*journal\s*=\s*[{"]Journal[^\}]*Studies[}"],$/m &&
+      $new_text =~ /^\s*year\s*=\s*[{"]1997[}"],?$/m);
 
 $new_entry = new Text::BibTeX::Entry $new_text;
 
+test ($entry->parse_ok);
+@warnings = warnings;
+test (@warnings == 1 &&
+      $warnings[0] =~ /$quote_warning/);
 test ($entry->type eq $new_entry->type);
 test ($entry->key eq $new_entry->key);
 test (slist_equal (scalar $entry->fieldlist, scalar $new_entry->fieldlist));

@@ -6,7 +6,7 @@
 # DESCRIPTION: Provides an object-oriented interface to BibTeX entries.
 # CREATED    : March 1997, Greg Ward
 # MODIFIED   : 
-# VERSION    : $Id: Entry.pm,v 1.18 1999/10/28 23:13:16 greg Exp $
+# VERSION    : $Id: Entry.pm,v 1.19 1999/11/26 01:20:59 greg Exp $
 # COPYRIGHT  : Copyright (c) 1997-98 by Gregory P. Ward.  All rights
 #              reserved.
 # 
@@ -755,23 +755,20 @@ sub print_s
 
       if (! ref $value)                 # just a string
       {
-         return qq["$value"];
+         return "{$value}";
       }
       else                              # a Text::BibTeX::Value object
       {
          confess "value is a reference, but not to Text::BibTeX::Value object"
             unless isa ($value, 'Text::BibTeX::Value');
          my @values = $value->values;
-         @values = map
-         { 
-            $_->type == &BTAST_STRING 
-               ? '"' . $_->text . '"'
-               : $_->text;
-         } @values;
+         foreach (@values)
+         {
+            $_ = $_->type == &BTAST_STRING ? '{' . $_->text . '}' : $_->text;
+         }
          return join (' # ', @values);            
       }
    }
-
 
    carp "entry type undefined" unless defined $self->{'type'};
 

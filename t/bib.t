@@ -56,6 +56,9 @@ my $structure = $file->structure;
 my $entry1 = new Text::BibTeX::BibEntry $file;
 my $entry2 = new Text::BibTeX::BibEntry $file;
 
+$file->close;
+unlink ($fn) || warn "couldn't delete temporary file $fn: $!\n";
+
 # The default options of BibStructure are:
 #   namestyle => 'full'
 #   nameorder => 'first'

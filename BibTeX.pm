@@ -4,7 +4,7 @@
 #              needed for parsing BibTeX files (both Perl and C code).
 # CREATED    : February 1997, Greg Ward
 # MODIFIED   : 
-# VERSION    : $Id: BibTeX.pm,v 1.24 1999/10/28 23:34:48 greg Exp $
+# VERSION    : $Id: BibTeX.pm,v 1.25 1999/11/26 00:50:36 greg Exp $
 # COPYRIGHT  : Copyright (c) 1997-98 by Gregory P. Ward.  All rights reserved.
 #
 #              This file is part of the Text::BibTeX library.  This
@@ -19,7 +19,7 @@ require 5.004;                          # needed for Text::BibTeX::Entry
 use strict;
 use UNIVERSAL qw(isa can);              # for 'check_class' subroutine
 use Carp;
-use vars qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS $AUTOLOAD);
+use vars qw(@ISA @EXPORT @EXPORT_OK %EXPORT_TAGS $AUTOLOAD);
 
 require Exporter;
 require DynaLoader;
@@ -44,7 +44,6 @@ require DynaLoader;
               @{$EXPORT_TAGS{'joinmethods'}},
               'check_class', 'display_list');
 @EXPORT = @{$EXPORT_TAGS{'metatypes'}};
-$VERSION = '0.31';
 
 =head1 NAME
 
@@ -226,7 +225,7 @@ require Text::BibTeX::Entry;
 
 # Load the XSUB code that's needed to parse BibTeX entries and 
 # the strings in them
-bootstrap Text::BibTeX $VERSION;
+bootstrap Text::BibTeX;
 
 # For the curious: I don't put the call to &initialize into a BEGIN block,
 # because then it would come before the bootstrap above, and &initialize is

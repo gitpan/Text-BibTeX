@@ -1,7 +1,7 @@
                                Text::BibTeX
-                               version 0.31
+                               version 0.32
                        Greg Ward (gward@python.net)
-                            28 October, 1999
+                             28 November, 1999
 
 INTRODUCTION
 ------------
@@ -49,28 +49,34 @@ Text::BibTeX requires Perl 5.004 or later and an ANSI-compliant C
 compiler.
 
 You must also have the btparse distribution, the C library underlying
-Text::BibTeX.  It is enough to put btparse-x.y.tar.gz (where x.y is the
-btparse release number -- it should be the same as for Text::BibTeX) in
-the same directory where you unpack the Text::BibTeX archive; or you can
-put the btparse tar file right into the Text::BibTeX distribution
-directory.  If you have already unpacked btparse, the directory that it
-unpacked to should be found just fine.
+Text::BibTeX.  If you didn't download btparse with Text::BibTeX, don't
+sweat it; the Makefile.PL is smart enough to go out and find it for you
+(using your preferred CPAN mirror if you have set one up,
+http://www.cpan.org/ otherwise).  If you did download btparse, just put the
+.tar.gz file in the parent of the Text::BibTeX, ie. make it a sibling of
+Text-BibTex-0.32.  Text::BibTeX's Makefile.PL will unpack and configure it
+for you.
 
 
 BUILDING
 --------
 
-Start by generating the Makefile and other preparatory steps (most
-notably, finding and possibly unpacking the btparse distribution):
+Start by generating the Makefile and other preparatory steps (most notably,
+preparing the btparse package for building).
 
    perl Makefile.PL
 
+This goes to some lengths to ensure that btparse, the companion C library,
+is found and available.  It will configure btparse for you, so you
+shouldn't have to do anything in the 'btparse' directory unless things go
+wrong there.
+
 Note that if Perl was built with a non-ANSI C compiler, you will need to
-specify an ANSI compiler when running Makefile.PL.  For instance, if
-you're running SunOS and Perl was built with 'cc' (non-ANSI), you will
-need to build Text::BibTeX (and btparse as well, for that matter) with
-an ANSI compiler such as 'gcc' or Sun's 'acc'.  This can be done for
-Text::BibTeX as follows:
+specify an ANSI compiler when running Makefile.PL.  For instance, if you're
+running SunOS and Perl was built with 'cc' (non-ANSI), you will need to
+build Text::BibTeX (and btparse as well, for that matter) with an ANSI
+compiler such as 'gcc' or Sun's 'acc'.  This can be done for Text::BibTeX
+as follows:
 
    perl Makefile.PL CC=gcc      # or acc, or whatever works on your system
 
@@ -79,35 +85,29 @@ thing to do is to build Perl with an ANSI-compliant compiler.  This will
 probably save you trouble with other extensions that require an ANSI C
 compiler.
 
-Now, configure btparse (the C library that is the back-end to
-Text::BibTeX):
+Now, build everything:
+
+   make
+
+This takes care of building btparse as well as the Text::BibTeX modules, so
+again you don't have to go grubbing around in the btparse directory unless
+things go wrong.
+
+Optionally, you can test and install btparse:
 
    cd btparse
-   ./configure
-
-(Again, you might have to jump through some hoops -- although in a
-different way -- to build btparse with an appropriate compiler.  See the
-btparse README for more information.  The only requirement is that you
-build both btparse and Text::BibTeX with an ANSI-compliant compiler, but
-I would recommend that you use the same compiler for both.  If possible
--- i.e., if you haven't already built Perl with a non-ANSI compiler -- I
-would also recommend using the same compiler to build Perl itself.)
-
-Next, build and test the C library (still in the 'btparse' directory):
-
-   make lib
-   make test
-
-Return to the main Text::BibTeX distribution directory, and continue as
-usual:
-
-   cd ..
-   make
    make test
    make install
+   cd ..
 
-Note that "make install" only installs the Perl modules; if you wish to
-install the C library, see the btparse README file.
+(You do not have to install btparse to use Text::BibTeX; that's only needed
+if you plan to do C programming using btparse.  See btparse/README for
+details.)
+
+Finally, test and install the Text::BibTeX Perl modules:
+
+   make test
+   make install
 
 Please let me know if anything goes wrong with building either btparse
 or Text::BibTeX.
@@ -157,4 +157,4 @@ CREDITS
 
 See the btparse README file.
 
-$Id: README,v 1.6 1999/10/28 23:24:50 greg Exp $
+$Id: README,v 1.7 1999/11/29 02:57:57 greg Exp $
