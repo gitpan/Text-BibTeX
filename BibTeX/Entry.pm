@@ -6,8 +6,8 @@
 # DESCRIPTION: Provides an object-oriented interface to BibTeX entries.
 # CREATED    : March 1997, Greg Ward
 # MODIFIED   : 
-# VERSION    : $Id: Entry.pm,v 1.19 1999/11/26 01:20:59 greg Exp $
-# COPYRIGHT  : Copyright (c) 1997-98 by Gregory P. Ward.  All rights
+# VERSION    : $Id: Entry.pm,v 1.23 2000/03/23 02:08:40 greg Exp $
+# COPYRIGHT  : Copyright (c) 1997-2000 by Gregory P. Ward.  All rights
 #              reserved.
 # 
 #              This file is part of the Text::BibTeX library.  This
@@ -21,7 +21,7 @@ require 5.004;                          # for isa, and delete on a slice
 use strict;
 use UNIVERSAL 'isa';
 use Carp;
-import Text::BibTeX qw(:metatypes :nodetypes);
+use Text::BibTeX qw(:metatypes :nodetypes);
 
 =head1 NAME
 
@@ -173,12 +173,13 @@ sub new
    my ($class, @source) = @_;
 
    $class = ref ($class) || $class;
-   my $self = {file   => undef,
-               type   => undef,
-               key    => undef,
-               status => undef,
-               'fields' => [],
-               'values' => {}};
+   my $self = {'file'     => undef,
+               'type'     => undef,
+               'key'      => undef,
+               'status'   => undef,
+               'metatype' => undef,
+               'fields'   => [],
+               'values'   => {}};
 
    bless $self, $class;
    if (@source)
@@ -593,6 +594,12 @@ sub names
 
 Sets the entry's type.
 
+=item set_metatype (METATYPE)
+
+Sets the entry's metatype (must be one of the four constants
+C<BTE_COMMENT>, C<BTE_PREAMBLE>, C<BTE_MACRODEF>, and C<BTE_REGULAR>, which
+are all optionally exported from C<Text::BibTeX>).
+
 =item set_key (KEY)
 
 Sets the entry's key.
@@ -638,6 +645,13 @@ sub set_type
 
    $self->{'type'} = $type;
 }
+
+sub set_metatype
+{
+   my ($self, $metatype) = @_;
+
+   $self->{'metatype'} = $metatype;
+}   
 
 sub set_key
 {
@@ -771,6 +785,7 @@ sub print_s
    }
 
    carp "entry type undefined" unless defined $self->{'type'};
+   carp "entry metatype undefined" unless defined $self->{'metatype'};
 
    # Regular and macro-def entries have to be treated differently when
    # printing the first line, because the former have keys and the latter
@@ -945,7 +960,7 @@ Greg Ward <gward@python.net>
 
 =head1 COPYRIGHT
 
-Copyright (c) 1997-98 by Gregory P. Ward.  All rights reserved.  This file
+Copyright (c) 1997-2000 by Gregory P. Ward.  All rights reserved.  This file
 is part of the Text::BibTeX library.  This library is free software; you
 may redistribute it and/or modify it under the same terms as Perl itself.
 

@@ -1,7 +1,7 @@
                                Text::BibTeX
-                               version 0.32
+                               version 0.33
                        Greg Ward (gward@python.net)
-                             28 November, 1999
+                              22 March, 2000
 
 INTRODUCTION
 ------------
@@ -14,10 +14,10 @@ Text::BibTeX (see below).
 Text::BibTeX gives you access to the data at many different levels: you
 may work with BibTeX entries as simple "field -> string" mappings, or
 get at the original form of the data as a list of simple values
-(strings, macros, or numbers) pasted together.  You can impose no
-restrictions on the allowed/expected entry types or fields, or you can
-use the structure defined by BibTeX 0.99's standard style files, or you
-can invent your own.
+(strings, macros, or numbers) pasted together.  You can choose not to
+impose nany restrictions on the allowed/expected entry types or fields,
+or you can use the structure defined by BibTeX 0.99's standard style
+files, or you can invent your own.
 
 The library is copiously documented.  After installing the module, see
 the Text::BibTeX man page for a comprehensive introduction to the
@@ -26,8 +26,7 @@ such as splitting and formatting names, defining or imposing database
 structures, getting access to unprocessed field values, and other nifty
 features, then you can probably get away with just reading the
 Text::BibTeX::Entry man page.  Comments/criticism of the documentation
-are welcome -- much of it is rather raw braindump, so may need a bit of
-massaging.
+are welcome.
 
 In addition to the man pages embedded in each module (and available
 after installation), I have written a technical report describing btOOL,
@@ -52,10 +51,9 @@ You must also have the btparse distribution, the C library underlying
 Text::BibTeX.  If you didn't download btparse with Text::BibTeX, don't
 sweat it; the Makefile.PL is smart enough to go out and find it for you
 (using your preferred CPAN mirror if you have set one up,
-http://www.cpan.org/ otherwise).  If you did download btparse, just put the
-.tar.gz file in the parent of the Text::BibTeX, ie. make it a sibling of
-Text-BibTex-0.32.  Text::BibTeX's Makefile.PL will unpack and configure it
-for you.
+http://www.cpan.org/ otherwise).  If you did download btparse, just put
+it in the same directory as the Text::BibTeX tarball.  Text::BibTeX's
+Makefile.PL will unpack and configure it for you.
 
 
 BUILDING
@@ -109,6 +107,11 @@ Finally, test and install the Text::BibTeX Perl modules:
    make test
    make install
 
+Note that you will need to be root on most systems in order to install
+either btparse or Text::BibTeX.  Consult the 'perlmodinstall' man page (as
+of Perl 5.005 or later) for more information on building and installing
+Perl module distributions.
+
 Please let me know if anything goes wrong with building either btparse
 or Text::BibTeX.
 
@@ -131,13 +134,6 @@ summary:
     the Perl I/O API is apparently not yet up to the task of replacing
     stdio in third-party C libraries
 
-  * there are some weird subtle bugs that I have been unable to isolate;
-    if you see messages like "Subroutine format redefined at
-    /usr/lib/perl5/site_perl/Text/BibTeX/Name.pm ...", please get
-    in touch with me -- you're not the first to have this problem.
-    However, I have been unable to reproduce the bug, much less
-    isolate and fix it -- so if you can reproduce it, I need your help!
-
 
 AVAILABILITY
 ------------
@@ -155,6 +151,18 @@ other goodies I can come up with over time.
 CREDITS
 -------
 
-See the btparse README file.
+For spotting bugs and sometimes even providing patches:
 
-$Id: README,v 1.7 1999/11/29 02:57:57 greg Exp $
+    Dirk Vleugels <vleugels@do.isst.fhg.de>
+    Kjetil Kjernsmo <kjetil.kjernsmo@astro.uio.no>
+    Andrew Cassin <acassin@cs.mu.oz.au>
+    Thomas Kamphusmann <thomas@delphi.ping.de>
+    Horst Tellioglu <telliogl@h2hobel.phl.univie.ac.at>
+    Nikolay Pelov <Nikolay.Pelov@cs.kuleuven.ac.be>
+
+...and probably a few others.  Please send me email if you feel you
+belong on this list and I forgot to include you.
+
+Also, see the btparse README file for contributors to the C library.
+
+$Id: README,v 1.9 2000/03/23 02:00:15 greg Exp $

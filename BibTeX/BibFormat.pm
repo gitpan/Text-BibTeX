@@ -7,7 +7,7 @@
 #              bibliographic entries.
 # CREATED    : 1997/11/24, GPW
 # MODIFIED   : 
-# VERSION    : $Id: BibFormat.pm,v 1.8 1999/10/28 23:13:16 greg Exp $
+# VERSION    : $Id: BibFormat.pm,v 1.11 2000/03/23 02:08:40 greg Exp $
 # COPYRIGHT  : Copyright (c) 1997 by Gregory P. Ward.  All rights reserved.
 # 
 #              This file is part of the Text::BibTeX library.  This is free
@@ -18,13 +18,16 @@
 package Text::BibTeX::BibFormat;
 
 use Carp;
-require Text::BibTeX::Name;
-require Text::BibTeX::NameFormat;
-
 use strict;
 use vars qw(@ISA);
+
+use Text::BibTeX::Name;
+use Text::BibTeX::NameFormat;
+use Text::BibTeX::Structure;
+
 @ISA = qw(Text::BibTeX::StructuredEntry);
-import Text::BibTeX qw(:subs display_list :nameparts :joinmethods);
+
+use Text::BibTeX qw(:subs display_list :nameparts :joinmethods);
 
 =head1 NAME
 
@@ -491,6 +494,6 @@ Greg Ward <gward@python.net>
 
 =head1 COPYRIGHT
 
-Copyright (c) 1997-98 by Gregory P. Ward.  All rights reserved.  This file
+Copyright (c) 1997-2000 by Gregory P. Ward.  All rights reserved.  This file
 is part of the Text::BibTeX library.  This library is free software; you
 may redistribute it and/or modify it under the same terms as Perl itself.

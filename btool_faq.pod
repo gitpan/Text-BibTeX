@@ -116,6 +116,6 @@ Greg Ward <gward@python.net>
 
 =head1 COPYRIGHT
 
-Copyright (c) 1997-98 by Gregory P. Ward.  All rights reserved.  This file
+Copyright (c) 1997-2000 by Gregory P. Ward.  All rights reserved.  This file
 is part of the Text::BibTeX library.  This library is free software; you
 may redistribute it and/or modify it under the same terms as Perl itself.

@@ -65,7 +65,7 @@ test (! warnings);
 $entry->set_fieldlist ([qw(author title journal year)]);
 @warnings = warnings;
 test (@warnings == 1 && 
-      $warnings[0] =~ /Implicitly adding undefined field \"journal\"/);
+      $warnings[0] =~ /implicitly adding undefined field \"journal\"/i);
 
 @fieldlist = $entry->fieldlist;
 test ($entry->exists ('journal') &&

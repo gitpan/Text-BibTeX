@@ -1,10 +1,14 @@
 require 5.004;
+use strict;
 use ExtUtils::MakeMaker;
 use File::Basename;
 
-# $Id: Makefile.PL,v 1.12 1999/11/29 02:31:24 greg Exp $
+# $Id: Makefile.PL,v 1.15 2000/03/23 03:31:22 greg Exp $
 
-my @btparse_versions = qw(0.30 0.31 0.32);
+# NB. btparse 0.33 hasn't actually been released as I write this
+# (ie. as Text::BibTeX 0.33 is going out the door), but I anticipate
+# that it will be -- so this list is ready for it!
+my @btparse_versions = qw(0.30 0.31 0.32 0.33);
 
 
 # Searches the specified @$search_dirs for either release directories or
@@ -17,7 +21,7 @@ sub find_btparse
 
    # We'll look for things in reverse order by version, so be sure
    # we have a version list sorted that way.
-   @versions = sort { $b <=> $a } @$versions;
+   my @versions = sort { $b <=> $a } @$versions;
 
    sub latest_file
    {
@@ -50,7 +54,7 @@ sub find_btparse
    my $wanted_dirs = "btparse-$versions[0]";
    $wanted_dirs .= " or $extra_versions" if $extra_versions;
 
-   my $search_dirs = join (" ", @$search_dirs);
+   $search_dirs = join (" ", @$search_dirs);
 
    # If no release directories were found, try looking for archive files.
 
@@ -66,7 +70,7 @@ or archive file.  I'll try to download it from CPAN now.
 
 MSG
 
-         return download_btparse ($versions[0]);
+         return download_btparse (\@versions);
       }
 
       # Multiple archive files found -- warn and pick the latest one
@@ -108,9 +112,115 @@ WARN
 }  # find_btparse()
 
 
+sub download_http
+{
+   my ($trials) = @_;
+
+   eval { require LWP::Simple; require HTTP::Status; };
+   if ($@)
+   {
+      die <<MSG . "  " . join ("  \n", map ($_->[1], @$trials)) . "\n";
+I couldn't load the LWP::Simple and HTTP::Status modules, so I can't
+download btparse.  I would have tried to download it from:
+MSG
+   }
+
+   my ($trial, $last_error, @urls_tried);
+   foreach $trial (@$trials)
+   {
+      my ($filename, $url, $save_to) = @$trial;
+
+      print "Trying to download btparse from $url...\n";
+      my $response = LWP::Simple::getstore ($url, $save_to);
+      if (LWP::Simple::is_success ($response))
+      {
+         return $save_to;
+      }
+      else
+      {
+         $last_error = sprintf ("%d: %s",
+                                $response,
+                                HTTP::Status::status_message ($response));
+         print "warning: download failed ($last_error), trying another one\n";
+         push (@urls_tried, $url);
+      }
+   }
+   
+   # only get here if all failed
+   my $msg = "I tried to download btparse from the following URLs:\n  ";
+   $msg .= join ("  \n", @urls_tried);
+   $msg .= <<MSG;
+but they all failed.  The last HTTP response was:
+$last_error
+MSG
+   die $msg;
+}
+
+
+sub download_ftp
+{
+   my ($trials) = @_;
+
+   my ($trial, $last_error, @urls_tried);
+   foreach $trial (@$trials)
+   {
+      my ($filename, $url, $save_to) = @$trial;
+      my ($host, $dir, $check_filename) =
+         ($url =~ m|^ftp://([^/]+)(/.*)/([^/]+)|);
+      die "this should not happen: '$filename' ne '$check_filename'\n"
+         if $filename ne $check_filename;
+
+      eval { require Net::FTP; };
+      if ($@)
+      {
+         die <<MSG . "  " . join ("  \n", map ($_->[1], @$trials)) . "\n";
+I couldn't load the Net::FTP module, so I can't download
+btparse.  I would have tried to download it from:
+MSG
+      }
+
+      eval
+      {
+         print "Connecting to $host...\n";
+         my $ftp = Net::FTP->new ($host) or die "$@\n";
+         $ftp->login or die "login failed\n";
+         $ftp->binary or die "couldn't set binary mode\n";
+         $ftp->cwd ($dir) or die "couldn't chdir to $dir\n";
+         #$ftp->cwd ($cpan_dir) or die "couldn't chdir to $cpan_dir\n";
+
+         print "Downloading $dir/$filename...\n";
+         $ftp->get ($filename, $save_to)
+            or die "download failed (file not there?)\n";
+      };
+
+      if ($@)                           # oh dear, we blew up
+      {
+         $last_error = $@;
+         chop $last_error;
+         print "warning: download failed ($last_error), trying another one\n";
+         push (@urls_tried, $url);
+      }
+      else                              # success!
+      {
+         return $save_to;
+      }
+   }
+
+   # if we get here, all attempts failed
+
+   my $msg = "I tried to download btparse from the following URLs:\n  ";
+   $msg .= join ("  \n", @urls_tried);
+   $msg .= <<MSG;
+but they all failed.  The last error message was:
+$last_error
+MSG
+   die $msg;
+}  # download_ftp ()
+ 
+
 sub download_btparse
 {
-   my ($version) = @_;
+   my ($versions) = @_;
 
    # Try to find a preferred CPAN mirror from the CPAN.pm config.
    my $cpan_url;
@@ -127,95 +237,55 @@ sub download_btparse
       print "Using your preferred CPAN mirror at $cpan_url\n";
    }
 
+   # build list of [base-filename, whole-url, where-to-save-it] lists
    my $cpan_dir = 'modules/by-authors/id/GWARD/';
-   my $archive_file = "btparse-${version}.tar.gz";
-   my $whole_url = $cpan_url . $cpan_dir . $archive_file;
-   my $saved_archive = "../$archive_file";
+   my @download_trials = ();
+   my ($ver, $archive_file);
+   foreach $ver (@$versions)
+   {
+      $archive_file = "btparse-${ver}.tar.gz";
+      push (@download_trials, [$archive_file,
+                            $cpan_url . $cpan_dir . $archive_file,
+                            "../$archive_file"]);
+   }
 
-   my $final = <<MSG;
+   my $saved_archive;
+   eval
+   {
+      if ($cpan_url =~ /^http:/)
+      {
+         $saved_archive = download_http (\@download_trials);
+      }
+      elsif ($cpan_url =~ m|^ftp://|)
+      {
+         $saved_archive = download_ftp (\@download_trials);
+      }
+      else
+      {
+         die <<MSG;
+I can't download btparse, because I don't know how to deal with the URL
+$cpan_url
+MSG
+      }
+   };
+
+   if ($@)
+   {
+      die $@ . <<MSG if $@;
 
 You\'ll have to download it yourself and put it in the current
 directory or its parent.
 MSG
+   }
 
-   # Use LWP::Simple for HTTP URLs
-   if ($cpan_url =~ /^http:/)
+   if ($saved_archive)
    {
-      eval { require LWP::Simple; require HTTP::Status; };
-      if ($@)
-      {
-         die <<MSG;
-I couldn't load the LWP::Simple and HTTP::Status modules, so I can't
-download btparse from $whole_url
-$final
-MSG
-      }
-     
-      print "Downloading btparse from $whole_url...\n";
-      my $response = LWP::Simple::getstore ($whole_url, $saved_archive);
-      unless (LWP::Simple::is_success ($response))
-      {
-         my $message = HTTP::Status::status_message ($response);
-         die <<MSG;
-I tried to download btparse from $whole_url,
-but the download failed.  (The HTTP response was $response: $message.)
-$final
-MSG
-      }
-
       print "Successfully downloaded btparse to $saved_archive\n";
       return $saved_archive;
    }
 
-   elsif ($cpan_url =~ m|^ftp://([^/]+)(/.*)|)
-   {
-      my ($host, $dir) = ($1, $2);
+   die "this should not happen: can't get here!\n";
 
-      eval { require Net::FTP; };
-      if ($@)
-      {
-         die <<MSG;
-I couldn't load the Net::FTP module, so I can't download
-btparse from $whole_url
-$final
-MSG
-      }
-
-      eval
-      {
-         print "Connecting to $cpan_url...\n";
-         my $ftp = Net::FTP->new ($host) or die "$@\n";
-         $ftp->login or die "login failed\n";
-         $ftp->binary or die "couldn't set binary mode\n";
-         $ftp->cwd ($dir) or die "couldn't chdir to $dir\n";
-         $ftp->cwd ($cpan_dir) or die "couldn't chdir to $cpan_dir\n";
-
-         print "Downloading $whole_url...\n";
-         $ftp->get ($archive_file, $saved_archive)
-            or die "download failed (file not there?)\n";
-      };
-      if ($@)
-      {
-         die <<MSG;
-I was unable to download btparse from
-$whole_url
-The error message I got was: $@$final
-MSG
-      }
-
-      print "Successfully downloaded btparse to $saved_archive\n";
-      return $saved_archive;
-   }
-
-   else
-   {
-      die <<MSG;
-I can't download btparse, because I don't know how to deal with the URL
-$whole_url
-$final
-MSG
-   }
-            
 }  # download_btparse()
 
 
@@ -280,7 +350,7 @@ sub configure_btparse
            -M "config.cache" < -M "configure")
    {
       print "btparse distribution in '$dir' is not configured; doing so now:\n";
-      @cmd = ('sh', './configure');
+      my @cmd = ('sh', './configure');
       print "@cmd\n";
       system @cmd;
       die "configure failed\n" unless $? == 0;
@@ -307,7 +377,7 @@ my @support_files = ('btxs_support$(OBJ_EXT)');
 # the contents of the Makefile that is written.
 WriteMakefile (
     'NAME'	=> 'Text::BibTeX',
-    'VERSION'   => '0.32',
+    'VERSION'   => '0.33',
     'XSPROTOARG' => '-prototypes',
     'LIBS'	=> [''],   # e.g., '-lm' 
     'DEFINE'	=> '',     # e.g., '-DHAVE_SOMETHING' 

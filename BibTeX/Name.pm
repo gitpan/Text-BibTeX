@@ -7,8 +7,8 @@
 #              them is done by the Text::BibTeX::NameFormat class).
 # CREATED    : Nov 1997, Greg Ward
 # MODIFIED   : 
-# VERSION    : $Id: Name.pm,v 1.8 1999/10/28 23:13:16 greg Exp $
-# COPYRIGHT  : Copyright (c) 1997-98 by Gregory P. Ward.  All rights
+# VERSION    : $Id: Name.pm,v 1.10 2000/03/23 02:08:40 greg Exp $
+# COPYRIGHT  : Copyright (c) 1997-2000 by Gregory P. Ward.  All rights
 #              reserved.
 # 
 #              This file is part of the Text::BibTeX library.  This
@@ -379,6 +379,6 @@ Greg Ward <gward@python.net>
 
 =head1 COPYRIGHT
 
-Copyright (c) 1997-98 by Gregory P. Ward.  All rights reserved.  This file
+Copyright (c) 1997-2000 by Gregory P. Ward.  All rights reserved.  This file
 is part of the Text::BibTeX library.  This library is free software; you
 may redistribute it and/or modify it under the same terms as Perl itself.

@@ -4,8 +4,8 @@
 #              needed for parsing BibTeX files (both Perl and C code).
 # CREATED    : February 1997, Greg Ward
 # MODIFIED   : 
-# VERSION    : $Id: BibTeX.pm,v 1.25 1999/11/26 00:50:36 greg Exp $
-# COPYRIGHT  : Copyright (c) 1997-98 by Gregory P. Ward.  All rights reserved.
+# VERSION    : $Id: BibTeX.pm,v 1.27 2000/03/23 02:08:40 greg Exp $
+# COPYRIGHT  : Copyright (c) 1997-2000 by Gregory P. Ward.  All rights reserved.
 #
 #              This file is part of the Text::BibTeX library.  This
 #              library is free software; you may redistribute it and/or
@@ -723,7 +723,7 @@ Greg Ward <gward@python.net>
 
 =head1 COPYRIGHT
 
-Copyright (c) 1997-98 by Gregory P. Ward.  All rights reserved.  This file
+Copyright (c) 1997-2000 by Gregory P. Ward.  All rights reserved.  This file
 is part of the Text::BibTeX library.  This library is free software; you
 may redistribute it and/or modify it under the same terms as Perl itself.
 

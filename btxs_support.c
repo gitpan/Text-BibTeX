@@ -4,8 +4,8 @@
 @GLOBALS    : 
 @CREATED    : 1997/11/16, Greg Ward (from code in BibTeX.xs)
 @MODIFIED   : 
-@VERSION    : $Id: btxs_support.c,v 1.5 1998/03/13 16:26:16 greg Exp $
-@COPYRIGHT  : Copyright (c) 1996-97 by Gregory P. Ward.  All rights reserved.
+@VERSION    : $Id: btxs_support.c,v 1.7 2000/03/23 02:08:39 greg Exp $
+@COPYRIGHT  : Copyright (c) 1997-2000 by Gregory P. Ward.  All rights reserved.
 -------------------------------------------------------------------------- */
 #include "EXTERN.h"
 #include "perl.h"

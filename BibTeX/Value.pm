@@ -6,8 +6,8 @@
 #              values) and simple values (string/macro/number).
 # CREATED    : 1998/03/12, Greg Ward
 # MODIFIED   : 
-# VERSION    : $Id: Value.pm,v 1.3 1999/10/28 23:13:16 greg Exp $
-# COPYRIGHT  : Copyright (c) 1997-98 by Gregory P. Ward.  All rights
+# VERSION    : $Id: Value.pm,v 1.6 2000/03/23 02:08:40 greg Exp $
+# COPYRIGHT  : Copyright (c) 1997-2000 by Gregory P. Ward.  All rights
 #              reserved.
 # 
 #              This file is part of the Text::BibTeX library.  This
@@ -239,7 +239,7 @@ package Text::BibTeX::SimpleValue;
 
 use strict;
 use Carp;
-import Text::BibTeX qw(:nodetypes);
+use Text::BibTeX qw(:nodetypes);
 
 =head2 Text::BibTeX::SimpleValue methods
 
@@ -319,7 +319,7 @@ Greg Ward <gward@python.net>
 
 =head1 COPYRIGHT
 
-Copyright (c) 1997-98 by Gregory P. Ward.  All rights reserved.  This file
+Copyright (c) 1997-2000 by Gregory P. Ward.  All rights reserved.  This file
 is part of the Text::BibTeX library.  This library is free software; you
 may redistribute it and/or modify it under the same terms as Perl itself.
 

@@ -1,3 +1,26 @@
+Release 0.33 - 22 March, 2000
+-----------------------------
+* fixed long-standing bug with import/inheritance code; should fix the
+  mysterious "method redefined" and "can't locate object method" errors
+  that various people have seen on various platforms over the years.
+  Thanks to Nikolay Pelov <Nikolay.Pelov@cs.kuleuven.ac.be> for
+  fixing the bug!
+* fixed some small bugs spotted by Horst Tellioglu
+  <telliogl@h2hobel.phl.univie.ac.at> that messed up creating a brand-
+  new entry from scratch
+* fixed even smaller bug spotted by Horst Tellioglu in the BibTeX 0.99
+  emulation code
+
+
+Release 0.32 - 28 November, 1999
+--------------------------------
+* made Makefile.PL able to download and configure btparse, instead
+  of leaving it up to the user
+* fixed entry output method (print_s) so strings are wrapped in braces,
+  not quotes -- that way we don't generate bogus BibTeX files if there
+  are quotes at top-level in a string
+
+
 Release 0.31 - 28 October, 1999
 -------------------------------
 * fixed small bug in Text::BibTeX::BibFormat

@@ -7,8 +7,8 @@
 #              in a BibTeX-style bibliographic database.
 # CREATED    : 1997/11/24, GPW (taken from Bib.pm)
 # MODIFIED   : 
-# VERSION    : $Id: BibSort.pm,v 1.7 1999/10/28 23:13:16 greg Exp $
-# COPYRIGHT  : Copyright (c) 1997-98 by Gregory P. Ward.  All rights 
+# VERSION    : $Id: BibSort.pm,v 1.10 2000/03/23 02:08:40 greg Exp $
+# COPYRIGHT  : Copyright (c) 1997-2000 by Gregory P. Ward.  All rights 
 #              reserved.
 # 
 #              This file is part of the Text::BibTeX library.  This is free
@@ -19,8 +19,12 @@
 package Text::BibTeX::BibSort;
 use strict;
 use vars qw(@ISA);
+
+use Text::BibTeX::Structure;
+
 @ISA = qw(Text::BibTeX::StructuredEntry);
-import Text::BibTeX qw(purify_string change_case);
+
+use Text::BibTeX qw(purify_string change_case);
 
 use Carp;
 
@@ -126,7 +130,7 @@ sub sort_key
 }  # sort_key
 
 
-sub sortify 
+sub sortify
 {
    my ($self, $field) = @_;
    return lc (purify_string ($self->get ($field)));
@@ -235,6 +239,6 @@ Greg Ward <gward@python.net>
 
 =head1 COPYRIGHT
 
-Copyright (c) 1997-98 by Gregory P. Ward.  All rights reserved.  This file
+Copyright (c) 1997-2000 by Gregory P. Ward.  All rights reserved.  This file
 is part of the Text::BibTeX library.  This library is free software; you
 may redistribute it and/or modify it under the same terms as Perl itself.

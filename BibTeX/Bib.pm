@@ -12,8 +12,8 @@
 #              style files of BibTeX 0.99.
 # CREATED    : 1997/09/21, Greg Ward
 # MODIFIED   : 
-# VERSION    : $Id: Bib.pm,v 1.13 1999/10/28 23:13:16 greg Exp $
-# COPYRIGHT  : Copyright (c) 1997-98 by Gregory P. Ward.  All rights
+# VERSION    : $Id: Bib.pm,v 1.17 2000/03/23 02:08:40 greg Exp $
+# COPYRIGHT  : Copyright (c) 1997-2000 by Gregory P. Ward.  All rights
 #              reserved.
 # 
 #              This file is part of the Text::BibTeX library.  This
@@ -323,7 +323,7 @@ Constrained fields: at most one of C<volume>, C<number>.
 
 =item C<techreport>
 
-Required fields: C<author>, C<title>, C<school>, C<year>.
+Required fields: C<author>, C<title>, C<institution>, C<year>.
 Optional fields: C<type>, C<number>, C<address>, C<month>, C<note>.
 
 =item C<unpublished>
@@ -410,7 +410,7 @@ sub describe_entry
                           organization publisher note)],
                       [0, 1, [qw(volume number)]]);
    $self->set_fields ('techreport',
-                      [qw(author title school year)],
+                      [qw(author title institution year)],
                       [qw(type number address month note)]);
    $self->set_fields ('unpublished',
                       [qw(author title note)],
@@ -441,10 +441,11 @@ L<Text::BibTeX::BibFormat> for details on these two methods.
 package Text::BibTeX::BibEntry;
 use strict;
 use vars qw(@ISA);
-@ISA = qw(Text::BibTeX::BibSort Text::BibTeX::BibFormat);
 
-require Text::BibTeX::BibSort;
-require Text::BibTeX::BibFormat;
+use Text::BibTeX::BibSort;
+use Text::BibTeX::BibFormat;
+
+@ISA = qw(Text::BibTeX::BibSort Text::BibTeX::BibFormat);
 
 # Pre-define the "month name" macros for compatibility with BibTeX.
 # This ignores all sorts of issues, like internationalization and
@@ -480,6 +481,6 @@ Greg Ward <gward@python.net>
 
 =head1 COPYRIGHT
 
-Copyright (c) 1997-98 by Gregory P. Ward.  All rights reserved.  This file
+Copyright (c) 1997-2000 by Gregory P. Ward.  All rights reserved.  This file
 is part of the Text::BibTeX library.  This library is free software; you
 may redistribute it and/or modify it under the same terms as Perl itself.
