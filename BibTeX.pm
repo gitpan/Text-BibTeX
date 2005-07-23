@@ -4,7 +4,7 @@
 #              needed for parsing BibTeX files (both Perl and C code).
 # CREATED    : February 1997, Greg Ward
 # MODIFIED   : 
-# VERSION    : $Id: BibTeX.pm,v 1.27 2000/03/23 02:08:40 greg Rel $
+# VERSION    : $Id: BibTeX.pm 755 2005-07-23 20:33:46Z alberto $
 # COPYRIGHT  : Copyright (c) 1997-2000 by Gregory P. Ward.  All rights reserved.
 #
 #              This file is part of the Text::BibTeX library.  This
@@ -19,10 +19,13 @@ require 5.004;                          # needed for Text::BibTeX::Entry
 use strict;
 use UNIVERSAL qw(isa can);              # for 'check_class' subroutine
 use Carp;
-use vars qw(@ISA @EXPORT @EXPORT_OK %EXPORT_TAGS $AUTOLOAD);
+use vars qw(@ISA @EXPORT @EXPORT_OK %EXPORT_TAGS $AUTOLOAD $VERSION);
 
 require Exporter;
 require DynaLoader;
+
+$VERSION=0.35;
+
 @ISA = qw(Exporter DynaLoader);
 %EXPORT_TAGS = (nodetypes => [qw(BTAST_STRING BTAST_MACRO BTAST_NUMBER)],
                 metatypes => [qw(BTE_UNKNOWN BTE_REGULAR BTE_COMMENT 
@@ -235,7 +238,7 @@ bootstrap Text::BibTeX;
 # which tries to call `constant' again, ad infinitum.  The moral of the
 # story: beware of what you put in BEGIN blocks in XS-dependent modules!)
 
-&initialize;                            # these are both XS functions
+initialize();                            # these are both XS functions
 END { &cleanup; }
 
 

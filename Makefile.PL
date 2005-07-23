@@ -3,12 +3,12 @@ use strict;
 use ExtUtils::MakeMaker;
 use File::Basename;
 
-# $Id: Makefile.PL,v 1.17 2000/12/23 03:55:10 greg Exp $
+# $Id: Makefile.PL 757 2005-07-23 20:37:05Z alberto $
 
-# NB. btparse 0.33 hasn't actually been released as I write this
-# (ie. as Text::BibTeX 0.33 is going out the door), but I anticipate
+# NB. btparse 0.35 hasn't actually been released as I write this
+# (ie. as Text::BibTeX 0.35 is going out the door), but I anticipate
 # that it will be -- so this list is ready for it!
-my @btparse_versions = qw(0.30 0.31 0.32 0.33);
+my @btparse_versions = qw(0.35);
 
 
 # Searches the specified @$search_dirs for either release directories or
@@ -238,7 +238,7 @@ sub download_btparse
    }
 
    # build list of [base-filename, whole-url, where-to-save-it] lists
-   my $cpan_dir = 'modules/by-authors/id/GWARD/';
+   my $cpan_dir = 'modules/by-authors/id/A/AM/AMBS/btparse';
    my @download_trials = ();
    my ($ver, $archive_file);
    foreach $ver (@$versions)
@@ -377,12 +377,12 @@ my @support_files = ('btxs_support$(OBJ_EXT)');
 # the contents of the Makefile that is written.
 WriteMakefile (
     'NAME'	=> 'Text::BibTeX',
-    'VERSION'   => '0.34',
+    'VERSION_FROM'   => 'BibTeX.pm',
     'XSPROTOARG' => '-prototypes',
     'LIBS'	=> [''],   # e.g., '-lm' 
     'DEFINE'	=> '',     # e.g., '-DHAVE_SOMETHING' 
     'INC'	=> '-Ibtparse/src',
-    'MYEXTLIB'  => 'btparse/libbtparse$(LIB_EXT)',
+    'MYEXTLIB'  => 'btparse/src/.libs/libbtparse$(LIB_EXT)',
     'OBJECT'    => 'BibTeX$(OBJ_EXT) ' . join (' ', @support_files),
     'dynamic_lib' => { INST_DYNAMIC_DEP => join (' ', @support_files) },
     'dist'      => { COMPRESS => "gzip", SUFFIX => "gz" }

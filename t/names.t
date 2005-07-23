@@ -1,18 +1,16 @@
+# -*- cperl -*-
 use strict;
 use vars qw($DEBUG);
 use IO::Handle;
-BEGIN { require "t/common.pl"; }
-
-my $loaded;
-BEGIN { $| = 1; print "1..51\n"; }
-END {print "not ok 1\n" unless $loaded;}
-use Text::BibTeX;
-$loaded = 1;
-print "ok 1\n";
+use Test::More tests => 51;
+BEGIN {
+  use_ok("Text::BibTeX");
+  require "t/common.pl";
+}
 
 $DEBUG = 0;
 
-setup_stderr;
+#setup_stderr;
 
 sub test_name
 {
@@ -34,7 +32,7 @@ sub test_name
       }
    }
 
-   test (keys %$name <= 4 && $ok);
+   ok (keys %$name <= 4 && $ok);
 }
 
 
@@ -61,24 +59,24 @@ my ($text, $entry);
   'Foo foo'                => 'Foo||foo|',
   'foo Foo'                => '|foo|Foo|'
  );
-          
+
 @orig_namelist = keys %names;
 $namelist = join (' and ', @orig_namelist);
 @namelist = Text::BibTeX::split_list
    ($namelist, 'and', 'test', 0, 'name');
-test (slist_equal (\@orig_namelist, \@namelist));
+is_deeply(\@orig_namelist, \@namelist);
 
 my $i;
 foreach $i (0 .. $#namelist)
 {
-   test ($namelist[$i] eq $orig_namelist[$i]);
+   is($namelist[$i], $orig_namelist[$i]);
    my %parts;
    Text::BibTeX::Name::_split (\%parts, $namelist[$i], 'test', 0, $i, 0);
-   test (keys %parts <= 4);
+   ok (keys %parts <= 4);
 
    my @name = map { join ('+', ref $_ ? @$_ : ()) }
                   @parts{'first','von','last','jr'};
-   test (join ('|', @name) eq $names{$orig_namelist[$i]});
+   is (join ('|', @name), $names{$orig_namelist[$i]});
 }
 
 # now an entry with some names in it
@@ -94,17 +92,16 @@ $text = <<'TEXT';
 }
 TEXT
 
-test ($entry = new Text::BibTeX::Entry $text);
+ok ($entry = new Text::BibTeX::Entry $text);
 my $author = $entry->get ('author');
-test ($author
-      eq 'Homer Simpson and Flanders, Jr., Ned Q. and {Foo Bar and Co.}');
+is ($author, 'Homer Simpson and Flanders, Jr., Ned Q. and {Foo Bar and Co.}');
 @names = $entry->split ('author');
-test (@names == 3 &&
-      $names[0] eq 'Homer Simpson' &&
-      $names[1] eq 'Flanders, Jr., Ned Q.' &&
-      $names[2] eq '{Foo Bar and Co.}');
+ok (@names == 3 &&
+    $names[0] eq 'Homer Simpson' &&
+    $names[1] eq 'Flanders, Jr., Ned Q.' &&
+    $names[2] eq '{Foo Bar and Co.}');
 @names = $entry->names ('author');
-test (@names == 3);
+ok (@names == 3);
 test_name ($names[0], [['Homer'], undef, ['Simpson'], undef]);
 test_name ($names[1], [['Ned', 'Q.'], undef, ['Flanders'], ['Jr.']]);
 test_name ($names[2], [undef, undef, ['{Foo Bar and Co.}']]);

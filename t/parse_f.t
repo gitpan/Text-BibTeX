@@ -16,7 +16,7 @@ setup_stderr;
 
 my ($fh, $entry);
 
-my $regular_file = 'btparse/t/data/regular.bib';
+my $regular_file = 'btparse/tests/data/regular.bib';
 
 # first, from a regular ol' Perl filehandle, with 'new' and 'parse"
 # bundled into one call

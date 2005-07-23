@@ -7,7 +7,7 @@
 # Currently hardcoded to use the "Bib" structure, which implements
 # exactly the structure of BibTeX 0.99.
 #
-# $Id: btcheck,v 1.4 1997/12/20 14:40:58 greg Rel $
+# $Id: btcheck 447 1997-12-20 14:40:58Z greg $
 #
 
 use strict;

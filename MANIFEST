@@ -34,3 +34,4 @@ t/parse_s.t
 t/purify.t
 t/split_names
 examples/append_entries
+META.yml                                 Module meta-data (added by MakeMaker)

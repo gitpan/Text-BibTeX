@@ -18,7 +18,7 @@ setup_stderr;
 # entry creation and parsing from a Text::BibTeX::File object
 
 my ($bibfile, $entry);
-my $multiple_file = 'btparse/t/data/simple.bib';
+my $multiple_file = 'btparse/tests/data/simple.bib';
 
 test ($bibfile = new Text::BibTeX::File $multiple_file);
 test ($entry = new Text::BibTeX::Entry $bibfile);

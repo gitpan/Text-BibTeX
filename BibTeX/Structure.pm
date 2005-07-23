@@ -7,7 +7,7 @@
 # CREATED    : in original form: Apr 1997
 #              completely redone: Oct 1997
 # MODIFIED   : 
-# VERSION    : $Id: Structure.pm,v 2.14 2000/03/23 02:08:40 greg Rel $
+# VERSION    : $Id: Structure.pm 670 2000-03-23 02:08:40Z greg $
 # COPYRIGHT  : Copyright (c) 1997-2000 by Gregory P. Ward.  All rights
 #              reserved.
 # 

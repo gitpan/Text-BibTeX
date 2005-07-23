@@ -1,3 +1,10 @@
+Release 0.35 - 23 July, 2004
+----------------------------
+* changed from 0.33 to 0.35 to maintain relation with btparse.
+* some tests now use Test::More (more tests will change soon)
+* the way the module initializes changed. Now the module can be
+  included to check its version.
+
 Release 0.33 - 22 March, 2000
 -----------------------------
 * fixed long-standing bug with import/inheritance code; should fix the
