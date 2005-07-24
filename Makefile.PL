@@ -5,9 +5,6 @@ use File::Basename;
 
 # $Id: Makefile.PL 757 2005-07-23 20:37:05Z alberto $
 
-# NB. btparse 0.35 hasn't actually been released as I write this
-# (ie. as Text::BibTeX 0.35 is going out the door), but I anticipate
-# that it will be -- so this list is ready for it!
 my @btparse_versions = qw(0.35);
 
 
@@ -238,7 +235,7 @@ sub download_btparse
    }
 
    # build list of [base-filename, whole-url, where-to-save-it] lists
-   my $cpan_dir = 'modules/by-authors/id/A/AM/AMBS/btparse';
+   my $cpan_dir = 'modules/by-authors/id/A/AM/AMBS/btparse/';
    my @download_trials = ();
    my ($ver, $archive_file);
    foreach $ver (@$versions)

@@ -1,4 +1,8 @@
-Release 0.35 - 23 July, 2004
+Release 0.36 - 24 July, 2005
+----------------------------
+* fixed url where btparse should be downloaded from. (stupid bug)
+
+Release 0.35 - 23 July, 2005
 ----------------------------
 * changed from 0.33 to 0.35 to maintain relation with btparse.
 * some tests now use Test::More (more tests will change soon)
