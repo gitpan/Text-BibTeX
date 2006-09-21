@@ -291,6 +291,8 @@ Constrained fields: at most one of C<volume>, C<number>.
 
 =item C<inproceedings>
 
+=item C<conference>
+
 Required fields: C<author>, C<title>, C<booktitle>, C<year>.
 Optional fields: C<editor>, C<series>, C<pages>, C<address>, C<month>, C<organization>, C<publisher>, C<note>.
 Constrained fields: at most one of C<volume>, C<number>.
@@ -387,6 +389,11 @@ sub describe_entry
                           edition month note)],
                       [0, 1, [qw(volume number)]]);
    $self->set_fields ('inproceedings',
+                      [qw(author title booktitle year)],
+                      [qw(editor series pages address month 
+                          organization publisher note)],
+                      [0, 1, [qw(volume number)]]);
+   $self->set_fields ('conference',
                       [qw(author title booktitle year)],
                       [qw(editor series pages address month 
                           organization publisher note)],

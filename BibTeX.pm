@@ -4,7 +4,7 @@
 #              needed for parsing BibTeX files (both Perl and C code).
 # CREATED    : February 1997, Greg Ward
 # MODIFIED   : 
-# VERSION    : $Id: BibTeX.pm 755 2005-07-23 20:33:46Z alberto $
+# VERSION    : $Id: BibTeX.pm 761 2005-07-24 15:29:40Z alberto $
 # COPYRIGHT  : Copyright (c) 1997-2000 by Gregory P. Ward.  All rights reserved.
 #
 #              This file is part of the Text::BibTeX library.  This
@@ -24,7 +24,7 @@ use vars qw(@ISA @EXPORT @EXPORT_OK %EXPORT_TAGS $AUTOLOAD $VERSION);
 require Exporter;
 require DynaLoader;
 
-$VERSION=0.36;
+$VERSION=0.37;
 
 @ISA = qw(Exporter DynaLoader);
 %EXPORT_TAGS = (nodetypes => [qw(BTAST_STRING BTAST_MACRO BTAST_NUMBER)],

@@ -1,3 +1,7 @@
+Release 0.37 - 21 Setember, 2006
+--------------------------------
+* added support for 'conference' key (alias for inproceedings)
+
 Release 0.36 - 24 July, 2005
 ----------------------------
 * fixed url where btparse should be downloaded from. (stupid bug)
