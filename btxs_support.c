@@ -4,7 +4,7 @@
 @GLOBALS    : 
 @CREATED    : 1997/11/16, Greg Ward (from code in BibTeX.xs)
 @MODIFIED   : 
-@VERSION    : $Id: btxs_support.c 685 2000-05-20 02:45:15Z greg $
+@VERSION    : $Id: btxs_support.c 3032 2006-09-21 20:05:55Z ambs $
 @COPYRIGHT  : Copyright (c) 1997-2000 by Gregory P. Ward.  All rights reserved.
 -------------------------------------------------------------------------- */
 #include "EXTERN.h"

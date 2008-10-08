@@ -6,7 +6,7 @@
 # DESCRIPTION: Provides an object-oriented interface to BibTeX entries.
 # CREATED    : March 1997, Greg Ward
 # MODIFIED   : 
-# VERSION    : $Id: Entry.pm 670 2000-03-23 02:08:40Z greg $
+# VERSION    : $Id: Entry.pm 6325 2008-10-08 12:35:41Z ambs $
 # COPYRIGHT  : Copyright (c) 1997-2000 by Gregory P. Ward.  All rights
 #              reserved.
 # 
@@ -196,9 +196,9 @@ sub new
             bless $self, $structure->entry_class;
          }            
       }
-      elsif (@source == 2 && ! ref $source[0] && fileno ($source[1]))
+      elsif (@source == 2 && defined $source[0] && ! ref $source[0] && fileno ($source[1]))
           { $status = $self->parse ($source[0], $source[1]) }
-      elsif (@source == 1 && ! ref $source[0])
+      elsif (@source == 1 && defined $source[0] && ! ref $source[0])
           { $status = $self->parse_s ($source[0]) }
       else
           { croak "new: source argument must be either a Text::BibTeX::File " .

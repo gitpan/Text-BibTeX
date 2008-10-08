@@ -23,7 +23,7 @@
 @CALLS      : 
 @CREATED    : Jan/Feb 1997, Greg Ward
 @MODIFIED   : 
-@VERSION    : $Id: BibTeX.xs 685 2000-05-20 02:45:15Z greg $
+@VERSION    : $Id: BibTeX.xs 3031 2006-09-21 20:02:34Z ambs $
 -------------------------------------------------------------------------- */
 #include "EXTERN.h"
 #include "perl.h"

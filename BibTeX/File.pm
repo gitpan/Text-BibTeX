@@ -6,7 +6,7 @@
 #              files.
 # CREATED    : March 1997, Greg Ward
 # MODIFIED   : 
-# VERSION    : $Id: File.pm 670 2000-03-23 02:08:40Z greg $
+# VERSION    : $Id: File.pm 3033 2006-09-21 20:07:27Z ambs $
 # COPYRIGHT  : Copyright (c) 1997-2000 by Gregory P. Ward.  All rights
 #              reserved.
 # 
