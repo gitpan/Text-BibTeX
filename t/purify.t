@@ -1,23 +1,25 @@
+# -*- cperl -*-
+use strict;
+use warnings;
+
+use IO::Handle;
+use Test::More tests => 110;
+
+use vars qw($DEBUG);
+
+BEGIN {
+    use_ok('Text::BibTeX', qw(purify_string));
+    require "t/common.pl";
+}
+
 #
 # purify.t
 #
 # Text::BibTeX test program -- compare my purify routine with known
 # results from BibTeX 0.99.
 #
-# $Id: purify.t 3030 2006-09-21 20:01:18Z ambs $
+# $Id: purify.t 8436 2010-02-15 15:55:23Z ambs $
 #
-
-use strict;
-use vars qw($DEBUG);
-use IO::Handle;
-BEGIN { require "t/common.pl"; }
-
-my $loaded;
-BEGIN { $| = 1; print "1..56\n"; }
-END {print "not ok 1\n" unless $loaded;}
-use Text::BibTeX qw(purify_string);
-$loaded = 1;
-print "ok 1\n";
 
 $DEBUG = 1;
 
@@ -28,13 +30,17 @@ $in1 = 'f{\"o}o';
 $in2 = $in1;
 $out = 'clobber me';
 $out = purify_string ($in2);
-test ($in1 eq $in2 && $out eq 'foo');
-test (length $in1 == 7 && length $in2 == 7 && length $out == 3);
+is($in1, $in2);
+is($out, 'foo');
+
+is(length $in1, 7);
+is(length $in2, 7);
+is(length $out, 3);
 
 # These two *don't* come from BibTeX -- just borderline cases
 # that should be checked
-test (purify_string ('') eq '');
-test (! defined purify_string (undef));
+is(purify_string (''), '');
+ok(! defined purify_string (undef));
 
 
 # The "expected" results here are all taken directly from BibTeX, using
@@ -129,6 +135,7 @@ while (@tests)
       if $DEBUG;
 
    $purified =~ s/ +$//;                # strip trailing spaces
-   test ($purified eq $exp_purified && $length == $exp_length);
+   is($purified, $exp_purified);
+   is($length, $exp_length);
 }
 

@@ -1,17 +1,18 @@
+# -*- cperl -*-
 use strict;
-use vars qw($DEBUG);
-BEGIN { require "t/common.pl"; }
+use warnings;
 
-my $loaded;
-BEGIN { $| = 1; print "1..12\n"; }
-END {print "not ok 1\n" unless $loaded;}
-use Text::BibTeX;
-$loaded = 1;
-print "ok 1\n";
+use IO::Handle;
+use Test::More tests => 12;
+
+use vars qw($DEBUG);
+
+BEGIN {
+    use_ok('Text::BibTeX');
+    require "t/common.pl";
+}
 
 $DEBUG = 0;
-
-setup_stderr;
 
 # ----------------------------------------------------------------------
 # make sure we can split up lists of names
@@ -32,19 +33,17 @@ my (@names);
     'K. Herterich and S. Determann and B. Grieger and I. Hansen and P. Helbig and S. Lorenz and A. Manschke and M. Matthies and A. Paul and R. Schlotte and U. Wyputta' => ['K. Herterich', 'S. Determann', 'B. Grieger', 'I. Hansen', 'P. Helbig', 'S. Lorenz', 'A. Manschke', 'M. Matthies', 'A. Paul', 'R. Schlotte', 'U. Wyputta'],
    );
 
-while (@names)
-{
-   my ($name, $should_split) = (shift @names, shift @names);
-   my $actual_split = [Text::BibTeX::split_list ($name, 'and')];
+while (@names) {
+    my ($name, $should_split) = (shift @names, shift @names);
+    my $actual_split = [Text::BibTeX::split_list ($name, 'and')];
 
-   if ($DEBUG)
-   {
-      printf "name = >%s<\n", $name;
-      print "should split to:\n  ";
-      print join ("\n  ", @$should_split) . "\n";
-      print "actually split to:\n  ";
-      print join ("\n  ", @$actual_split) . "\n";
-   }
+    if ($DEBUG) {
+        printf "name = >%s<\n", $name;
+        print "should split to:\n  ";
+        print join ("\n  ", @$should_split) . "\n";
+        print "actually split to:\n  ";
+        print join ("\n  ", @$actual_split) . "\n";
+    }
 
-   test (slist_equal ($should_split, $actual_split));
+    ok(slist_equal ($should_split, $actual_split));
 }
