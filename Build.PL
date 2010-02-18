@@ -20,11 +20,12 @@ my $builder = MyBuilder->new
    dist_author    => ['Alberto Simões <ambs@cpan.org>',
                       'Greg Ward <gward@python.net>'],
    needs_compiler => 1,
-   requires       => {
+   build_requires => {
                       'File::Copy'         => '0',
                       'Capture::Tiny'      => '0.06',
                       'Config::AutoConf'   => '0.14',
                       'ExtUtils::CBuilder' => '0.27',
+                      'Module::Build'      => '0.3603',
                      },
    add_to_cleanup => [
                       'Text-BibTeX-*',

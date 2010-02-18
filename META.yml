@@ -4,7 +4,11 @@ author:
   - 'Alberto Simões <ambs@cpan.org>'
   - 'Greg Ward <gward@python.net>'
 build_requires:
-  ExtUtils::CBuilder: 0
+  Capture::Tiny: 0.06
+  Config::AutoConf: 0.14
+  ExtUtils::CBuilder: 0.27
+  File::Copy: 0
+  Module::Build: 0.3603
 configure_requires:
   Module::Build: 0.36
 generated_by: 'Module::Build version 0.3603'
@@ -16,7 +20,7 @@ name: Text-BibTeX
 provides:
   Text::BibTeX:
     file: lib/Text/BibTeX.pm
-    version: 0.40_2
+    version: 0.40_3
   Text::BibTeX::BibEntry:
     file: lib/Text/BibTeX/Bib.pm
   Text::BibTeX::BibFormat:
@@ -41,11 +45,6 @@ provides:
     file: lib/Text/BibTeX/Structure.pm
   Text::BibTeX::Value:
     file: lib/Text/BibTeX/Value.pm
-requires:
-  Capture::Tiny: 0.06
-  Config::AutoConf: 0.14
-  ExtUtils::CBuilder: 0.27
-  File::Copy: 0
 resources:
   license: http://dev.perl.org/licenses/
-version: 0.40_2
+version: 0.40_3
