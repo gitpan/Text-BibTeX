@@ -6,7 +6,7 @@
 @GLOBALS    : 
 @CREATED    : 1997/08/12, Greg Ward
 @MODIFIED   : 
-@VERSION    : $Id: bibtex_ast.c 6328 2008-10-08 21:07:28Z ambs $
+@VERSION    : $Id: bibtex_ast.c 8524 2010-03-11 18:29:46Z ambs $
 @COPYRIGHT  : Copyright (c) 1996-99 by Gregory P. Ward.  All rights reserved.
 
               This file is part of the btparse library.  This library is
@@ -57,7 +57,7 @@ static void dump (AST *root, int depth)
 void dump_ast (char *msg, AST *root)
 {
    if (msg != NULL)
-      printf (msg);
+      printf ("%s",msg);
    dump (root, 0);
    printf ("\n");
 }

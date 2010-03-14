@@ -1,5 +1,5 @@
-use Capture::Tiny 'capture';
 use Carp;
+use Capture::Tiny 'capture';
 
 sub no_err {
     err_like( $_[0], qr/^$/);

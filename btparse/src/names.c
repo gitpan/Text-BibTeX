@@ -8,7 +8,7 @@
 @CREATED    : 1997/05/05, Greg Ward (as string_util.c)
 @MODIFIED   : 1997/05/14-05/16, GW: added all the code to split individual 
                                     names, renamed file to names.c
-@VERSION    : $Id: names.c 7273 2009-05-03 16:28:08Z ambs $
+@VERSION    : $Id: names.c 8530 2010-03-12 21:20:39Z ambs $
 @COPYRIGHT  : Copyright (c) 1996-99 by Gregory P. Ward.  All rights reserved.
 
               This file is part of the btparse library.  This library is
@@ -298,6 +298,7 @@ find_commas (name_loc * loc, char *name, int max_commas)
 
    for (i = 0; i < len; i++)
    {
+      update_depth (name, i, depth);
       if (depth == 0 && name[i] == ',')
       {
          num_commas++;

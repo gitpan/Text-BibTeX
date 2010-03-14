@@ -10,7 +10,7 @@
 @CALLS      : 
 @CREATED    : 1996/08/28, Greg Ward
 @MODIFIED   : 
-@VERSION    : $Id: error.c 7283 2009-05-05 18:07:47Z ambs $
+@VERSION    : $Id: error.c 8524 2010-03-11 18:29:46Z ambs $
 @COPYRIGHT  : Copyright (c) 1996-99 by Gregory P. Ward.  All rights reserved.
 
               This file is part of the btparse library.  This library is
@@ -88,7 +88,7 @@ void print_error (bt_error *err)
 
    if (err->filename)
    {
-      fprintf (stderr, err->filename);
+      fprintf (stderr, "%s", err->filename);
       something_printed = TRUE;
    }
    if (err->line > 0)                   /* going to print a line number? */
@@ -111,7 +111,7 @@ void print_error (bt_error *err)
    {
       if (something_printed)
          fprintf (stderr, ", ");
-      fprintf (stderr, name);
+      fprintf (stderr, "%s", name);
       something_printed = TRUE;
    }
 
