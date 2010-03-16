@@ -20,7 +20,7 @@ name: Text-BibTeX
 provides:
   Text::BibTeX:
     file: lib/Text/BibTeX.pm
-    version: 0.41
+    version: 0.42
   Text::BibTeX::BibEntry:
     file: lib/Text/BibTeX/Bib.pm
   Text::BibTeX::BibFormat:
@@ -47,4 +47,4 @@ provides:
     file: lib/Text/BibTeX/Value.pm
 resources:
   license: http://dev.perl.org/licenses/
-version: 0.41
+version: 0.42

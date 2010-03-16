@@ -7,7 +7,7 @@
 #              them is done by the Text::BibTeX::NameFormat class).
 # CREATED    : Nov 1997, Greg Ward
 # MODIFIED   : 
-# VERSION    : $Id: Name.pm 8423 2010-02-13 20:40:27Z ambs $
+# VERSION    : $Id: Name.pm 8536 2010-03-14 18:21:28Z ambs $
 # COPYRIGHT  : Copyright (c) 1997-2000 by Gregory P. Ward.  All rights
 #              reserved.
 # 
