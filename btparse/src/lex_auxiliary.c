@@ -19,7 +19,7 @@
 @CREATED    : Greg Ward, 1996/07/25-28
 @MODIFIED   : Jan 1997
               Jun 1997
-@VERSION    : $Id: lex_auxiliary.c 6328 2008-10-08 21:07:28Z ambs $
+@VERSION    : $Id: lex_auxiliary.c 8557 2010-03-18 19:59:35Z ambs $
 @COPYRIGHT  : Copyright (c) 1996-99 by Gregory P. Ward.  All rights reserved.
 
               This file is part of the btparse library.  This library is
@@ -310,8 +310,10 @@ void lexer_overflow (unsigned char **lastpos, unsigned char **nextpos)
            zzchar, zzchar, zzbegexpr-zzlextext);
 #endif
 
-   notify ("lexical buffer overflowed (reallocating to %d bytes)",
-                    zzbufsize+ZZLEXBUFSIZE);
+   /* Removed this as it's not that useful to know and is disconcerting
+    for Text::BibTeX users */
+   /*   notify ("lexical buffer overflowed (reallocating to %d bytes)",
+        zzbufsize+ZZLEXBUFSIZE); */
    realloc_lex_buffer (ZZLEXBUFSIZE, lastpos, nextpos);
 
 } /* lexer_overflow () */

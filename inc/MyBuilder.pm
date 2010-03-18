@@ -7,6 +7,7 @@ use strict;
 use Config;
 use Carp;
 
+use Config::AutoConf;
 use Config::AutoConf::Linker;
 
 use ExtUtils::ParseXS;
@@ -14,6 +15,15 @@ use ExtUtils::Mkbootstrap;
 
 use File::Spec::Functions qw.catdir catfile.;
 use File::Path qw.mkpath.;
+
+sub ACTION_install {
+    my $self = shift;
+    $self->SUPER::ACTION_install;
+    if ($^O =~ /linux/) {
+        my $linux = Config::AutoConf->check_prog("ldconfig");
+        system $linux if (-x $linux);
+    }
+}
 
 sub ACTION_code {
     my $self = shift;

@@ -1,7 +1,7 @@
 ---
 abstract: 'interface to read and parse BibTeX files'
 author:
-  - 'Alberto Sim√µes <ambs@cpan.org>'
+  - 'Alberto Simıes <ambs@cpan.org>'
   - 'Greg Ward <gward@python.net>'
 build_requires:
   Capture::Tiny: 0.06
@@ -11,6 +11,7 @@ build_requires:
   Module::Build: 0.3603
 configure_requires:
   Module::Build: 0.36
+dynamic_config: 0
 generated_by: 'Module::Build version 0.3603'
 license: perl
 meta-spec:
@@ -20,7 +21,7 @@ name: Text-BibTeX
 provides:
   Text::BibTeX:
     file: lib/Text/BibTeX.pm
-    version: 0.43
+    version: 0.43_1
   Text::BibTeX::BibEntry:
     file: lib/Text/BibTeX/Bib.pm
   Text::BibTeX::BibFormat:
@@ -47,4 +48,4 @@ provides:
     file: lib/Text/BibTeX/Value.pm
 resources:
   license: http://dev.perl.org/licenses/
-version: 0.43
+version: 0.43_1
