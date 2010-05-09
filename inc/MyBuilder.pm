@@ -96,9 +96,12 @@ sub ACTION_compile_xscode {
     # .o => .(a|bundle)
     my $lib_file = catfile( $archdir, "BibTeX.$Config{dlext}" );
     if ( !$self->up_to_date( [ @$objects ], $lib_file ) ) {
+        my $btparselibdir = $self->install_path('usrlib');
         $cbuilder->link(
                         module_name => 'Text::BibTeX',
-                        extra_linker_flags => '-Lbtparse/src -lbtparse ',
+                        ($^O !~ /darwin/)?
+                        (extra_linker_flags => "-Lbtparse/src -Wl,-R${btparselibdir} -lbtparse "):
+                        (extra_linker_flags => "-Lbtparse/src -lbtparse "),
                         objects     => $objects,
                         lib_file    => $lib_file,
                        );
@@ -167,11 +170,14 @@ sub ACTION_create_binaries {
     my $exe_file = catfile("btparse","progs","dumpnames$EXEEXT");
     push @toinstall, $exe_file;
     my $object   = catfile("btparse","progs","dumpnames.o");
+    my $btparselibdir = $self->install_path('usrlib');
     if (!$self->up_to_date($object, $exe_file)) {
         $CCL->($cbuilder,
                exe_file => $exe_file,
                objects  => [ $object ],
-               extra_linker_flags => '-Lbtparse/src -lbtparse ');
+               ($^O !~ /darwin/)?
+               (extra_linker_flags => "-Lbtparse/src -Wl,-R${btparselibdir} -lbtparse "):
+               (extra_linker_flags => "-Lbtparse/src -lbtparse "));
     }
 
     $exe_file = catfile("btparse","progs","biblex$EXEEXT");
@@ -181,7 +187,9 @@ sub ACTION_create_binaries {
         $CCL->($cbuilder,
                exe_file => $exe_file,
                objects  => [ $object ],
-               extra_linker_flags => '-Lbtparse/src -lbtparse ');
+               ($^O !~ /darwin/)?
+               (extra_linker_flags => "-Lbtparse/src -Wl,-R${btparselibdir} -lbtparse "):
+               (extra_linker_flags => "-Lbtparse/src -lbtparse "));
     }
 
     $exe_file = catfile("btparse","progs","bibparse$EXEEXT");
@@ -190,7 +198,9 @@ sub ACTION_create_binaries {
     if (!$self->up_to_date($object, $exe_file)) {
         $CCL->($cbuilder,
                exe_file => $exe_file,
-               extra_linker_flags => '-Lbtparse/src -lbtparse ',
+               ($^O !~ /darwin/)?
+               (extra_linker_flags => "-Lbtparse/src -Wl,-R${btparselibdir} -lbtparse "):
+               (extra_linker_flags => "-Lbtparse/src -lbtparse "),
                objects => $object);
     }
 
@@ -321,8 +331,12 @@ sub ACTION_test {
     if ($^O =~ /darwin/i) {
         $ENV{DYLD_LIBRARY_PATH} = catdir($self->blib,"usrlib");
     }
-    if ($^O =~ /(freebsd|solaris|linux)/i) {
+    elsif ($^O =~ /(?:linux|bsd|sun|sol|dragonfly|hpux|irix)/i) {
         $ENV{LD_LIBRARY_PATH} = catdir($self->blib,"usrlib");
+    }
+    elsif ($^O =~ /aix/i) {
+        my $oldlibpath = $ENV{LIBPATH} || '/lib:/usr/lib';
+        $ENV{LIBPATH} = catdir($self->blib,"usrlib").":$oldlibpath";
     }
 
     $self->SUPER::ACTION_test
