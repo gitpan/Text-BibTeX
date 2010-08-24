@@ -8,7 +8,7 @@
 @CREATED    : 1997/05/05, Greg Ward (as string_util.c)
 @MODIFIED   : 1997/05/14-05/16, GW: added all the code to split individual 
                                     names, renamed file to names.c
-@VERSION    : $Id: names.c 8530 2010-03-12 21:20:39Z ambs $
+@VERSION    : $Id: names.c 8923 2010-08-24 16:12:36Z ambs $
 @COPYRIGHT  : Copyright (c) 1996-99 by Gregory P. Ward.  All rights reserved.
 
               This file is part of the btparse library.  This library is
@@ -694,7 +694,9 @@ split_general_name (name_loc * loc,
    {                                    /* lowercase tokens */
       if (last_lc == comma_token[0])    /* lc string ends at first comma */
       {
-         name_warning (loc, "no capitalized tokens before first comma");
+        /* No longer very useful as a warning since we can have Unicode bits now
+           and so "capitalised" doesn't really have consistent meaning any more */
+        /*         name_warning (loc, "no capitalized tokens before first comma"); */
          last_lc--;
       }
       
