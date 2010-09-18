@@ -6,7 +6,7 @@
 @CALLS      : 
 @CREATED    : 1997/10/14, Greg Ward (from code in bibparse.c)
 @MODIFIED   : 
-@VERSION    : $Id: input.c 7283 2009-05-05 18:07:47Z ambs $
+@VERSION    : $Id: input.c 8964 2010-09-18 14:34:16Z ambs $
 @COPYRIGHT  : Copyright (c) 1996-99 by Gregory P. Ward.  All rights reserved.
 
               This file is part of the btparse library.  This library is
@@ -25,6 +25,8 @@
 #include "prototypes.h"
 #include "error.h"
 #include "my_dmalloc.h"
+
+
 
 
 char *   InputFilename;
@@ -238,6 +240,7 @@ AST * bt_parse_entry_s (char *    entry_text,
    }
 
    zzast_sp = ZZAST_STACKSIZE;          /* workaround apparent pccts bug */
+
    start_parse (NULL, entry_text, line);
 
    entry (&entry_ast);                  /* enter the parser */

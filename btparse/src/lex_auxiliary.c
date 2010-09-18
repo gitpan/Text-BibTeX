@@ -19,7 +19,7 @@
 @CREATED    : Greg Ward, 1996/07/25-28
 @MODIFIED   : Jan 1997
               Jun 1997
-@VERSION    : $Id: lex_auxiliary.c 8557 2010-03-18 19:59:35Z ambs $
+@VERSION    : $Id: lex_auxiliary.c 8964 2010-09-18 14:34:16Z ambs $
 @COPYRIGHT  : Copyright (c) 1996-99 by Gregory P. Ward.  All rights reserved.
 
               This file is part of the btparse library.  This library is
@@ -121,10 +121,6 @@ static int     JunkCount;               /* non-whitespace chars at toplevel */
  *     flags if we have already detected (and warned) that the current
  *     string appears to be a runaway, so that we don't warn again
  *     (and again and again and again)
- *   QuoteWarned:
- *     flags if we have already warned about seeing a '"' in a string,
- *     because they tend to come in pairs and one warning per string 
- *     is enough
  *
  * (See bibtex.g for an explanation of my runaway string detection heuristic.)
  */
@@ -133,9 +129,6 @@ static int     BraceDepth;              /* depth of brace-nesting */
 static int     ParenDepth;              /* depth of parenthesis-nesting */
 static int     StringStart = -1;        /* start line of current string */
 static int     ApparentRunaway;         /* current string looks like runaway */
-static int     QuoteWarned;             /* already warned about " in string? */
-
-
 
 /* ----------------------------------------------------------------------
  * Miscellaneous functions:
@@ -158,8 +151,11 @@ void zzcr_attr (Attrib *a, int tok, char *txt)
    {
       int   len = strlen (txt);
 
-      assert ((txt[0] == '{' && txt[len-1] == '}')
-              || (txt[0] == '\"' && txt[len-1] == '\"'));
+      assert (
+          (txt[0] == '{'  && txt[len-1] == '}')
+          ||
+          (txt[0] == '\"' && txt[len-1] == '\"')
+          );
       txt[len-1] = (char) 0;            /* remove closing quote from string */
       txt++;                            /* so we'll skip the opening quote */
    }
@@ -593,7 +589,6 @@ void start_string (char start_char)
    ParenDepth = 0;
    StringStart = zzline;
    ApparentRunaway = 0;
-   QuoteWarned = 0;
    if (start_char == '{')
       open_brace ();
    if (start_char == '(')
@@ -802,12 +797,6 @@ void quote_in_string (void)
       else
          internal_error ("Illegal string opener \"%c\"", StringOpener);
 
-      if (!QuoteWarned && at_top)
-      {
-         lexical_warning ("found \" at brace-depth zero in string "
-                          "(TeX accents in BibTeX should be inside braces)");
-         QuoteWarned = 1;
-      }
       zzmore ();
    }
 }
@@ -870,13 +859,14 @@ void check_runaway_string (void)
       zzline++;
    }
 
-   /* standardize whitespace (convert all to space) */
+   /* standardize whitespace (convert all to space) but don't accept ascii 160 
+      as space which most broken ctype.h do as this breaks lots of Unicode things */
 
    len = strlen (zzbegexpr);
    for (i = 0; i < len; i++)
    {
-      if (isspace (zzbegexpr[i]))
-         zzbegexpr[i] = ' ';
+       if (isspace (zzbegexpr[i]) && zzbegexpr[i] != 160)
+           zzbegexpr[i] = ' ';
    }
    
 
