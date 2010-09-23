@@ -5,8 +5,9 @@ author:
   - 'Greg Ward <gward@python.net>'
 build_requires:
   Capture::Tiny: 0.06
-  Config::AutoConf: 0.14
+  Config::AutoConf: 0.16
   ExtUtils::CBuilder: 0.27
+  ExtUtils::LibBuilder: 0.01
   File::Copy: 0
   Module::Build: 0.3603
 configure_requires:
@@ -21,7 +22,7 @@ name: Text-BibTeX
 provides:
   Text::BibTeX:
     file: lib/Text/BibTeX.pm
-    version: 0.46
+    version: 0.47
   Text::BibTeX::BibEntry:
     file: lib/Text/BibTeX/Bib.pm
   Text::BibTeX::BibFormat:
@@ -48,4 +49,4 @@ provides:
     file: lib/Text/BibTeX/Value.pm
 resources:
   license: http://dev.perl.org/licenses/
-version: 0.46
+version: 0.47
