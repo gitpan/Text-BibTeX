@@ -6,7 +6,7 @@
 @CALLS      : 
 @CREATED    : 1997/01/12, Greg Ward
 @MODIFIED   : 
-@VERSION    : $Id: macros.c 7283 2009-05-05 18:07:47Z ambs $
+@VERSION    : $Id: macros.c 9504 2011-01-27 14:35:42Z ambs $
 @COPYRIGHT  : Copyright (c) 1996-99 by Gregory P. Ward.  All rights reserved.
 
               This file is part of the btparse library.  This library is
@@ -39,8 +39,10 @@
  * something like that.  I'm not sure of the exact Knuthian
  * specification.
  */
-#define NUM_MACROS 547
-#define STRING_SIZE 4096
+/* Increased 10-fold to accomodate reasonbly string libraries - PK 27/10/2011 */
+
+#define NUM_MACROS 5449
+#define STRING_SIZE 40960
 
 Sym *AllMacros = NULL;                  /* `scope' so we can get back list */
                                         /* of all macros when done */

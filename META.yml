@@ -7,12 +7,14 @@ build_requires:
   Capture::Tiny: 0.06
   Config::AutoConf: 0.16
   ExtUtils::CBuilder: 0.27
-  ExtUtils::LibBuilder: 0.01
+  ExtUtils::LibBuilder: 0.02
   File::Copy: 0
   Module::Build: 0.3603
 configure_requires:
+  Config::AutoConf: 0.16
+  ExtUtils::LibBuilder: 0.02
   Module::Build: 0.36
-generated_by: 'Module::Build version 0.3607'
+generated_by: 'Module::Build version 0.3622'
 license: perl
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.4.html
@@ -21,7 +23,7 @@ name: Text-BibTeX
 provides:
   Text::BibTeX:
     file: lib/Text/BibTeX.pm
-    version: 0.48
+    version: 0.49
   Text::BibTeX::BibEntry:
     file: lib/Text/BibTeX/Bib.pm
   Text::BibTeX::BibFormat:
@@ -48,4 +50,4 @@ provides:
     file: lib/Text/BibTeX/Value.pm
 resources:
   license: http://dev.perl.org/licenses/
-version: 0.48
+version: 0.49
