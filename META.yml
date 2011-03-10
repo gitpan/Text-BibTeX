@@ -1,7 +1,7 @@
 ---
 abstract: 'interface to read and parse BibTeX files'
 author:
-  - 'Alberto Simões <ambs@cpan.org>'
+  - 'Alberto SimÃµes <ambs@cpan.org>'
   - 'Greg Ward <gward@python.net>'
 build_requires:
   Capture::Tiny: 0.06
@@ -14,7 +14,8 @@ configure_requires:
   Config::AutoConf: 0.16
   ExtUtils::LibBuilder: 0.02
   Module::Build: 0.36
-generated_by: 'Module::Build version 0.3624'
+dynamic_config: 1
+generated_by: 'Module::Build version 0.38, CPAN::Meta::Converter version 2.110580'
 license: perl
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.4.html
@@ -23,31 +24,43 @@ name: Text-BibTeX
 provides:
   Text::BibTeX:
     file: lib/Text/BibTeX.pm
-    version: 0.52
+    version: 0.53
   Text::BibTeX::BibEntry:
     file: lib/Text/BibTeX/Bib.pm
+    version: 0
   Text::BibTeX::BibFormat:
     file: lib/Text/BibTeX/BibFormat.pm
+    version: 0
   Text::BibTeX::BibSort:
     file: lib/Text/BibTeX/BibSort.pm
+    version: 0
   Text::BibTeX::BibStructure:
     file: lib/Text/BibTeX/Bib.pm
+    version: 0
   Text::BibTeX::Entry:
     file: lib/Text/BibTeX/Entry.pm
+    version: 0
   Text::BibTeX::File:
     file: lib/Text/BibTeX/File.pm
+    version: 0
   Text::BibTeX::Name:
     file: lib/Text/BibTeX/Name.pm
+    version: 0
   Text::BibTeX::NameFormat:
     file: lib/Text/BibTeX/NameFormat.pm
+    version: 0
   Text::BibTeX::SimpleValue:
     file: lib/Text/BibTeX/Value.pm
+    version: 0
   Text::BibTeX::Structure:
     file: lib/Text/BibTeX/Structure.pm
+    version: 0
   Text::BibTeX::StructuredEntry:
     file: lib/Text/BibTeX/Structure.pm
+    version: 0
   Text::BibTeX::Value:
     file: lib/Text/BibTeX/Value.pm
+    version: 0
 resources:
   license: http://dev.perl.org/licenses/
-version: 0.52
+version: 0.53
