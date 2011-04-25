@@ -36,7 +36,7 @@
    "provides" : {
       "Text::BibTeX" : {
          "file" : "lib/Text/BibTeX.pm",
-         "version" : "0.54"
+         "version" : "0.55"
       },
       "Text::BibTeX::BibEntry" : {
          "file" : "lib/Text/BibTeX/Bib.pm",
@@ -93,5 +93,5 @@
          "http://dev.perl.org/licenses/"
       ]
    },
-   "version" : "0.54"
+   "version" : "0.55"
 }
