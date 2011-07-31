@@ -24,7 +24,7 @@ name: Text-BibTeX
 provides:
   Text::BibTeX:
     file: lib/Text/BibTeX.pm
-    version: 0.59
+    version: 0.60
   Text::BibTeX::BibEntry:
     file: lib/Text/BibTeX/Bib.pm
     version: 0
@@ -63,4 +63,4 @@ provides:
     version: 0
 resources:
   license: http://dev.perl.org/licenses/
-version: 0.59
+version: 0.60

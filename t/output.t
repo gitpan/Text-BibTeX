@@ -33,11 +33,11 @@ ok($entry->parse_ok);
 
 $new_text = $entry->print_s;
 
-like $new_text => qr/^\@article\{homer97,$/m;
-like $new_text => qr/^\s*author\s*=\s*{H{\\"o}mer Simpson \\"und Ned Flanders},$/m;
-like $new_text => qr/^\s*title\s*=\s*[{"]Territorial[^}"]*Suburbia[}"],$/m;
-like $new_text => qr/^\s*journal\s*=\s*[{"]Journal[^\}]*Studies[}"],$/m;
-like $new_text => qr/^\s*year\s*=\s*[{"]1997[}"],$/m;
+like $new_text => qr/^\@article\{homer97,\s*$/m;
+like $new_text => qr/^\s*author\s*=\s*{H{\\"o}mer Simpson \\"und Ned Flanders},\s*$/m;
+like $new_text => qr/^\s*title\s*=\s*[{"]Territorial[^}"]*Suburbia[}"],\s*$/m;
+like $new_text => qr/^\s*journal\s*=\s*[{"]Journal[^\}]*Studies[}"],\s*$/m;
+like $new_text => qr/^\s*year\s*=\s*[{"]1997[}"],\s*$/m;
 
 $new_entry = new Text::BibTeX::Entry $new_text;
 ok($entry->parse_ok);
