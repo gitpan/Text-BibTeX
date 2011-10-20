@@ -6,7 +6,7 @@
 # DESCRIPTION: Provides an object-oriented interface to BibTeX entries.
 # CREATED    : March 1997, Greg Ward
 # MODIFIED   : 
-# VERSION    : $Id: Entry.pm 8671 2010-05-09 21:10:28Z ambs $
+# VERSION    : $Id: Entry.pm 10034 2011-08-19 21:02:11Z ambs $
 # COPYRIGHT  : Copyright (c) 1997-2000 by Gregory P. Ward.  All rights
 #              reserved.
 # 
@@ -187,14 +187,14 @@ sub new
       my $status;
 
       if (@source == 1 && ref($source[0]) && $source[0]->isa ('Text::BibTeX::File'))
-      { 
+      {
          my $file = $source[0];
          $status = $self->read ($file);
          if (my $structure = $file->structure)
          {
             $self->{structure} = $structure;
             bless $self, $structure->entry_class;
-         }            
+         }
       }
       elsif (@source == 2 && defined $source[0] && ! ref $source[0] && fileno ($source[1]))
           { $status = $self->parse ($source[0], $source[1]) }

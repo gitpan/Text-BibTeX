@@ -15,7 +15,7 @@ configure_requires:
   ExtUtils::LibBuilder: 0.02
   Module::Build: 0.36
 dynamic_config: 1
-generated_by: 'Module::Build version 0.38, CPAN::Meta::Converter version 2.110930'
+generated_by: 'Module::Build version 0.38, CPAN::Meta::Converter version 2.112621'
 license: perl
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.4.html
@@ -24,7 +24,7 @@ name: Text-BibTeX
 provides:
   Text::BibTeX:
     file: lib/Text/BibTeX.pm
-    version: 0.60
+    version: 0.61
   Text::BibTeX::BibEntry:
     file: lib/Text/BibTeX/Bib.pm
     version: 0
@@ -63,4 +63,4 @@ provides:
     version: 0
 resources:
   license: http://dev.perl.org/licenses/
-version: 0.60
+version: 0.61
