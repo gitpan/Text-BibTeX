@@ -7,7 +7,7 @@
 #              bibliographic entries.
 # CREATED    : 1997/11/24, GPW
 # MODIFIED   : 
-# VERSION    : $Id: BibFormat.pm 8423 2010-02-13 20:40:27Z ambs $
+# VERSION    : $Id: BibFormat.pm 10124 2011-10-21 10:15:41Z ambs $
 # COPYRIGHT  : Copyright (c) 1997 by Gregory P. Ward.  All rights reserved.
 # 
 #              This file is part of the Text::BibTeX library.  This is free
@@ -19,13 +19,14 @@ package Text::BibTeX::BibFormat;
 
 use Carp;
 use strict;
-use vars qw(@ISA);
+use vars qw(@ISA $VERSION);
 
 use Text::BibTeX::Name;
 use Text::BibTeX::NameFormat;
 use Text::BibTeX::Structure;
 
 @ISA = qw(Text::BibTeX::StructuredEntry);
+$VERSION = 0;
 
 use Text::BibTeX qw(:subs display_list :nameparts :joinmethods);
 

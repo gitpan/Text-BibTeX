@@ -7,7 +7,7 @@
 #              Text::BibTeX:Name class.)
 # CREATED    : Nov 1997, Greg Ward
 # MODIFIED   : 
-# VERSION    : $Id: NameFormat.pm 8423 2010-02-13 20:40:27Z ambs $
+# VERSION    : $Id: NameFormat.pm 10311 2012-01-07 16:14:49Z ambs $
 # COPYRIGHT  : Copyright (c) 1997-2000 by Gregory P. Ward.  All rights
 #              reserved.
 # 
@@ -22,6 +22,8 @@ require 5.004;
 
 use strict;
 use Carp;
+use vars qw'$VERSION';
+$VERSION = 0;
 
 =head1 NAME
 
@@ -304,3 +306,7 @@ is part of the Text::BibTeX library.  This library is free software; you
 may redistribute it and/or modify it under the same terms as Perl itself.
 
 =cut
+
+
+1;
+

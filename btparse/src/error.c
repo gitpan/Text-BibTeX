@@ -10,7 +10,7 @@
 @CALLS      : 
 @CREATED    : 1996/08/28, Greg Ward
 @MODIFIED   : 
-@VERSION    : $Id: error.c 8524 2010-03-11 18:29:46Z ambs $
+@VERSION    : $Id: error.c 10121 2011-10-20 18:57:43Z ambs $
 @COPYRIGHT  : Copyright (c) 1996-99 by Gregory P. Ward.  All rights reserved.
 
               This file is part of the btparse library.  This library is

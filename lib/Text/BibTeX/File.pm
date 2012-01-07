@@ -6,7 +6,7 @@
 #              files.
 # CREATED    : March 1997, Greg Ward
 # MODIFIED   : 
-# VERSION    : $Id: File.pm 8423 2010-02-13 20:40:27Z ambs $
+# VERSION    : $Id: File.pm 10124 2011-10-21 10:15:41Z ambs $
 # COPYRIGHT  : Copyright (c) 1997-2000 by Gregory P. Ward.  All rights
 #              reserved.
 # 
@@ -20,6 +20,9 @@ package Text::BibTeX::File;
 use strict;
 use Carp;
 use IO::File;
+
+use vars qw'$VERSION';
+$VERSION = 0;
 
 =head1 NAME
 

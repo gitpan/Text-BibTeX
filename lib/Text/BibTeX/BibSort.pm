@@ -7,7 +7,7 @@
 #              in a BibTeX-style bibliographic database.
 # CREATED    : 1997/11/24, GPW (taken from Bib.pm)
 # MODIFIED   : 
-# VERSION    : $Id: BibSort.pm 8423 2010-02-13 20:40:27Z ambs $
+# VERSION    : $Id: BibSort.pm 10124 2011-10-21 10:15:41Z ambs $
 # COPYRIGHT  : Copyright (c) 1997-2000 by Gregory P. Ward.  All rights 
 #              reserved.
 # 
@@ -18,11 +18,12 @@
 
 package Text::BibTeX::BibSort;
 use strict;
-use vars qw(@ISA);
+use vars qw(@ISA $VERSION);
 
 use Text::BibTeX::Structure;
 
 @ISA = qw(Text::BibTeX::StructuredEntry);
+$VERSION = 0;
 
 use Text::BibTeX qw(purify_string change_case);
 

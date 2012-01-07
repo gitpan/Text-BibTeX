@@ -6,7 +6,7 @@
 #              values) and simple values (string/macro/number).
 # CREATED    : 1998/03/12, Greg Ward
 # MODIFIED   : 
-# VERSION    : $Id: Value.pm 8423 2010-02-13 20:40:27Z ambs $
+# VERSION    : $Id: Value.pm 10124 2011-10-21 10:15:41Z ambs $
 # COPYRIGHT  : Copyright (c) 1997-2000 by Gregory P. Ward.  All rights
 #              reserved.
 # 
@@ -20,6 +20,9 @@ package Text::BibTeX::Value;
 use strict;
 use UNIVERSAL 'isa';
 use Carp;
+
+use vars qw'$VERSION';
+$VERSION = 0;
 
 =head1 NAME
 

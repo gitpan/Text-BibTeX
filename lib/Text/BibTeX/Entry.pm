@@ -6,7 +6,7 @@
 # DESCRIPTION: Provides an object-oriented interface to BibTeX entries.
 # CREATED    : March 1997, Greg Ward
 # MODIFIED   : 
-# VERSION    : $Id: Entry.pm 10034 2011-08-19 21:02:11Z ambs $
+# VERSION    : $Id: Entry.pm 10124 2011-10-21 10:15:41Z ambs $
 # COPYRIGHT  : Copyright (c) 1997-2000 by Gregory P. Ward.  All rights
 #              reserved.
 # 
@@ -19,9 +19,11 @@ package Text::BibTeX::Entry;
 require 5.004;                          # for isa, and delete on a slice
 
 use strict;
-
+use vars qw'$VERSION';
 use Carp;
 use Text::BibTeX qw(:metatypes :nodetypes);
+
+$VERSION = 0;
 
 =head1 NAME
 
