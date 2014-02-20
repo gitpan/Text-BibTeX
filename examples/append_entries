@@ -24,7 +24,7 @@
 # 
 # by Greg Ward, 1998/04/04
 #
-# $Id: append_entries 3032 2006-09-21 20:05:55Z ambs $
+# $Id$
 #
  
 # Copyright (c) 1997-2000 by Gregory P. Ward.  All rights reserved.  This file

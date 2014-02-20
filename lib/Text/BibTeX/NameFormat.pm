@@ -7,7 +7,7 @@
 #              Text::BibTeX:Name class.)
 # CREATED    : Nov 1997, Greg Ward
 # MODIFIED   : 
-# VERSION    : $Id: NameFormat.pm 10311 2012-01-07 16:14:49Z ambs $
+# VERSION    : $Id$
 # COPYRIGHT  : Copyright (c) 1997-2000 by Gregory P. Ward.  All rights
 #              reserved.
 # 

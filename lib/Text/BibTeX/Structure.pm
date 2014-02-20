@@ -7,7 +7,7 @@
 # CREATED    : in original form: Apr 1997
 #              completely redone: Oct 1997
 # MODIFIED   : 
-# VERSION    : $Id: Structure.pm 10124 2011-10-21 10:15:41Z ambs $
+# VERSION    : $Id$
 # COPYRIGHT  : Copyright (c) 1997-2000 by Gregory P. Ward.  All rights
 #              reserved.
 # 

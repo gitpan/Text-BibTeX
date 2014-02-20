@@ -6,7 +6,7 @@
 #              values) and simple values (string/macro/number).
 # CREATED    : 1998/03/12, Greg Ward
 # MODIFIED   : 
-# VERSION    : $Id: Value.pm 10124 2011-10-21 10:15:41Z ambs $
+# VERSION    : $Id$
 # COPYRIGHT  : Copyright (c) 1997-2000 by Gregory P. Ward.  All rights
 #              reserved.
 # 

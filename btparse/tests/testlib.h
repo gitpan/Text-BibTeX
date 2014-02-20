@@ -3,7 +3,7 @@
 @DESCRIPTION: Macros and prototypes common to all the btparse test programs.
 @CREATED    : 1997/09/26, Greg Ward
 @MODIFIED   : 
-@VERSION    : $Id: testlib.h 7283 2009-05-05 18:07:47Z ambs $
+@VERSION    : $Id$
 -------------------------------------------------------------------------- */
 
 #ifndef TESTLIB_H

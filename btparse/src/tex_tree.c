@@ -8,7 +8,7 @@
 @CALLERS    : 
 @CREATED    : 1997/05/29, Greg Ward
 @MODIFIED   : 
-@VERSION    : $Id: tex_tree.c 6328 2008-10-08 21:07:28Z ambs $
+@VERSION    : $Id$
 @COPYRIGHT  : Copyright (c) 1996-99 by Gregory P. Ward.  All rights reserved.
 
               This file is part of the btparse library.  This library is

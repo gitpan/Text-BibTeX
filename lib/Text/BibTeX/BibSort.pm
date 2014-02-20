@@ -7,7 +7,7 @@
 #              in a BibTeX-style bibliographic database.
 # CREATED    : 1997/11/24, GPW (taken from Bib.pm)
 # MODIFIED   : 
-# VERSION    : $Id: BibSort.pm 10124 2011-10-21 10:15:41Z ambs $
+# VERSION    : $Id$
 # COPYRIGHT  : Copyright (c) 1997-2000 by Gregory P. Ward.  All rights 
 #              reserved.
 # 

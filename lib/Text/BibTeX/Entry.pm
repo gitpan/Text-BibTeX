@@ -6,7 +6,7 @@
 # DESCRIPTION: Provides an object-oriented interface to BibTeX entries.
 # CREATED    : March 1997, Greg Ward
 # MODIFIED   : 
-# VERSION    : $Id: Entry.pm 10124 2011-10-21 10:15:41Z ambs $
+# VERSION    : $Id$
 # COPYRIGHT  : Copyright (c) 1997-2000 by Gregory P. Ward.  All rights
 #              reserved.
 # 

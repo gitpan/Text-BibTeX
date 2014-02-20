@@ -5,7 +5,7 @@
 @GLOBALS    : 
 @CREATED    : 1997/11/16, Greg Ward
 @MODIFIED   : 
-@VERSION    : $Id: btxs_support.h 8426 2010-02-14 17:31:19Z ambs $
+@VERSION    : $Id$
 @COPYRIGHT  : Copyright (c) 1997-2000 by Gregory P. Ward.  All rights reserved.
 -------------------------------------------------------------------------- */
 

@@ -7,7 +7,7 @@
 # Currently hardcoded to use the "Bib" structure, which implements
 # exactly the structure of BibTeX 0.99.
 #
-# $Id: btcheck 8426 2010-02-14 17:31:19Z ambs $
+# $Id$
 #
 
 use strict;

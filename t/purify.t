@@ -18,7 +18,7 @@ BEGIN {
 # Text::BibTeX test program -- compare my purify routine with known
 # results from BibTeX 0.99.
 #
-# $Id: purify.t 8436 2010-02-15 15:55:23Z ambs $
+# $Id$
 #
 
 $DEBUG = 1;

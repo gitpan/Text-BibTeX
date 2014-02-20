@@ -33,7 +33,7 @@ sub ACTION_install {
         my $linux = Config::AutoConf->check_prog("ldconfig");
         system $linux if (-x $linux);
     }
-    if ($^O =~ /(?:linux|bsd|sun|sol|dragonfly|hpux|irix|darwin)/
+    if ($^O =~ /(?:linux|bsd|sun|sol|dragonfly|hpux|irix|darwin|gnu)/
         &&
         $usrlib !~ m!^/usr(/local)?/lib/?$!)
       {
@@ -168,6 +168,7 @@ sub ACTION_create_objects {
         $object =~ s/\.c/.o/;
         next if $self->up_to_date($file, $object);
         $cbuilder->compile(object_file  => $object,
+                           extra_compiler_flags=>["-D_FORTIFY_SOURCE=1"],
                            source       => $file,
                            include_dirs => ["btparse/src"]);
     }
@@ -339,7 +340,7 @@ sub ACTION_test {
     if ($^O =~ /darwin/i) {
         $ENV{DYLD_LIBRARY_PATH} = catdir($self->blib, "usrlib");
     }
-    elsif ($^O =~ /(?:linux|bsd|sun|sol|dragonfly|hpux|irix)/i) {
+    elsif ($^O =~ /(?:linux|bsd|sun|sol|dragonfly|hpux|irix|gnu)/i) {
         $ENV{LD_LIBRARY_PATH} = catdir($self->blib, "usrlib");
     }
     elsif ($^O =~ /aix/i) {

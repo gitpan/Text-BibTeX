@@ -13,7 +13,7 @@
 @CALLERS    : 
 @CREATED    : 1997/07/29, Greg Ward
 @MODIFIED   : 
-@VERSION    : $Id: simple_test.c 7283 2009-05-05 18:07:47Z ambs $
+@VERSION    : $Id$
 @COPYRIGHT  : Copyright (c) 1996-97 by Gregory P. Ward.  All rights reserved.
 
               This file is part of the btparse distribution (but not part

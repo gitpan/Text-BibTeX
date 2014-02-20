@@ -6,7 +6,7 @@
 # Reads an entire BibTeX file, sorts the entries, and spits them back out
 # again.
 #
-# $Id: btsort 8426 2010-02-14 17:31:19Z ambs $
+# $Id$
 #
 
 use strict;

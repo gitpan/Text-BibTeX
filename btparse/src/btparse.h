@@ -6,7 +6,7 @@
 @CALLS      : 
 @CREATED    : 1997/01/19, Greg Ward
 @MODIFIED   : 
-@VERSION    : $Id: btparse.h 7283 2009-05-05 18:07:47Z ambs $
+@VERSION    : $Id$
 @COPYRIGHT  : Copyright (c) 1996-97 by Gregory P. Ward.  All rights reserved.
 
               This file is part of the btparse library.  This library is

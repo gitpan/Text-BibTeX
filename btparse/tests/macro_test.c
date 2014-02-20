@@ -14,7 +14,7 @@
  *
  * GPW 1998/03/01
  *
- * $Id: macro_test.c 6328 2008-10-08 21:07:28Z ambs $
+ * $Id$
  */
 
 #include <stdlib.h>

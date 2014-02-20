@@ -5,7 +5,7 @@
       "Greg Ward <gward@python.net>"
    ],
    "dynamic_config" : 1,
-   "generated_by" : "Module::Build version 0.4003, CPAN::Meta::Converter version 2.120921",
+   "generated_by" : "Module::Build version 0.4205",
    "license" : [
       "perl_5"
    ],
@@ -36,55 +36,43 @@
    "provides" : {
       "Text::BibTeX" : {
          "file" : "lib/Text/BibTeX.pm",
-         "version" : "0.66"
+         "version" : "0.67"
       },
       "Text::BibTeX::BibEntry" : {
-         "file" : "lib/Text/BibTeX/Bib.pm",
-         "version" : 0
+         "file" : "lib/Text/BibTeX/Bib.pm"
       },
       "Text::BibTeX::BibFormat" : {
-         "file" : "lib/Text/BibTeX/BibFormat.pm",
-         "version" : 0
+         "file" : "lib/Text/BibTeX/BibFormat.pm"
       },
       "Text::BibTeX::BibSort" : {
-         "file" : "lib/Text/BibTeX/BibSort.pm",
-         "version" : 0
+         "file" : "lib/Text/BibTeX/BibSort.pm"
       },
       "Text::BibTeX::BibStructure" : {
-         "file" : "lib/Text/BibTeX/Bib.pm",
-         "version" : 0
+         "file" : "lib/Text/BibTeX/Bib.pm"
       },
       "Text::BibTeX::Entry" : {
-         "file" : "lib/Text/BibTeX/Entry.pm",
-         "version" : 0
+         "file" : "lib/Text/BibTeX/Entry.pm"
       },
       "Text::BibTeX::File" : {
-         "file" : "lib/Text/BibTeX/File.pm",
-         "version" : 0
+         "file" : "lib/Text/BibTeX/File.pm"
       },
       "Text::BibTeX::Name" : {
-         "file" : "lib/Text/BibTeX/Name.pm",
-         "version" : 0
+         "file" : "lib/Text/BibTeX/Name.pm"
       },
       "Text::BibTeX::NameFormat" : {
-         "file" : "lib/Text/BibTeX/NameFormat.pm",
-         "version" : 0
+         "file" : "lib/Text/BibTeX/NameFormat.pm"
       },
       "Text::BibTeX::SimpleValue" : {
-         "file" : "lib/Text/BibTeX/Value.pm",
-         "version" : 0
+         "file" : "lib/Text/BibTeX/Value.pm"
       },
       "Text::BibTeX::Structure" : {
-         "file" : "lib/Text/BibTeX/Structure.pm",
-         "version" : 0
+         "file" : "lib/Text/BibTeX/Structure.pm"
       },
       "Text::BibTeX::StructuredEntry" : {
-         "file" : "lib/Text/BibTeX/Structure.pm",
-         "version" : 0
+         "file" : "lib/Text/BibTeX/Structure.pm"
       },
       "Text::BibTeX::Value" : {
-         "file" : "lib/Text/BibTeX/Value.pm",
-         "version" : 0
+         "file" : "lib/Text/BibTeX/Value.pm"
       }
    },
    "release_status" : "stable",
@@ -93,5 +81,5 @@
          "http://dev.perl.org/licenses/"
       ]
    },
-   "version" : "0.66"
+   "version" : "0.67"
 }

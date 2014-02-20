@@ -7,7 +7,7 @@
 #              bibliographic entries.
 # CREATED    : 1997/11/24, GPW
 # MODIFIED   : 
-# VERSION    : $Id: BibFormat.pm 10124 2011-10-21 10:15:41Z ambs $
+# VERSION    : $Id$
 # COPYRIGHT  : Copyright (c) 1997 by Gregory P. Ward.  All rights reserved.
 # 
 #              This file is part of the Text::BibTeX library.  This is free

@@ -12,7 +12,7 @@
 #              style files of BibTeX 0.99.
 # CREATED    : 1997/09/21, Greg Ward
 # MODIFIED   : 
-# VERSION    : $Id: Bib.pm 8423 2010-02-13 20:40:27Z ambs $
+# VERSION    : $Id$
 # COPYRIGHT  : Copyright (c) 1997-2000 by Gregory P. Ward.  All rights
 #              reserved.
 # 

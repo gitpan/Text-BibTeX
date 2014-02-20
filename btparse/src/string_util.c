@@ -13,7 +13,7 @@
 @CREATED    : 1997/10/19, Greg Ward
 @MODIFIED   : 1997/11/25, GPW: renamed to from purify.c to string_util.c
                                added bt_change_case() and friends
-@VERSION    : $Id: string_util.c 7283 2009-05-05 18:07:47Z ambs $
+@VERSION    : $Id$
 -------------------------------------------------------------------------- */
 
 #include <stdlib.h>

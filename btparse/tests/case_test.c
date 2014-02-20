@@ -3,7 +3,7 @@
  * 
  * GPW 1997/11/25
  *
- * $Id: case_test.c 6328 2008-10-08 21:07:28Z ambs $
+ * $Id$
  */
 
 #include <stdlib.h>
