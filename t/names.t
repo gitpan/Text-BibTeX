@@ -2,11 +2,14 @@
 use strict;
 use warnings;
 use vars qw($DEBUG);
+use Encode;
 use IO::Handle;
-use Test::More tests => 56;
+use Test::More tests => 62;
+use utf8;
 
 BEGIN {
     use_ok("Text::BibTeX");
+    use_ok("Text::BibTeX::Name");
     require "t/common.pl";
 }
 
@@ -36,8 +39,8 @@ sub test_name {
 # ----------------------------------------------------------------------
 # processing of author names
 
-my (@names, @pnames, %names, @orig_namelist, $namelist, @namelist);
-my ($text, $entry, $pentry);
+my (@names, @unames, @pnames, %names, @orig_namelist, $namelist, @namelist);
+my ($text, $entry, $pentry, $uentry);
 
 # first just a big ol' list of names, not attached to any entry
 %names =
@@ -94,6 +97,15 @@ my $protected_test = <<'PROT';
   author = {{U.S. Department of Health and Human Services, National Institute of Mental Health, National Heart, Lung and Blood Institute}}
 }
 PROT
+
+my $uname = new Text::BibTeX::Name('фон дер Иванов, И. И.');
+is (decode_utf8(join('', $uname->part('last'))), 'Иванов');
+is (decode_utf8(join('', $uname->part('first'))), 'И.И.');
+is (decode_utf8(join(' ', $uname->part('von'))), 'фон дер');# 2-byte UTF-8 lowercase
+$uname = new Text::BibTeX::Name('ꝥaa Smith, John');
+is (decode_utf8(join('', $uname->part('von'))), 'ꝥaa');# 3-byte UTF-8 lowercase (U+A765)
+$uname = new Text::BibTeX::Name('𝓺aa Smith, John');
+is (decode_utf8(join('', $uname->part('von'))), '𝓺aa');# 4-byte UTF-8 lowercase (U+1D4FA)
 
 ok ($pentry = new Text::BibTeX::Entry $protected_test);
 my $pauthor = $pentry->get ('author');
