@@ -36,10 +36,11 @@
    "provides" : {
       "Text::BibTeX" : {
          "file" : "lib/Text/BibTeX.pm",
-         "version" : "0.68"
+         "version" : "0.69"
       },
       "Text::BibTeX::BibEntry" : {
-         "file" : "lib/Text/BibTeX/Bib.pm"
+         "file" : "lib/Text/BibTeX/Bib.pm",
+         "version" : "0.1"
       },
       "Text::BibTeX::BibFormat" : {
          "file" : "lib/Text/BibTeX/BibFormat.pm",
@@ -50,7 +51,8 @@
          "version" : "0.1"
       },
       "Text::BibTeX::BibStructure" : {
-         "file" : "lib/Text/BibTeX/Bib.pm"
+         "file" : "lib/Text/BibTeX/Bib.pm",
+         "version" : "0.1"
       },
       "Text::BibTeX::Entry" : {
          "file" : "lib/Text/BibTeX/Entry.pm",
@@ -69,7 +71,8 @@
          "version" : "0.1"
       },
       "Text::BibTeX::SimpleValue" : {
-         "file" : "lib/Text/BibTeX/Value.pm"
+         "file" : "lib/Text/BibTeX/Value.pm",
+         "version" : "0.1"
       },
       "Text::BibTeX::Structure" : {
          "file" : "lib/Text/BibTeX/Structure.pm",
@@ -89,5 +92,5 @@
          "http://dev.perl.org/licenses/"
       ]
    },
-   "version" : "0.68"
+   "version" : "0.69"
 }
