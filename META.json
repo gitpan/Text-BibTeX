@@ -42,37 +42,45 @@
          "file" : "lib/Text/BibTeX/Bib.pm"
       },
       "Text::BibTeX::BibFormat" : {
-         "file" : "lib/Text/BibTeX/BibFormat.pm"
+         "file" : "lib/Text/BibTeX/BibFormat.pm",
+         "version" : "0.1"
       },
       "Text::BibTeX::BibSort" : {
-         "file" : "lib/Text/BibTeX/BibSort.pm"
+         "file" : "lib/Text/BibTeX/BibSort.pm",
+         "version" : "0.1"
       },
       "Text::BibTeX::BibStructure" : {
          "file" : "lib/Text/BibTeX/Bib.pm"
       },
       "Text::BibTeX::Entry" : {
-         "file" : "lib/Text/BibTeX/Entry.pm"
+         "file" : "lib/Text/BibTeX/Entry.pm",
+         "version" : "0.1"
       },
       "Text::BibTeX::File" : {
-         "file" : "lib/Text/BibTeX/File.pm"
+         "file" : "lib/Text/BibTeX/File.pm",
+         "version" : "0.1"
       },
       "Text::BibTeX::Name" : {
-         "file" : "lib/Text/BibTeX/Name.pm"
+         "file" : "lib/Text/BibTeX/Name.pm",
+         "version" : "0.1"
       },
       "Text::BibTeX::NameFormat" : {
-         "file" : "lib/Text/BibTeX/NameFormat.pm"
+         "file" : "lib/Text/BibTeX/NameFormat.pm",
+         "version" : "0.1"
       },
       "Text::BibTeX::SimpleValue" : {
          "file" : "lib/Text/BibTeX/Value.pm"
       },
       "Text::BibTeX::Structure" : {
-         "file" : "lib/Text/BibTeX/Structure.pm"
+         "file" : "lib/Text/BibTeX/Structure.pm",
+         "version" : "0.1"
       },
       "Text::BibTeX::StructuredEntry" : {
          "file" : "lib/Text/BibTeX/Structure.pm"
       },
       "Text::BibTeX::Value" : {
-         "file" : "lib/Text/BibTeX/Value.pm"
+         "file" : "lib/Text/BibTeX/Value.pm",
+         "version" : "0.1"
       }
    },
    "release_status" : "stable",
